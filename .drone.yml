@@ -1,0 +1,14 @@
+pipeline:
+  build:
+    image: nightsir/megil-testenv:0.1
+    commands:
+      - chmod +x gradlew
+      - ./gradlew test --stacktrace
+
+  discord:
+    image: appleboy/drone-discord
+    webhook_id: 491992508004433920
+    webhook_token: 19lcO9ymce_J_Kt3YhRT_8SHN69QyY3O8Oezb-TsqU6iXMUaklHr77c_ufdhrXZ3jnIN
+    message: "**Build {{build.status}}!**\nBuild #{{build.number}} on Branch {{build.branch}}\nIssued by: {{build.author}}\nFor detailed output see: {{build.link}}"
+    when:
+      status: [ success, failure ]
