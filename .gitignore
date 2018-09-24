@@ -13,7 +13,9 @@
 .settings
 .project
 .classpath
+/bin
 
 # Gradle files (wrapper needs to be included) #
+.gradle
 /build
 !gradle-wrapper.jar
