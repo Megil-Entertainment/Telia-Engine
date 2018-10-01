@@ -1,42 +1,28 @@
 package ch.megil.teliaengine.base;
 
-import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
 public class MapEditor extends Pane{
-	private double mouseX;
-	private double mouseY;
+	private double dx;
+	private double dy;
 	
-	@FXML
-	public void setOnMouseDragged(MouseEvent event) {
-		onMousePressed(event);
+	public void onDragStart(MouseEvent event) {
 		var source = (Node) event.getSource();
-		double deltaX = source.getLayoutX() - mouseX;
-		double deltaY = source.getLayoutY() - mouseY;
-		relocate(getLayoutX() + deltaX, getLayoutY() + deltaY);
-		mouseX = event.getSceneX() ;
-        mouseY = event.getSceneY() ;
+		dx = source.getLayoutX() - event.getSceneX();
+		dy = source.getLayoutY() - event.getSceneY();
 	}
 	
-	private void onMousePressed(MouseEvent event) {
-		mouseX = event.getSceneX();
-		mouseY = event.getSceneY();
+	private void moveNode(MouseEvent event) {
+		var source = (Node) event.getSource();
+		source.setLayoutX(event.getSceneX() + dx);
+		source.setLayoutY(event.getSceneY() + dy);
 	}
 	
-	@FXML
-	public void dragPane(MouseEvent event) {
-		if(event.isSecondaryButtonDown()) {
-			setOnMouseDragged(event);
-			event.consume();
-		}
-	}
-	
-	@FXML
-	public void dragNode(MouseEvent event) {
+	public void onDragNode(MouseEvent event) {
 		if(event.isPrimaryButtonDown()) {
-			setOnMouseDragged(event);
+			moveNode(event);
 			event.consume();
 		}
 	}
