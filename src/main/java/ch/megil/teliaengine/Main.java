@@ -1,5 +1,6 @@
 package ch.megil.teliaengine;
 
+import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.ui.FXMLConfiguration;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -16,7 +17,7 @@ public class Main extends Application {
 
 		primaryStage.setMaximized(true);
 		primaryStage.setScene(scene);
-		primaryStage.setTitle(TeliaConfiguration.APP_NAME);
+		primaryStage.setTitle(SystemConfiguration.APP_NAME.getConfiguration());
 		primaryStage.show();
 	}
 
