@@ -10,6 +10,6 @@ public class EngineUIController {
 
 	@FXML
 	private void helpAbout() {
-		// TODO: implement about
+		new AboutDialog().showAndWait();
 	}
 }
