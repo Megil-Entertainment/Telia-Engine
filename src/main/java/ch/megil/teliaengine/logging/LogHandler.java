@@ -7,19 +7,22 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 public class LogHandler {
+	public static final String LOG_DIR = "log";
+	public static final String LOG_FILE_FORMAT = LOG_DIR + "/telia-%u.%g.log";
+	
 	private static final Logger LOGGER = Logger.getGlobal();
 
 	static {
 		try {
 			LOGGER.setLevel(Level.INFO);
 
-			var file = new File("log");
+			var file = new File(LOG_DIR);
 			if (!file.exists()) {
 				file.mkdir();
 			}
 
 			// up to ten log files with 5MB size each
-			var fh = new FileHandler("log/telia-%u.%g.log", 5_000_000, 10);
+			var fh = new FileHandler(LOG_FILE_FORMAT, 5_000_000, 10);
 			fh.setFormatter(new SimpleFormatter());
 
 			LOGGER.addHandler(fh);
