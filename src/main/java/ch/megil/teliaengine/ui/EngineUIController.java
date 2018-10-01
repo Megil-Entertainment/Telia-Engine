@@ -1,4 +1,4 @@
-package ch.megil.teliaengine.base;
+package ch.megil.teliaengine.ui;
 
 import javafx.fxml.FXML;
 

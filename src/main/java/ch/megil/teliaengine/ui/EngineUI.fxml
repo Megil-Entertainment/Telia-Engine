@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.Pane?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="ch.megil.teliaengine.base.EngineUIController">
+	fx:controller="ch.megil.teliaengine.ui.EngineUIController">
 	<top>
 		<MenuBar>
 			<menus>
