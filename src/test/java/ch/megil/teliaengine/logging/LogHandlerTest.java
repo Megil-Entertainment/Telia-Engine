@@ -1,71 +1,121 @@
 package ch.megil.teliaengine.logging;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.logging.Level;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class LogHandlerTest {
-	private static final File TEMP_LOG_DIR = new File("tlog");
+	private static final String LOG_0 = "/telia-0.0.log";
 	private static final File LOG_DIR = new File(LogHandler.LOG_DIR);
 	
-	private static void deleteAllLogs() {
+	private String getLastLogLine() {
+		var log = "";
+		
+		try (var reader = new BufferedReader(new FileReader(LogHandler.LOG_DIR + LOG_0))) {
+			var line = "";
+			while ((line = reader.readLine()) != null) {
+				log = line;
+			}
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
+		return log;
+	}
+	
+	private String getLastLogLineNoTab() {
+		var log = "";
+		
+		try (var reader = new BufferedReader(new FileReader(LogHandler.LOG_DIR + LOG_0))) {
+			var line = "";
+			while ((line = reader.readLine()) != null) {
+				if (!line.startsWith("\t") && !line.isEmpty()) {
+					log = line;
+				}
+			}
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
+		return log;
+	}
+	
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
 		if (LOG_DIR.exists()) {
 			for (var f : LOG_DIR.listFiles()) {
 				f.delete();
 			}
 		}
 	}
-	
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		if (LOG_DIR.exists()) {
-			LOG_DIR.renameTo(TEMP_LOG_DIR);
-		}
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		if (TEMP_LOG_DIR.exists()) {
-			deleteAllLogs();
-			LOG_DIR.delete();
-			TEMP_LOG_DIR.renameTo(LOG_DIR);
-		}
-	}
 
 	@Before
 	public void setUp() throws Exception {
-		deleteAllLogs();
 	}
 
 	@Test
 	public void testLogStringLevel() {
-		fail("Not yet implemented");
+		var logLine = "general log test";
+		
+		LogHandler.log(logLine, Level.SEVERE);
+		var log = getLastLogLine();
+		assertEquals("SEVERE: " + logLine, log);
+		
+		LogHandler.log(logLine, Level.WARNING);
+		log = getLastLogLine();
+		assertEquals("WARNING: " + logLine, log);
+		
+		LogHandler.log(logLine, Level.INFO);
+		log = getLastLogLine();
+		assertEquals("INFO: " + logLine, log);
 	}
 
 	@Test
 	public void testLogThrowableLevel() {
-		fail("Not yet implemented");
+		var testExeption = new IOException("test exception");
+		
+		LogHandler.log(testExeption, Level.SEVERE);
+		var log = getLastLogLineNoTab();
+		var last = getLastLogLine();
+		assertEquals("SEVERE: java.io.IOException: " + testExeption.getMessage(), log);
+		assertTrue(last.isEmpty());
 	}
 
 	@Test
 	public void testSevere() {
-		fail("Not yet implemented");
+		var severe = "severe log test";
+		
+		LogHandler.severe(severe);
+		var log = getLastLogLine();
+		assertEquals("SEVERE: " + severe, log);
 	}
 
 	@Test
 	public void testWarning() {
-		fail("Not yet implemented");
+		var warning = "warning log test";
+		
+		LogHandler.warning(warning);
+		var log = getLastLogLine();
+		assertEquals("WARNING: " + warning, log);
 	}
 
 	@Test
-	public void testInfo() {
-		fail("Not yet implemented");
+	public void testInfo() throws IOException {
+		var info = "information log test";
+		
+		LogHandler.info(info);
+		var log = getLastLogLine();
+		assertEquals("INFO: " + info, log);
 	}
 
 }
