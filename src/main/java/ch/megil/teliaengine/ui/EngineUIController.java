@@ -1,4 +1,4 @@
-package ch.megil.teliaengine.base;
+package ch.megil.teliaengine.ui;
 
 import javafx.fxml.FXML;
 
@@ -10,6 +10,6 @@ public class EngineUIController {
 
 	@FXML
 	private void helpAbout() {
-		// TODO: implement about
+		new AboutDialog().showAndWait();
 	}
 }
