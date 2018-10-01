@@ -12,7 +12,7 @@ public class AboutDialog extends Dialog<Void> {
 		
 		var root = new VBox();
 		
-		var aboutText = new TextArea("Test bla bla bla \n dsalfkjasdf \n asldfkjsadl...");
+		var aboutText = new TextArea();
 		aboutText.setEditable(false);
 		aboutText.setWrapText(true);
 		aboutText.setFocusTraversable(false);
