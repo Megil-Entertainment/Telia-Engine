@@ -7,6 +7,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.Pane?>
+<?import ch.megil.teliaengine.ui.component.MapEditor?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="ch.megil.teliaengine.ui.EngineUIController">
@@ -26,9 +27,7 @@
 	<center>
 		<SplitPane>
 			<items>
-				<Pane>
-					<Label text="Map-Editor" />
-				</Pane>
+				<MapEditor />
 				<Pane>
 					<Label text="Obj-Explorer" />
 				</Pane>
