@@ -8,7 +8,9 @@ import ch.megil.teliaengine.logging.LogHandler;
 
 public enum SystemConfiguration {
 	APP_NAME("appName"),
-	APP_ABOUT("appAbout");
+	APP_ABOUT("appAbout"),
+	FILE_EXT_MAP("fileExtMap"),
+	FILE_EXT_OBJECT("fileExtObject");
 	
 	private static Properties sysProp;
 	
