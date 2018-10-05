@@ -10,7 +10,9 @@ public enum GameConfiguration {
 	ASSETS_MAPS("assetsMaps"),
 	ASSETS_OBJECTS("assetsObjects"),
 	FILE_EXT_MAP("fileExtMap"),
-	FILE_EXT_OBJECT("fileExtObject");
+	FILE_EXT_OBJECT("fileExtObject"),
+	SEPARATOR_ENTRY("separatorEntry"),
+	SEPERATOR_PROPERTY("seperatorProperty");
 	
 	private static Properties gameProp;
 	
