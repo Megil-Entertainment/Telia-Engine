@@ -22,8 +22,10 @@ import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
 
 public class MapSaveLoadTest {
+	private static File parentDir = new File(GameConfiguration.ASSETS_MAPS.getConfiguration());
+	
 	@Rule
-	public TemporaryFolder testMapsDir = new TemporaryFolder(new File(GameConfiguration.ASSETS_MAPS.getConfiguration()));
+	public TemporaryFolder testMapsDir = new TemporaryFolder(parentDir);
 
 	@Mock
 	private static GameObject obj1;
@@ -36,6 +38,10 @@ public class MapSaveLoadTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		if (!parentDir.exists()) {
+			parentDir.mkdirs();
+		}
+		
 		obj1 = mock(GameObject.class);
 		when(obj1.getName()).thenReturn("red");
 		when(obj1.getPosX()).thenReturn(10.0);
