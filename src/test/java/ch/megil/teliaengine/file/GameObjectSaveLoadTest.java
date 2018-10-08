@@ -45,16 +45,6 @@ public class GameObjectSaveLoadTest {
 		try (var writer = new BufferedWriter(new FileWriter(red))) {
 			writer.write("50.0/60.0/FF0000");
 		}
-		
-		var green = testMapsDir.newFile("green.tobj");
-		try (var writer = new BufferedWriter(new FileWriter(green))) {
-			writer.write("50.0/60.0/00FF00");
-		}
-		
-		var blue = testMapsDir.newFile("blue.tobj");
-		try (var writer = new BufferedWriter(new FileWriter(blue))) {
-			writer.write("50.0/60.0/0000FF");
-		}
 	}
 
 	@After
@@ -68,6 +58,7 @@ public class GameObjectSaveLoadTest {
 		assertTrue(optObj.isPresent());
 		var obj = optObj.get();
 		
+		assertEquals(testMapsDir.getRoot().getName() + "/red", obj.getName());
 		assertEquals(0.0, obj.getPosX(), 0);
 		assertEquals(0.0, obj.getPosY(), 0);
 		assertEquals(50.0, ((Rectangle)obj.getDepiction()).getWidth(), 0);
