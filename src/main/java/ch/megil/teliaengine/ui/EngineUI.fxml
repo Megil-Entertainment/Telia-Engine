@@ -8,6 +8,7 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.Pane?>
 <?import ch.megil.teliaengine.ui.component.MapEditor?>
+<?import ch.megil.teliaengine.ui.component.ObjectEditor?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="ch.megil.teliaengine.ui.EngineUIController">
@@ -27,10 +28,8 @@
 	<center>
 		<SplitPane>
 			<items>
-				<MapEditor />
-				<Pane>
-					<Label text="Obj-Explorer" />
-				</Pane>
+				<MapEditor fx:id="mapEditor"/>
+				<ObjectEditor fx:id="objectExplorer"/>
 			</items>
 		</SplitPane>
 	</center>
