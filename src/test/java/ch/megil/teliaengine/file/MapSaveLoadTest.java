@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -25,18 +26,16 @@ public class MapSaveLoadTest {
 	public TemporaryFolder testMapsDir = new TemporaryFolder(new File(GameConfiguration.ASSETS_MAPS.getConfiguration()));
 
 	@Mock
-	private GameObject obj1;
+	private static GameObject obj1;
 	@Mock
-	private GameObject obj2;
+	private static GameObject obj2;
 	@Mock
-	private Map testMap;
+	private static Map testMap;
 
 	private MapSaveLoad mapSaveLoad;
 
-	@Before
-	public void setUp() throws Exception {
-		mapSaveLoad = new MapSaveLoad();
-
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
 		obj1 = mock(GameObject.class);
 		when(obj1.getName()).thenReturn("red");
 		when(obj1.getPosX()).thenReturn(10.0);
@@ -53,6 +52,11 @@ public class MapSaveLoadTest {
 		when(testMap.getPlayerX()).thenReturn(20.0);
 		when(testMap.getPlayerY()).thenReturn(80.0);
 		when(testMap.getMapObjects()).thenReturn(Arrays.asList(obj1, obj2));
+	}
+	
+	@Before
+	public void setUp() throws Exception {
+		mapSaveLoad = new MapSaveLoad();
 	}
 
 	@Test
