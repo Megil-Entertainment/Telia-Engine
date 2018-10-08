@@ -20,3 +20,6 @@
 .gradle
 /build
 !gradle-wrapper.jar
+
+# dev env assets #
+/assets
