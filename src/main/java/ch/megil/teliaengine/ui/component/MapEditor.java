@@ -1,13 +1,12 @@
 package ch.megil.teliaengine.ui.component;
 
+import ch.megil.teliaengine.file.GameObjectSaveLoad;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 public class MapEditor extends Pane{
 	private Map map;
@@ -26,8 +25,7 @@ public class MapEditor extends Pane{
 					});
 			}});
 		
-		addGameObject(new GameObject("blue", new Rectangle(50,50,Color.BLUE)));
-		addGameObject(new GameObject("red", new Rectangle(50,50,Color.RED)));
+		new GameObjectSaveLoad().loadAll().forEach(this::addGameObject);
 	}
 	
 	public void addGameObject(GameObject obj) {
