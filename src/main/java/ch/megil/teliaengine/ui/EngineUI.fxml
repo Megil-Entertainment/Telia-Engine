@@ -14,6 +14,9 @@
 	<top>
 		<MenuBar>
 			<menus>
+				<Menu text="File">
+					<MenuItem text="Save" onAction="#fileSave" />
+				</Menu>
 				<Menu text="Game">
 					<MenuItem text="Run" onAction="#gameRun" />
 				</Menu>
@@ -27,7 +30,7 @@
 	<center>
 		<SplitPane>
 			<items>
-				<MapEditor />
+				<MapEditor fx:id="mapEditor" />
 				<Pane>
 					<Label text="Obj-Explorer" />
 				</Pane>
