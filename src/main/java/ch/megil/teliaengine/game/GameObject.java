@@ -14,8 +14,8 @@ public class GameObject {
 		this.name = name;
 		this.depiction = depiction;
 		
-		this.posX = new SimpleDoubleProperty(0);
-		this.posY = new SimpleDoubleProperty(0);
+		this.posX = new SimpleDoubleProperty(depiction.getLayoutX());
+		this.posY = new SimpleDoubleProperty(depiction.getLayoutY());
 		
 		this.depiction.layoutXProperty().bindBidirectional(posX);
 		this.depiction.layoutYProperty().bindBidirectional(posY);
