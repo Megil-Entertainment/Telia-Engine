@@ -15,6 +15,9 @@
 	<top>
 		<MenuBar>
 			<menus>
+				<Menu text="File">
+					<MenuItem text="Save" onAction="#fileSave" />
+				</Menu>
 				<Menu text="Game">
 					<MenuItem text="Run" onAction="#gameRun" />
 				</Menu>
