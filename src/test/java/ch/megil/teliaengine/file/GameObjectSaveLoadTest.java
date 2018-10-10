@@ -1,7 +1,6 @@
 package ch.megil.teliaengine.file;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,6 +13,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ch.megil.teliaengine.configuration.GameConfiguration;
+import ch.megil.teliaengine.file.exception.AssetFormatException;
+import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -40,14 +41,16 @@ public class GameObjectSaveLoadTest {
 		try (var writer = new BufferedWriter(new FileWriter(red))) {
 			writer.write("50.0/60.0/FF0000");
 		}
+		
+		var fail = testMapsDir.newFile("fail.tobj");
+		try (var writer = new BufferedWriter(new FileWriter(fail))) {
+			writer.write("50.0/60.0");
+		}
 	}
 
 	@Test
-	public void testLoad() {
-		var optObj = gameObjectSaveLoad.load(testMapsDir.getRoot().getName() + "/red");
-
-		assertTrue(optObj.isPresent());
-		var obj = optObj.get();
+	public void testLoad() throws Exception {
+		var obj = gameObjectSaveLoad.load(testMapsDir.getRoot().getName() + "/red");
 
 		assertEquals(testMapsDir.getRoot().getName() + "/red", obj.getName());
 		assertEquals(0.0, obj.getPosX(), 0);
@@ -55,5 +58,15 @@ public class GameObjectSaveLoadTest {
 		assertEquals(50.0, ((Rectangle) obj.getDepiction()).getWidth(), 0);
 		assertEquals(60.0, ((Rectangle) obj.getDepiction()).getHeight(), 0);
 		assertEquals(Color.RED, ((Rectangle) obj.getDepiction()).getFill());
+	}
+	
+	@Test(expected = AssetNotFoundException.class)
+	public void testLoadNotExisting() throws Exception {
+		gameObjectSaveLoad.load(testMapsDir.getRoot().getName() + "/nonExisting");
+	}
+	
+	@Test(expected = AssetFormatException.class)
+	public void testLoadFalseFormat() throws Exception {
+		gameObjectSaveLoad.load(testMapsDir.getRoot().getName() + "/fail");
 	}
 }
