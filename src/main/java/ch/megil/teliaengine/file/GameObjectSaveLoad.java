@@ -29,12 +29,8 @@ public class GameObjectSaveLoad {
 			
 			return obj;
 		} catch (IOException e) {
-//			LogHandler.severe("Game Object not found.");
-//			LogHandler.log(e, Level.SEVERE);
 			throw new AssetNotFoundException("Game Object not found: " + name, e);
 		} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
-//			LogHandler.severe("Game Object not correctly formated.");
-//			LogHandler.log(e, Level.SEVERE);
 			throw new AssetFormatException("Game Object not correctly formated: " + name, e);
 		}
 	}
