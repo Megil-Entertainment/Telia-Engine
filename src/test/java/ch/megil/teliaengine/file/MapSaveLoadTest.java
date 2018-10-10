@@ -9,7 +9,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Arrays;
 
 import org.junit.Before;
@@ -140,54 +139,54 @@ public class MapSaveLoadTest {
 			assertEquals("blue:100.0:50.0", reader.readLine());
 		}
 	}
-	
+
 	@Test
 	public void testLoad() throws Exception {
 		var mapName = testMapsDir.getRoot().getName() + "/correct";
 		var map = mapSaveLoad.load(mapName, false);
-		
+
 		assertEquals(100.0, map.getWidth(), 0);
 		assertEquals(70.0, map.getHeight(), 0);
 		assertEquals(15.0, map.getPlayerX(), 0);
 		assertEquals(10.0, map.getPlayerY(), 0);
-		
+
 		assertEquals(2, map.getMapObjects().size());
 	}
-	
+
 	@Test(expected = AssetNotFoundException.class)
 	public void testLoadNotExisting() throws Exception {
 		var mapName = testMapsDir.getRoot().getName() + "/nonExisting";
 		mapSaveLoad.load(mapName, false);
 	}
-	
+
 	@Test(expected = AssetFormatException.class)
 	public void testLoadFalseFormat() throws Exception {
 		var mapName = testMapsDir.getRoot().getName() + "/failOnMap";
 		mapSaveLoad.load(mapName, false);
 	}
-	
+
 	@Test(expected = AssetFormatException.class)
 	public void testLoadFalseFormatInObject() throws Exception {
 		var mapName = testMapsDir.getRoot().getName() + "/failOnObj";
 		mapSaveLoad.load(mapName, false);
 	}
-	
+
 	@Test(expected = AssetNotFoundException.class)
 	public void testLoadMissingObject() throws Exception {
 		var mapName = testMapsDir.getRoot().getName() + "/missingObject";
 		mapSaveLoad.load(mapName, false);
 	}
-	
+
 	@Test
 	public void testLoadRecoverMode() throws Exception {
 		var mapName = testMapsDir.getRoot().getName() + "/recover";
 		var map = mapSaveLoad.load(mapName, true);
-		
+
 		assertEquals(100.0, map.getWidth(), 0);
 		assertEquals(70.0, map.getHeight(), 0);
 		assertEquals(15.0, map.getPlayerX(), 0);
 		assertEquals(10.0, map.getPlayerY(), 0);
-		
+
 		assertEquals(4, map.getMapObjects().size());
 	}
 }
