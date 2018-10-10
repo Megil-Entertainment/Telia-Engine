@@ -4,6 +4,7 @@ import ch.megil.teliaengine.file.MapSaveLoad;
 import ch.megil.teliaengine.ui.component.MapEditor;
 import ch.megil.teliaengine.ui.component.ObjectExplorer;
 import javafx.fxml.FXML;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
 
 public class EngineUIController {

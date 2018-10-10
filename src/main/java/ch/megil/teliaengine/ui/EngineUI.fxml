@@ -32,7 +32,8 @@
 		<SplitPane>
 			<items>
 				<MapEditor fx:id="mapEditor"/>
-				<ObjectExplorer fx:id="objectExplorer"/>
+				<ObjectExplorer fx:id="objectExplorer">
+				</ObjectExplorer>
 			</items>
 		</SplitPane>
 	</center>
