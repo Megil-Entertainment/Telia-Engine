@@ -12,8 +12,10 @@ import java.util.logging.Level;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class LogHandlerTest {
 	private static final String LOG_0 = "/telia-0.0.log";
 	private static final File LOG_DIR = new File(LogHandler.LOG_DIR);
