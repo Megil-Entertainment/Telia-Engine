@@ -48,7 +48,11 @@ public class EngineUIController {
 				.collect(Collectors.toList());
 		
 		if (mapNames.size() == 0) {
-			// TODO: inform of no existing maps
+			var alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("No maps found.");
+			alert.setHeaderText(null);
+			alert.setContentText("There were no saved maps found.");
+			alert.showAndWait();
 		} else {
 			var dialog = new ChoiceDialog<>(mapNames.get(0), mapNames);
 			dialog.setTitle("Map Load");
@@ -62,7 +66,8 @@ public class EngineUIController {
 				} catch (AssetNotFoundException | AssetFormatException e) {
 					var alert = new Alert(AlertType.WARNING);
 					alert.setTitle("Map Load Error");
-					alert.setHeaderText("There was an error while loading the map. Do you wanna try and recover the map?");
+					alert.setHeaderText(null);
+					alert.setContentText("There was an error while loading the map. Do you wanna try and recover the map?");
 					alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.CANCEL);
 					var res = alert.showAndWait();
 					if (res.isPresent() && res.get().equals(ButtonType.YES)) {
