@@ -2,7 +2,6 @@ package ch.megil.teliaengine.ui;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -10,10 +9,12 @@ import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.file.MapSaveLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
-import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.logging.LogHandler;
 import ch.megil.teliaengine.ui.component.MapEditor;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextInputDialog;
 
@@ -59,7 +60,18 @@ public class EngineUIController {
 				try {
 					mapEditor.setMap(mapSaveLoad.load(result.get(), false));
 				} catch (AssetNotFoundException | AssetFormatException e) {
-					LogHandler.log(e, Level.SEVERE);
+					var alert = new Alert(AlertType.WARNING);
+					alert.setTitle("Map Load Error");
+					alert.setHeaderText("There was an error while loading the map. Do you wanna try and recover the map?");
+					alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.CANCEL);
+					var res = alert.showAndWait();
+					if (res.isPresent() && res.get().equals(ButtonType.YES)) {
+						try {
+							mapEditor.setMap(mapSaveLoad.load(result.get(), true));
+						} catch (AssetNotFoundException | AssetFormatException e2) {LogHandler.log(e2, Level.SEVERE);}
+					} else {
+						LogHandler.log(e, Level.SEVERE);
+					}
 				}
 			}
 		}
