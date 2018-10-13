@@ -43,10 +43,9 @@ public class EngineUIController {
 	private void fileLoadMap() {
 		var mapDir = new File(GameConfiguration.ASSETS_MAPS.getConfiguration());
 		var mapNames = Arrays.stream(mapDir.listFiles())
-				.map(m -> m.getName().replace(GameConfiguration.FILE_EXT_MAP.getConfiguration(), ""))
-				.sorted()
+				.map(m -> m.getName().replace(GameConfiguration.FILE_EXT_MAP.getConfiguration(), "")).sorted()
 				.collect(Collectors.toList());
-		
+
 		if (mapNames.size() == 0) {
 			var alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("No maps found.");
@@ -57,9 +56,9 @@ public class EngineUIController {
 			var dialog = new ChoiceDialog<>(mapNames.get(0), mapNames);
 			dialog.setTitle("Map Load");
 			dialog.setHeaderText("Select a map to load.");
-			
+
 			var result = dialog.showAndWait();
-			
+
 			if (result.isPresent()) {
 				try {
 					mapEditor.setMap(mapSaveLoad.load(result.get(), false));
@@ -73,7 +72,9 @@ public class EngineUIController {
 					if (res.isPresent() && res.get().equals(ButtonType.YES)) {
 						try {
 							mapEditor.setMap(mapSaveLoad.load(result.get(), true));
-						} catch (AssetNotFoundException | AssetFormatException e2) {LogHandler.log(e2, Level.SEVERE);}
+						} catch (AssetNotFoundException | AssetFormatException e2) {
+							LogHandler.log(e2, Level.SEVERE);
+						}
 					} else {
 						LogHandler.log(e, Level.SEVERE);
 					}

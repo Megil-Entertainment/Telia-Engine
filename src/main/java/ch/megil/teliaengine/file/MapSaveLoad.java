@@ -41,27 +41,30 @@ public class MapSaveLoad {
 	}
 	
 	public Map load(String mapName, boolean recoverMode) throws AssetNotFoundException, AssetFormatException {
-		var fileName = GameConfiguration.ASSETS_MAPS.getConfiguration() + "/" + mapName + GameConfiguration.FILE_EXT_MAP.getConfiguration();
+		var fileName = GameConfiguration.ASSETS_MAPS.getConfiguration() + "/" + mapName
+				+ GameConfiguration.FILE_EXT_MAP.getConfiguration();
 		var file = new File(fileName);
-		
+
 		try (var scanner = new Scanner(file)) {
 			scanner.useDelimiter(GameConfiguration.SEPARATOR_ENTRY.getConfiguration());
-			
+
 			var mapSize = scanner.next().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			var playerPos = scanner.next().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			var map = new Map(Double.parseDouble(mapSize[0]), Double.parseDouble(mapSize[1]),
 					Double.parseDouble(playerPos[0]), Double.parseDouble(playerPos[1]));
 
 			var objectLoader = new GameObjectSaveLoad();
-			while(scanner.hasNext()) {
+			while (scanner.hasNext()) {
 				var objSpec = scanner.next().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 				try {
 					var obj = objectLoader.load(objSpec[0]);
 					obj.setPosX(Double.parseDouble(objSpec[1]));
 					obj.setPosY(Double.parseDouble(objSpec[2]));
 					map.addObject(obj);
-				} catch (AssetNotFoundException | AssetFormatException | ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
-					LogHandler.warning("There was a problem with loading Game Object " + objSpec[0] + " inside Map: " + mapName);
+				} catch (AssetNotFoundException | AssetFormatException
+						| ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
+					LogHandler.warning(
+							"There was a problem with loading Game Object " + objSpec[0] + " inside Map: " + mapName);
 					if (recoverMode) {
 						LogHandler.log(e, Level.WARNING);
 					} else {
@@ -69,7 +72,7 @@ public class MapSaveLoad {
 					}
 				}
 			}
-			
+
 			return map;
 		} catch (IOException e) {
 			throw new AssetNotFoundException("Map not found: " + mapName, e);
