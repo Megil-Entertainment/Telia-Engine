@@ -60,7 +60,7 @@ public class MapSaveLoad {
 					obj.setPosX(Double.parseDouble(objSpec[1]));
 					obj.setPosY(Double.parseDouble(objSpec[2]));
 					map.addObject(obj);
-				} catch (AssetNotFoundException | AssetFormatException e) {
+				} catch (AssetNotFoundException | AssetFormatException | ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
 					LogHandler.warning("There was a problem with loading Game Object " + objSpec[0] + " inside Map: " + mapName);
 					if (recoverMode) {
 						LogHandler.log(e, Level.WARNING);
