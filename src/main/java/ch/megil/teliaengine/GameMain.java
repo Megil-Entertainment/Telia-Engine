@@ -6,6 +6,7 @@ import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.ui.game.GameMap;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -29,10 +30,10 @@ public class GameMain extends Application {
 
 		var scene = new Scene(root);
 		
-		primaryStage.setMaximized(true);
-//		primaryStage.setFullScreen(true);
-//		primaryStage.setFullScreenExitHint(null);
-//		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+//		primaryStage.setMaximized(true);
+		primaryStage.setFullScreen(true);
+		primaryStage.setFullScreenExitHint(null);
+		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 		primaryStage.setScene(scene);
 		primaryStage.setTitle(SystemConfiguration.GAME_NAME.getConfiguration());
 		primaryStage.show();

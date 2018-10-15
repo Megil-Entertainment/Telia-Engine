@@ -93,6 +93,7 @@ public class EngineUIController {
 	
 	@FXML
 	private void gameRun() {
+		fileSaveMap();
 		var stage = new Stage();
 		try {
 			var main = new GameMain(mapEditor.getMap().getName());
