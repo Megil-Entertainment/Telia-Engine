@@ -34,9 +34,17 @@ public class GameObject {
 	public double getPosX() {
 		return posX.get();
 	}
+	
+	public void setPosX(double posX) {
+		this.posX.set(posX);
+	}
 
 	public double getPosY() {
 		return posY.get();
+	}
+	
+	public void setPosY(double posY) {
+		this.posY.set(posY);
 	}
 
 	public Node getDepiction() {
