@@ -42,7 +42,7 @@ public class ObjectExplorer extends ScrollPane{
 	
 	public void createNewObject(GameObject object) {
 		var newObject = new GameObjectSaveLoad().load(object.getName());
-		mapEditor.addGameObject(newObject);
+//		mapEditor.addGameObject(newObject);
 	}
 	
 	public void setMapEditor(MapEditor mapEditor) {
