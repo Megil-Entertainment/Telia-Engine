@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import ch.megil.teliaengine.GameMain;
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.file.MapSaveLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
@@ -18,6 +19,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextInputDialog;
+import javafx.stage.Stage;
 
 public class EngineUIController {
 	@FXML
@@ -34,13 +36,24 @@ public class EngineUIController {
 	}
 	
 	@FXML
+	private void fileNewMap() {
+		new MapCreateDialog().showAndWait().ifPresent(mapEditor::setMap);
+	}
+	
+	@FXML
 	private void fileSaveMap() {
-		var dialog = new TextInputDialog();
-		dialog.setTitle("Map Name");
-		dialog.setHeaderText("Select a map name to save.");
+		var map = mapEditor.getMap();
 		
-		var result = dialog.showAndWait();
-		result.ifPresent(n -> mapSaveLoad.save(mapEditor.getMap(), n));
+		if (map.getName() == null) {
+			var dialog = new TextInputDialog();
+			dialog.setTitle("Map Name");
+			dialog.setHeaderText("Select a map name to save.");
+			
+			var result = dialog.showAndWait();
+			result.ifPresent(map::setName);
+		}
+		
+		mapSaveLoad.save(map);
 	}
 	
 	@FXML
@@ -89,7 +102,21 @@ public class EngineUIController {
 	
 	@FXML
 	private void gameRun() {
-		// TODO: implement run
+		fileSaveMap();
+		var stage = new Stage();
+		try {
+			var main = new GameMain(mapEditor.getMap().getName());
+			main.start(stage);
+		} catch (Exception e) {
+			stage.hide();
+			LogHandler.log(e, Level.SEVERE);
+			
+			var alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Load Error");
+			alert.setHeaderText(null);
+			alert.setContentText("There was an error while loading the game.");
+			alert.showAndWait();
+		}
 	}
 
 	@FXML

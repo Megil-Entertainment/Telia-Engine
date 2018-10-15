@@ -23,6 +23,7 @@ import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
+import ch.megil.teliaengine.game.Player;
 
 public class MapSaveLoadTest {
 	private static File parentDir = new File(GameConfiguration.ASSETS_MAPS.getConfiguration());
@@ -60,12 +61,15 @@ public class MapSaveLoadTest {
 		when(obj2.getName()).thenReturn("blue");
 		when(obj2.getPosX()).thenReturn(100.0);
 		when(obj2.getPosY()).thenReturn(50.0);
+		
+		var testPlayer = mock(Player.class);
+		when(testPlayer.getPosX()).thenReturn(20.0);
+		when(testPlayer.getPosY()).thenReturn(80.0);
 
 		testMap = mock(Map.class);
 		when(testMap.getWidth()).thenReturn(150.0);
 		when(testMap.getHeight()).thenReturn(100.0);
-		when(testMap.getPlayerX()).thenReturn(20.0);
-		when(testMap.getPlayerY()).thenReturn(80.0);
+		when(testMap.getPlayer()).thenReturn(testPlayer);
 		when(testMap.getMapObjects()).thenReturn(Arrays.asList(obj1, obj2));
 	}
 	
@@ -128,8 +132,9 @@ public class MapSaveLoadTest {
 
 	@Test
 	public void testSave() throws Exception {
-		var mapName = testMapsDir.getRoot().getName() + "/testSave";
-		mapSaveLoad.save(testMap, mapName);
+		when(testMap.getName()).thenReturn(testMapsDir.getRoot().getName() + "/testSave");
+		
+		mapSaveLoad.save(testMap);
 		var file = testMapsDir.getRoot().listFiles((f, n) -> n.startsWith("testSave."))[0];
 
 		try (var reader = new BufferedReader(new FileReader(file))) {
@@ -145,10 +150,11 @@ public class MapSaveLoadTest {
 		var mapName = testMapsDir.getRoot().getName() + "/correct";
 		var map = mapSaveLoad.load(mapName, false);
 
+		assertEquals(mapName, map.getName());
 		assertEquals(100.0, map.getWidth(), 0);
 		assertEquals(70.0, map.getHeight(), 0);
-		assertEquals(15.0, map.getPlayerX(), 0);
-		assertEquals(10.0, map.getPlayerY(), 0);
+		assertEquals(15.0, map.getPlayer().getPosX(), 0);
+		assertEquals(10.0, map.getPlayer().getPosY(), 0);
 
 		assertEquals(2, map.getMapObjects().size());
 	}
@@ -182,10 +188,11 @@ public class MapSaveLoadTest {
 		var mapName = testMapsDir.getRoot().getName() + "/recover";
 		var map = mapSaveLoad.load(mapName, true);
 
+		assertEquals(mapName, map.getName());
 		assertEquals(100.0, map.getWidth(), 0);
 		assertEquals(70.0, map.getHeight(), 0);
-		assertEquals(15.0, map.getPlayerX(), 0);
-		assertEquals(10.0, map.getPlayerY(), 0);
+		assertEquals(15.0, map.getPlayer().getPosX(), 0);
+		assertEquals(10.0, map.getPlayer().getPosY(), 0);
 
 		assertEquals(4, map.getMapObjects().size());
 	}
