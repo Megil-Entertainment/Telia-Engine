@@ -32,6 +32,11 @@ public class EngineUIController {
 	}
 	
 	@FXML
+	private void fileNewMap() {
+		
+	}
+	
+	@FXML
 	private void fileSaveMap() {
 		var map = mapEditor.getMap();
 		

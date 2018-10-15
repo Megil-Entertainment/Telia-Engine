@@ -15,6 +15,7 @@
 		<MenuBar>
 			<menus>
 				<Menu text="File">
+					<MenuItem text="New Map" onAction="#fileNewMap" />
 					<MenuItem text="Save Map" onAction="#fileSaveMap" />
 					<MenuItem text="Load Map" onAction="#fileLoadMap" />
 				</Menu>
