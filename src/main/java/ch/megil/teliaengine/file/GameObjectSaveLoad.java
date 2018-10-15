@@ -6,18 +6,18 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.GameConfiguration;
+import ch.megil.teliaengine.file.exception.AssetFormatException;
+import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.logging.LogHandler;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class GameObjectSaveLoad {
-	public Optional<GameObject> load(String name) {
-		Optional<GameObject> res = Optional.empty();
+	public GameObject load(String name) throws AssetNotFoundException, AssetFormatException {
 		var fileName = GameConfiguration.ASSETS_OBJECTS.getConfiguration() + "/" + name + GameConfiguration.FILE_EXT_OBJECT.getConfiguration();
 		var file = new File(fileName);
 		
@@ -27,16 +27,12 @@ public class GameObjectSaveLoad {
 			
 			var obj = new GameObject(name, depiction);
 			
-			res = Optional.of(obj);
+			return obj;
 		} catch (IOException e) {
-			LogHandler.severe("Game Object not found.");
-			LogHandler.log(e, Level.SEVERE);
+			throw new AssetNotFoundException("Game Object not found: " + name, e);
 		} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
-			LogHandler.severe("Game Object not correctly formated.");
-			LogHandler.log(e, Level.SEVERE);
+			throw new AssetFormatException("Game Object not correctly formated: " + name, e);
 		}
-		
-		return res;
 	}
 	
 	public List<GameObject> loadAll() {
@@ -46,7 +42,11 @@ public class GameObjectSaveLoad {
 		
 		for (var file : path.list()) {
 			var name = file.split(GameConfiguration.FILE_EXT_OBJECT.getConfiguration())[0];
-			load(name).ifPresent(res::add);
+			try {
+				res.add(load(name));
+			} catch (AssetNotFoundException | AssetFormatException e) {
+				LogHandler.log(e, Level.SEVERE);
+			}
 		}
 		
 		return res;

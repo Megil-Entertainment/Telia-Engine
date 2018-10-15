@@ -1,6 +1,8 @@
 package ch.megil.teliaengine.ui.component;
 
 import ch.megil.teliaengine.file.GameObjectSaveLoad;
+import ch.megil.teliaengine.file.exception.AssetFormatException;
+import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
 import javafx.scene.Node;
 import javafx.scene.control.ListView;
@@ -41,7 +43,15 @@ public class ObjectExplorer extends ScrollPane{
 	}
 	
 	public void createNewObject(GameObject object) {
-		var newObject = new GameObjectSaveLoad().load(object.getName());
+		try {
+			var newObject = new GameObjectSaveLoad().load(object.getName());
+		} catch (AssetNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AssetFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 //		mapEditor.addGameObject(newObject);
 	}
 	

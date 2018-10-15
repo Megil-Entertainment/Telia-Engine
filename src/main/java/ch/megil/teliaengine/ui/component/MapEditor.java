@@ -55,4 +55,11 @@ public class MapEditor extends Pane{
 	public Map getMap() {
 		return map;
 	}
+	
+	public void setMap(Map map) {
+		getChildren().clear();
+		
+		this.map = map;
+		map.getMapObjects().forEach(o -> getChildren().add(o.getDepiction()));
+	}
 }

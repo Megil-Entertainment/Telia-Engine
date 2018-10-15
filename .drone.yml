@@ -3,7 +3,7 @@ pipeline:
     image: nightsir/megil-testenv:0.1
     commands:
       - chmod +x gradlew
-      - ./gradlew test --stacktrace
+      - ./gradlew test --stacktrace --info
 
   discord:
     image: appleboy/drone-discord

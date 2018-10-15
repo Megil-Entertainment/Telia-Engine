@@ -50,5 +50,11 @@ public class GameObjectTest {
 
 		assertEquals(5, obj.getPosX(), 0);
 		assertEquals(15, obj.getPosY(), 0);
+		
+		obj.setPosX(15);
+		obj.setPosY(5);
+
+		assertEquals(15, depiction.getLayoutX(), 0);
+		assertEquals(5, depiction.getLayoutY(), 0);
 	}
 }
