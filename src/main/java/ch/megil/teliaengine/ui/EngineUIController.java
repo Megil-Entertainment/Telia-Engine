@@ -93,20 +93,20 @@ public class EngineUIController {
 	
 	@FXML
 	private void gameRun() {
-//		var stage = new Stage();
-//		try {
-//			var main = new GameMain();
-//			main.start(stage);
-//		} catch (Exception e) {
-//			stage.hide();
-//			LogHandler.log(e, Level.SEVERE);
-//			
-//			var alert = new Alert(AlertType.ERROR);
-//			alert.setTitle("Load Error");
-//			alert.setHeaderText(null);
-//			alert.setContentText("There was an error while loading the game.");
-//			alert.showAndWait();
-//		}
+		var stage = new Stage();
+		try {
+			var main = new GameMain(mapEditor.getMap().getName());
+			main.start(stage);
+		} catch (Exception e) {
+			stage.hide();
+			LogHandler.log(e, Level.SEVERE);
+			
+			var alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Load Error");
+			alert.setHeaderText(null);
+			alert.setContentText("There was an error while loading the game.");
+			alert.showAndWait();
+		}
 	}
 
 	@FXML
