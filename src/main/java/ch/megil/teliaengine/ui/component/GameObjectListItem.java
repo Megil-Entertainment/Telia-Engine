@@ -6,6 +6,7 @@ import ch.megil.teliaengine.game.GameObject;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
@@ -14,6 +15,9 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
 public class GameObjectListItem extends AnchorPane{
+	private static final int PADDING = 5;
+	private static final int SPACING = 5;
+	
 	private Rectangle bg;
 	private HBox content;
 	
@@ -30,6 +34,8 @@ public class GameObjectListItem extends AnchorPane{
 		getChildren().add(bg);
 		content = new HBox();
 		content.setAlignment(Pos.CENTER_LEFT);
+		content.setPadding(new Insets(PADDING));
+		content.setSpacing(SPACING);
 		getChildren().add(content);
 		
 		bg.widthProperty().bind(widthProperty());
