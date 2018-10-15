@@ -3,19 +3,20 @@ package ch.megil.teliaengine.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
 public class Map {
 	private String name;
 	private double width;
 	private double height;
-	private double playerX;
-	private double playerY;
+	private Player player;
 	private List<GameObject> mapObjects;
 	
 	public Map(double width, double height, double playerX, double playerY) {
 		this.width = width;
 		this.height = height;
-		this.playerX = playerX;
-		this.playerY = playerY;
+		player = new Player(playerX, playerY);
 		this.mapObjects = new ArrayList<>();
 	}
 	
@@ -40,12 +41,8 @@ public class Map {
 		return height;
 	}
 
-	public double getPlayerX() {
-		return playerX;
-	}
-
-	public double getPlayerY() {
-		return playerY;
+	public Player getPlayer() {
+		return player;
 	}
 
 	public void addObject(GameObject object) {

@@ -31,7 +31,7 @@ public class MapSaveLoad {
 		
 		try (var writer = new BufferedWriter(new FileWriter(fileName))) {
 			writer.write(map.getWidth() + propSeperator + map.getHeight() + entrySeperator);
-			writer.write(map.getPlayerX() + propSeperator + map.getPlayerY() + entrySeperator);
+			writer.write(map.getPlayer().getPosX() + propSeperator + map.getPlayer().getPosY() + entrySeperator);
 			for (var o : map.getMapObjects()) {
 				writer.write(o.getName() + propSeperator + o.getPosX() + propSeperator + o.getPosY() + entrySeperator);
 			}
