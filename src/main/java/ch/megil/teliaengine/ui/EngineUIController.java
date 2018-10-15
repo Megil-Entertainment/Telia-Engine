@@ -13,14 +13,10 @@ import ch.megil.teliaengine.logging.LogHandler;
 import ch.megil.teliaengine.ui.component.MapEditor;
 import ch.megil.teliaengine.ui.component.ObjectExplorer;
 import javafx.fxml.FXML;
-<<<<<<< HEAD
-import javafx.scene.control.ListView;
-=======
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
->>>>>>> dev
 import javafx.scene.control.TextInputDialog;
 
 public class EngineUIController {
