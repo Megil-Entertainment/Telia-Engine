@@ -14,5 +14,6 @@ public class GameMap extends Pane {
 		map = new MapSaveLoad().load(mapName, false);
 
 		map.getMapObjects().stream().map(GameObject::getDepiction).forEach(getChildren()::add);
+		getChildren().add(map.getPlayer().getDepiction());
 	}
 }
