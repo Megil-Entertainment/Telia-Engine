@@ -11,7 +11,7 @@ public class Player {
 	private DoubleProperty posY;
 	private Node depiction;
 	
-	public Player(double posX, double posY) {
+	public Player(Node depiction, double posX, double posY) {
 		this.depiction = new Rectangle(10, 10, Color.BLACK);
 		
 		this.posX = new SimpleDoubleProperty(depiction.getLayoutX());
