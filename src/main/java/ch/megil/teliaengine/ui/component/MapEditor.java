@@ -1,6 +1,5 @@
 package ch.megil.teliaengine.ui.component;
 
-import ch.megil.teliaengine.file.GameObjectSaveLoad;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
 import javafx.collections.ListChangeListener;
@@ -15,8 +14,6 @@ public class MapEditor extends Pane{
 	private double dy;
 	
 	public MapEditor() {
-		map = new Map(1920, 1080, 50, 50);
-		
 		getChildren().addListener((ListChangeListener<Node>) c -> {
 			while(c.next()) {
 				c.getAddedSubList().forEach(n -> {
@@ -24,13 +21,13 @@ public class MapEditor extends Pane{
 					n.setOnMouseDragged(this::onDragNode);
 					});
 			}});
-		
-		new GameObjectSaveLoad().loadAll().forEach(this::addGameObject);
 	}
 	
 	public void addGameObject(GameObject obj) {
-		map.addObject(obj);
-		getChildren().add(obj.getDepiction());
+		if (map != null) {
+			map.addObject(obj);
+			getChildren().add(obj.getDepiction());
+		}
 	}
 	
 	public void onDragStart(MouseEvent event) {
