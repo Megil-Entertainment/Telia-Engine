@@ -33,7 +33,7 @@ public class EngineUIController {
 	
 	@FXML
 	private void fileNewMap() {
-		
+		new MapCreateDialog().showAndWait().ifPresent(mapEditor::setMap);
 	}
 	
 	@FXML
