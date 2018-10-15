@@ -9,6 +9,9 @@ import ch.megil.teliaengine.logging.LogHandler;
 public enum GameConfiguration {
 	ASSETS_MAPS("assetsMaps"),
 	ASSETS_OBJECTS("assetsObjects"),
+	ASSET_PLAYER("assetPlayer"),
+	PLAYER_WIDTH("playerWidth"),
+	PLAYER_HEIGHT("playerHeight"),
 	FILE_EXT_MAP("fileExtMap"),
 	FILE_EXT_OBJECT("fileExtObject"),
 	SEPARATOR_ENTRY("separatorEntry"),

@@ -22,16 +22,16 @@ public class MapSaveLoad {
 		}
 	}
 	
-	public void save(Map map, String mapName) {
+	public void save(Map map) {
 		checkAndCreateDirectory();
-		var fileName = GameConfiguration.ASSETS_MAPS.getConfiguration() + "/" + mapName + GameConfiguration.FILE_EXT_MAP.getConfiguration();
+		var fileName = GameConfiguration.ASSETS_MAPS.getConfiguration() + "/" + map.getName() + GameConfiguration.FILE_EXT_MAP.getConfiguration();
 		
 		var propSeperator = GameConfiguration.SEPERATOR_PROPERTY.getConfiguration();
 		var entrySeperator = GameConfiguration.SEPARATOR_ENTRY.getConfiguration();
 		
 		try (var writer = new BufferedWriter(new FileWriter(fileName))) {
 			writer.write(map.getWidth() + propSeperator + map.getHeight() + entrySeperator);
-			writer.write(map.getPlayerX() + propSeperator + map.getPlayerY() + entrySeperator);
+			writer.write(map.getPlayer().getPosX() + propSeperator + map.getPlayer().getPosY() + entrySeperator);
 			for (var o : map.getMapObjects()) {
 				writer.write(o.getName() + propSeperator + o.getPosX() + propSeperator + o.getPosY() + entrySeperator);
 			}
@@ -50,7 +50,7 @@ public class MapSaveLoad {
 
 			var mapSize = scanner.next().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			var playerPos = scanner.next().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
-			var map = new Map(Double.parseDouble(mapSize[0]), Double.parseDouble(mapSize[1]),
+			var map = new Map(mapName, Double.parseDouble(mapSize[0]), Double.parseDouble(mapSize[1]),
 					Double.parseDouble(playerPos[0]), Double.parseDouble(playerPos[1]));
 
 			var objectLoader = new GameObjectSaveLoad();
