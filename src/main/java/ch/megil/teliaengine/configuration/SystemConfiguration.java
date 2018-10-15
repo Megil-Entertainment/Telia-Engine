@@ -8,7 +8,9 @@ import ch.megil.teliaengine.logging.LogHandler;
 
 public enum SystemConfiguration {
 	APP_NAME("appName"),
-	APP_ABOUT("appAbout");
+	APP_ABOUT("appAbout"),
+	OBJECT_LIST_BG("objectListBg"),
+	OBJECT_LIST_HOVER("objectListHover");
 	
 	private static Properties sysProp;
 	

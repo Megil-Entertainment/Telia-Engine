@@ -73,6 +73,10 @@ public class GameObjectListItem extends AnchorPane{
 		this.hoverColor.set(hoverColor);
 	}
 	
+	public void setBgColor(Paint bgColor) {
+		this.bg.setFill(bgColor);
+	}
+	
 	public Consumer<GameObject> getOnAction() {
 		return onAction.get();
 	}
