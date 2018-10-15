@@ -128,8 +128,9 @@ public class MapSaveLoadTest {
 
 	@Test
 	public void testSave() throws Exception {
-		var mapName = testMapsDir.getRoot().getName() + "/testSave";
-		mapSaveLoad.save(testMap, mapName);
+		when(testMap.getName()).thenReturn(testMapsDir.getRoot().getName() + "/testSave");
+		
+		mapSaveLoad.save(testMap);
 		var file = testMapsDir.getRoot().listFiles((f, n) -> n.startsWith("testSave."))[0];
 
 		try (var reader = new BufferedReader(new FileReader(file))) {
@@ -145,6 +146,7 @@ public class MapSaveLoadTest {
 		var mapName = testMapsDir.getRoot().getName() + "/correct";
 		var map = mapSaveLoad.load(mapName, false);
 
+		assertEquals(mapName, map.getName());
 		assertEquals(100.0, map.getWidth(), 0);
 		assertEquals(70.0, map.getHeight(), 0);
 		assertEquals(15.0, map.getPlayerX(), 0);
@@ -182,6 +184,7 @@ public class MapSaveLoadTest {
 		var mapName = testMapsDir.getRoot().getName() + "/recover";
 		var map = mapSaveLoad.load(mapName, true);
 
+		assertEquals(mapName, map.getName());
 		assertEquals(100.0, map.getWidth(), 0);
 		assertEquals(70.0, map.getHeight(), 0);
 		assertEquals(15.0, map.getPlayerX(), 0);
