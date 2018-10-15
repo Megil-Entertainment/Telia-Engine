@@ -1,27 +1,38 @@
 package ch.megil.teliaengine.game;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+
 public class Vector {
-	private int x;
-	private int y;
+	private DoubleProperty posX;
+	private DoubleProperty posY;
 	
-	public Vector(int x, int y) {
-		this.x = x;
-		this.y = y;
+	public Vector(double x, double y) {
+		this.posX = new SimpleDoubleProperty(x);
+		this.posY = new SimpleDoubleProperty(y);
 	}
 	
-	public void setX(int x) {
-		this.x = x;
+	public void setX(double x) {
+		this.posX.set(x);
 	}
 	
-	public void setY(int y) {
-		this.y = y;
+	public double getX() {
+		return posX.get();
 	}
 	
-	public int getX() {
-		return x;
+	public void setY(double y) {
+		this.posY.set(y);
 	}
 	
-	public int getY() {
-		return y;
+	public double getY() {
+		return posY.get();
+	}
+	
+	public DoubleProperty getPosX() {
+		return posX;
+	}
+	
+	public DoubleProperty getPosY() {
+		return posY;
 	}
 }
