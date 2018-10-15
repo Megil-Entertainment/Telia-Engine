@@ -22,12 +22,15 @@ import javafx.scene.control.TextInputDialog;
 public class EngineUIController {
 	@FXML
 	private MapEditor mapEditor;
+	@FXML
+	private ObjectExplorer objectExplorer;
 	
 	private MapSaveLoad mapSaveLoad;
 
 	@FXML
 	private void initialize() {
 		mapSaveLoad = new MapSaveLoad();
+		objectExplorer.setMapEditor(mapEditor);
 	}
 	
 	@FXML

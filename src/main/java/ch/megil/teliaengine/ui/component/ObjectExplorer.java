@@ -1,9 +1,12 @@
 package ch.megil.teliaengine.ui.component;
 
+import java.util.logging.Level;
+
 import ch.megil.teliaengine.file.GameObjectSaveLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
+import ch.megil.teliaengine.logging.LogHandler;
 import javafx.scene.Node;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
@@ -23,13 +26,6 @@ public class ObjectExplorer extends ScrollPane{
 		container.setFillWidth(true);
 		setContent(container);
 		
-//		getChildren().addListener((ListChangeListener<Node>) c -> {
-//			while(c.next()) {
-//				c.getAddedSubList().forEach(n -> {
-//					n.setOnMousePressed(this::createNewObject);
-//					});
-//			}});
-		
 		new GameObjectSaveLoad().loadAll().forEach(this::loadGameObject);
 		
 	}
@@ -45,14 +41,12 @@ public class ObjectExplorer extends ScrollPane{
 	public void createNewObject(GameObject object) {
 		try {
 			var newObject = new GameObjectSaveLoad().load(object.getName());
+			mapEditor.addGameObject(newObject);
 		} catch (AssetNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogHandler.log(e, Level.SEVERE);
 		} catch (AssetFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LogHandler.log(e, Level.SEVERE);
 		}
-//		mapEditor.addGameObject(newObject);
 	}
 	
 	public void setMapEditor(MapEditor mapEditor) {
