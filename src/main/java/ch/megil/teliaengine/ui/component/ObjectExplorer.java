@@ -44,9 +44,7 @@ public class ObjectExplorer extends ScrollPane{
 		try {
 			var newObject = new GameObjectSaveLoad().load(object.getName());
 			mapEditor.addGameObject(newObject);
-		} catch (AssetNotFoundException e) {
-			LogHandler.log(e, Level.SEVERE);
-		} catch (AssetFormatException e) {
+		} catch (AssetNotFoundException | AssetFormatException e) {
 			LogHandler.log(e, Level.SEVERE);
 		}
 	}
