@@ -128,6 +128,8 @@ public class MapSaveLoadTest {
 	@Test
 	public void testSave() throws Exception {
 		when(testMap.getName()).thenReturn(testMapsDir.getRoot().getName() + "/testSave");
+		Player.get().setPosX(20);
+		Player.get().setPosY(80);
 		
 		mapSaveLoad.save(testMap);
 		var file = testMapsDir.getRoot().listFiles((f, n) -> n.startsWith("testSave."))[0];
