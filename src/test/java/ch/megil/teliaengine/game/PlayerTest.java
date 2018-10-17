@@ -23,8 +23,11 @@ public class PlayerTest {
 
 		var player = new Player(depiction, 5, 15);
 
+		assertEquals(depiction, player.getDepiction());
 		assertEquals(5, player.getPosX(), 0);
 		assertEquals(15, player.getPosY(), 0);
+		assertEquals(5, depiction.getLayoutX(), 0);
+		assertEquals(15, depiction.getLayoutY(), 0);
 	}
 	
 	@Test

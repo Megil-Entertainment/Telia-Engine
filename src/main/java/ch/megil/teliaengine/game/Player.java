@@ -9,7 +9,7 @@ public class Player {
 	private Node depiction;
 	
 	public Player(Node depiction, double posX, double posY) {
-		this.depiction = new Rectangle(10, 10, Color.BLACK);
+		this.depiction = depiction;
 		
 		this.position = new Vector(depiction.getLayoutX(), depiction.getLayoutY());
 		
