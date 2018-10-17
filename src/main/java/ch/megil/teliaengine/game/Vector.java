@@ -17,15 +17,11 @@ public class Vector {
 	}
 	
 	public void setX(double x) {
-		this.y.set(x);
+		this.x.set(x);
 	}
 	
-	public DoubleProperty getPosX() {
+	public DoubleProperty xProperty() {
 		return x;
-	}
-	
-	public void setDoublePropertyX(DoubleProperty x) {
-		this.x = x;
 	}
 	
 	public double getY() {
@@ -36,11 +32,7 @@ public class Vector {
 		this.y.set(y);
 	}
 	
-	public DoubleProperty getPosY() {
+	public DoubleProperty yProperty() {
 		return y;
-	}
-	
-	public void setDoublePropertyY(DoubleProperty y) {
-		this.y = y;
 	}
 }

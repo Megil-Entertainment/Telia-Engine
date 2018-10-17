@@ -13,8 +13,8 @@ public class GameObject {
 		
 		this.position = new Vector(depiction.getLayoutX(), depiction.getLayoutY());
 		
-		this.depiction.layoutXProperty().bindBidirectional(position.getPosX());
-		this.depiction.layoutYProperty().bindBidirectional(position.getPosY());
+		this.depiction.layoutXProperty().bindBidirectional(position.xProperty());
+		this.depiction.layoutYProperty().bindBidirectional(position.yProperty());
 	}
 	
 	public GameObject(String name, Node depiction, double posX, double posY) {
