@@ -1,21 +1,29 @@
-package ch.megil.teliaengine.game;
+package ch.megil.teliaengine.game.player;
 
+import ch.megil.teliaengine.file.PlayerLoad;
+import ch.megil.teliaengine.game.Vector;
 import javafx.scene.Node;
 
-public class Player {
+public final class Player {
+	private static Player instance;
+	
 	private Vector position;
 	private Node depiction;
 	
-	public Player(Node depiction, double posX, double posY) {
+	protected Player(Node depiction) {
 		this.depiction = depiction;
 		
 		this.position = new Vector(depiction.getLayoutX(), depiction.getLayoutY());
 		
 		this.depiction.layoutXProperty().bindBidirectional(position.xProperty());
 		this.depiction.layoutYProperty().bindBidirectional(position.yProperty());
-		
-		position.setX(posX);
-		position.setY(posY);
+	}
+	
+	public static Player get() {
+		if (instance == null) {
+			instance = new PlayerLoad().load(Player::new);
+		}
+		return instance;
 	}
 	
 	public double getPosX() {

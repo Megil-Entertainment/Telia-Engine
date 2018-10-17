@@ -1,10 +1,11 @@
-package ch.megil.teliaengine.game;
+package ch.megil.teliaengine.game.player;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import ch.megil.teliaengine.game.player.Player;
 import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
 
@@ -21,7 +22,9 @@ public class PlayerTest {
 		depiction.setLayoutX(10);
 		depiction.setLayoutY(20);
 
-		var player = new Player(depiction, 5, 15);
+		var player = new Player(depiction);
+		player.setPosX(5);
+		player.setPosY(15);
 
 		assertEquals(depiction, player.getDepiction());
 		assertEquals(5, player.getPosX(), 0);
@@ -32,7 +35,9 @@ public class PlayerTest {
 	
 	@Test
 	public void testPositionBinding() {
-		var player = new Player(depiction, 0, 0);
+		var player = new Player(depiction);
+		player.setPosX(0);
+		player.setPosY(0);
 
 		assertEquals(0, player.getPosX(), 0);
 		assertEquals(0, player.getPosY(), 0);

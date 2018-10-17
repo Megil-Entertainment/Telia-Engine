@@ -23,7 +23,7 @@ import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
-import ch.megil.teliaengine.game.Player;
+import ch.megil.teliaengine.game.player.Player;
 
 public class MapSaveLoadTest {
 	private static File parentDir = new File(GameConfiguration.ASSETS_MAPS.getConfiguration());

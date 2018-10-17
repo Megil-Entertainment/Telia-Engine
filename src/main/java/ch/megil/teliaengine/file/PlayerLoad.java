@@ -6,13 +6,14 @@ import java.util.Scanner;
 import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.GameConfiguration;
-import ch.megil.teliaengine.game.Player;
+import ch.megil.teliaengine.game.player.Player;
+import ch.megil.teliaengine.game.player.PlayerConstructor;
 import ch.megil.teliaengine.logging.LogHandler;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class PlayerLoad {
-	public Player load(double posX, double posY) {
+	public Player load(PlayerConstructor constructor) {
 		var fileName = GameConfiguration.ASSET_PLAYER.getConfiguration();
 		var file = new File(fileName);
 		
@@ -31,6 +32,6 @@ public class PlayerLoad {
 			LogHandler.severe("Player spec not correctly formated.");
 		}
 		
-		return new Player(depiction, posX, posY);
+		return constructor.invoke(depiction);
 	}
 }
