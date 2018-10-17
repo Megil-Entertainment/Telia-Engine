@@ -50,8 +50,9 @@ public class MapSaveLoad {
 
 			var mapSize = scanner.next().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			var playerPos = scanner.next().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
-			var map = new Map(mapName, Double.parseDouble(mapSize[0]), Double.parseDouble(mapSize[1]),
-					Double.parseDouble(playerPos[0]), Double.parseDouble(playerPos[1]));
+			
+			var player = new PlayerLoad().load(Double.parseDouble(playerPos[0]), Double.parseDouble(playerPos[1]));
+			var map = new Map(mapName, Double.parseDouble(mapSize[0]), Double.parseDouble(mapSize[1]), player);
 
 			var objectLoader = new GameObjectSaveLoad();
 			while (scanner.hasNext()) {

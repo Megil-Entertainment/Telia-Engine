@@ -3,8 +3,6 @@ package ch.megil.teliaengine.game;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.megil.teliaengine.file.PlayerLoad;
-
 public class Map {
 	private String name;
 	private double width;
@@ -12,15 +10,15 @@ public class Map {
 	private Player player;
 	private List<GameObject> mapObjects;
 	
-	public Map(double width, double height, double playerX, double playerY) {
+	public Map(double width, double height, Player player) {
 		this.width = width;
 		this.height = height;
-		player = new PlayerLoad().load(playerX, playerY);
+		this.player = player;
 		this.mapObjects = new ArrayList<>();
 	}
 	
-	public Map(String name, double width, double height, double playerX, double playerY) {
-		this(width, height, playerX, playerY);
+	public Map(String name, double width, double height, Player player) {
+		this(width, height, player);
 		this.name = name;
 	}
 	
