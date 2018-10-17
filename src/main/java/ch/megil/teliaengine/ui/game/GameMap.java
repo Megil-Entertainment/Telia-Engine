@@ -5,6 +5,7 @@ import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
+import ch.megil.teliaengine.game.player.Player;
 import javafx.scene.layout.Pane;
 
 public class GameMap extends Pane {
@@ -14,6 +15,6 @@ public class GameMap extends Pane {
 		map = new MapSaveLoad().load(mapName, false);
 
 		map.getMapObjects().stream().map(GameObject::getDepiction).forEach(getChildren()::add);
-		getChildren().add(map.getPlayer().getDepiction());
+		getChildren().add(Player.get().getDepiction());
 	}
 }

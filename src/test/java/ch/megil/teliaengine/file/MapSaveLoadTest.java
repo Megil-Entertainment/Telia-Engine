@@ -61,15 +61,10 @@ public class MapSaveLoadTest {
 		when(obj2.getName()).thenReturn("blue");
 		when(obj2.getPosX()).thenReturn(100.0);
 		when(obj2.getPosY()).thenReturn(50.0);
-		
-		var testPlayer = mock(Player.class);
-		when(testPlayer.getPosX()).thenReturn(20.0);
-		when(testPlayer.getPosY()).thenReturn(80.0);
 
 		testMap = mock(Map.class);
 		when(testMap.getWidth()).thenReturn(150.0);
 		when(testMap.getHeight()).thenReturn(100.0);
-		when(testMap.getPlayer()).thenReturn(testPlayer);
 		when(testMap.getMapObjects()).thenReturn(Arrays.asList(obj1, obj2));
 	}
 	
@@ -153,8 +148,8 @@ public class MapSaveLoadTest {
 		assertEquals(mapName, map.getName());
 		assertEquals(100.0, map.getWidth(), 0);
 		assertEquals(70.0, map.getHeight(), 0);
-		assertEquals(15.0, map.getPlayer().getPosX(), 0);
-		assertEquals(10.0, map.getPlayer().getPosY(), 0);
+		assertEquals(15.0, Player.get().getPosX(), 0);
+		assertEquals(10.0, Player.get().getPosY(), 0);
 
 		assertEquals(2, map.getMapObjects().size());
 	}
@@ -191,8 +186,8 @@ public class MapSaveLoadTest {
 		assertEquals(mapName, map.getName());
 		assertEquals(100.0, map.getWidth(), 0);
 		assertEquals(70.0, map.getHeight(), 0);
-		assertEquals(15.0, map.getPlayer().getPosX(), 0);
-		assertEquals(10.0, map.getPlayer().getPosY(), 0);
+		assertEquals(15.0, Player.get().getPosX(), 0);
+		assertEquals(10.0, Player.get().getPosY(), 0);
 
 		assertEquals(4, map.getMapObjects().size());
 	}
