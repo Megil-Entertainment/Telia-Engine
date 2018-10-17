@@ -1,43 +1,37 @@
 package ch.megil.teliaengine.game;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 public class Player {
-	private DoubleProperty posX;
-	private DoubleProperty posY;
+	private Vector position;
 	private Node depiction;
 	
 	public Player(Node depiction, double posX, double posY) {
-		this.depiction = new Rectangle(10, 10, Color.BLACK);
+		this.depiction = depiction;
 		
-		this.posX = new SimpleDoubleProperty(depiction.getLayoutX());
-		this.posY = new SimpleDoubleProperty(depiction.getLayoutY());
+		this.position = new Vector(depiction.getLayoutX(), depiction.getLayoutY());
 		
-		this.depiction.layoutXProperty().bindBidirectional(this.posX);
-		this.depiction.layoutYProperty().bindBidirectional(this.posY);
+		this.depiction.layoutXProperty().bindBidirectional(position.xProperty());
+		this.depiction.layoutYProperty().bindBidirectional(position.yProperty());
 		
-		this.posX.set(posX);
-		this.posY.set(posY);
+		position.setX(posX);
+		position.setY(posY);
 	}
 	
 	public double getPosX() {
-		return posX.get();
+		return position.getX();
 	}
 	
 	public void setPosX(double posX) {
-		this.posX.set(posX);
+		this.position.setX(posX);;
 	}
 
 	public double getPosY() {
-		return posY.get();
+		return position.getY();
 	}
 	
 	public void setPosY(double posY) {
-		this.posY.set(posY);
+		this.position.setY(posY);
 	}
 
 	public Node getDepiction() {

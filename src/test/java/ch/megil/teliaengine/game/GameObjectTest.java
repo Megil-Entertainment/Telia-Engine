@@ -23,6 +23,7 @@ public class GameObjectTest {
 
 		var obj = new GameObject("testObject", depiction);
 
+		assertEquals(depiction, obj.getDepiction());
 		assertEquals(10, obj.getPosX(), 0);
 		assertEquals(20, obj.getPosY(), 0);
 	}
@@ -31,9 +32,10 @@ public class GameObjectTest {
 	public void testGameObjectStringNodeDoubleDouble() {
 		var obj = new GameObject("testObject", depiction, 30, 40);
 
+
+		assertEquals(depiction, obj.getDepiction());
 		assertEquals(30, obj.getPosX(), 0);
 		assertEquals(40, obj.getPosY(), 0);
-
 		assertEquals(30, depiction.getLayoutX(), 0);
 		assertEquals(40, depiction.getLayoutY(), 0);
 	}
