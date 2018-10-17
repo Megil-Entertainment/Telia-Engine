@@ -1,8 +1,6 @@
 package ch.megil.teliaengine.game;
 
 import javafx.scene.Node;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 public class Player {
 	private Vector position;
