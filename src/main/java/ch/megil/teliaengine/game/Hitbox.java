@@ -2,15 +2,18 @@ package ch.megil.teliaengine.game;
 
 public class Hitbox {
 	Vector origin;
+	Vector size;
 	Vector endpoint;
 	
 	public Hitbox(Vector origin, double width, double height) {
 		this.origin = origin;
-		this.endpoint = new Vector(this.origin.getX()+width, this.origin.getY()+height);
+		this.size = new Vector(width, height);
 	}
 	
 	public boolean checkCollision(Hitbox hitbox) {
 		boolean collision = false;
+		endpoint = Vector.addVectors(origin, size);
+		
 		if(((origin.getY() >= hitbox.origin.getY() && origin.getY() <= hitbox.endpoint.getY()) ||
 				(endpoint.getY() >= hitbox.origin.getY() && endpoint.getY() <= hitbox.endpoint.getY())) &&
 			((origin.getX() >= hitbox.origin.getX() && origin.getX() <= hitbox.endpoint.getX()) ||

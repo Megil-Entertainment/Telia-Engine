@@ -36,7 +36,7 @@ public class Vector {
 		return y;
 	}
 	
-	public Vector addVectors(Vector v1, Vector v2) {
+	public static Vector addVectors(Vector v1, Vector v2) {
 		double newX = v1.getX() + v2.getX();
 		double newY = v1.getY() + v2.getY();
 		
