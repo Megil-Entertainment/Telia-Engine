@@ -59,6 +59,6 @@ public class MapEditor extends Pane{
 		
 		this.map = map;
 		map.getMapObjects().forEach(o -> getChildren().add(o.getDepiction()));
-		getChildren().add(Player.get().getDepiction());
+		getChildren().add(Player.getEngine().getDepiction());
 	}
 }
