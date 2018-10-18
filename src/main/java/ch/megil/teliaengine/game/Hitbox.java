@@ -8,11 +8,11 @@ public class Hitbox {
 	public Hitbox(Vector origin, double width, double height) {
 		this.origin = origin;
 		this.size = new Vector(width, height);
+		endpoint = Vector.addVectors(origin, size);
 	}
 	
 	public boolean checkCollision(Hitbox hitbox) {
 		boolean collision = false;
-		endpoint = Vector.addVectors(origin, size);
 		
 		if(((origin.getY() >= hitbox.origin.getY() && origin.getY() <= hitbox.endpoint.getY()) ||
 				(endpoint.getY() >= hitbox.origin.getY() && endpoint.getY() <= hitbox.endpoint.getY())) &&
@@ -32,15 +32,16 @@ public class Hitbox {
 	
 	public void setOrigin(Vector origin) {
 		this.origin = origin;
+		this.endpoint = Vector.addVectors(origin, size);
 	}
 	
 	public Vector getVectorSize() {
-		return this.endpoint;
+		return this.size;
 	}
 	
 	public void setVectorSize(double width, double height) {
-		this.endpoint.setX(width);
-		this.endpoint.setY(height);
+		this.size.setX(width);
+		this.size.setY(height);
 	}
 	
 }
