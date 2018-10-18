@@ -8,10 +8,7 @@ import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.logging.LogHandler;
-import javafx.scene.Node;
-import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
