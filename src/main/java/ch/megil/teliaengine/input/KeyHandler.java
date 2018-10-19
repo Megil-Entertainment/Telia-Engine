@@ -1,16 +1,54 @@
 package ch.megil.teliaengine.input;
 
-import ch.megil.teliaengine.gamelogic.GameLoop;
+import java.util.EnumSet;
+import java.util.Set;
+
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 public class KeyHandler {
-	public void press(KeyEvent ke) {
-		GameLoop.get().addInput(convert(ke.getCode()));
+	private EnumSet<VirtualController> pressed;
+	private EnumSet<VirtualController> repeat;
+	private EnumSet<VirtualController> released;
+	
+	public KeyHandler() {
+		pressed = EnumSet.noneOf(VirtualController.class);
+		repeat = EnumSet.noneOf(VirtualController.class);
+		released = EnumSet.noneOf(VirtualController.class);
 	}
 	
-	public void release(KeyEvent ke) {
-		GameLoop.get().removeInput(convert(ke.getCode()));
+	public Set<VirtualController> getPressed() {
+		synchronized (this) {
+			var ret = pressed.clone();
+			repeat.addAll(pressed);
+			pressed.clear();
+			return ret;
+		}
+	}
+	
+	public Set<VirtualController> getReleased() {
+		synchronized (this) {
+			var ret = released.clone();
+			released.clear();
+			return ret;
+		}
+	}
+	
+	public void press(KeyEvent e) {
+		var key = convert(e.getCode());
+		synchronized (this) {
+			if (!repeat.contains(key)) {
+				pressed.add(key);
+			}
+		}
+	}
+	
+	public void release(KeyEvent e) {
+		var key = convert(e.getCode());
+		synchronized (this) {
+			repeat.remove(key);
+			released.add(key);
+		}
 	}
 	
 	private VirtualController convert(KeyCode code) {

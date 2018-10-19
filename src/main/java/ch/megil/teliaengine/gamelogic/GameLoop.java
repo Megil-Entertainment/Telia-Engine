@@ -1,23 +1,20 @@
 package ch.megil.teliaengine.gamelogic;
 
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Set;
-
 import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.game.player.Player;
-import ch.megil.teliaengine.input.VirtualController;
+import ch.megil.teliaengine.input.KeyHandler;
 import javafx.animation.AnimationTimer;
 
 public class GameLoop extends AnimationTimer {
+	private static final long TICK_SPEED = 1000_000_000/20;
+	
 	private static GameLoop instance;
 	
 	private long lastRun;
-	private long tickSpeed = 1000_000_000/20;
-	private Set<VirtualController> inputs;
+	private KeyHandler keyHandler;
 	
 	protected GameLoop() {
-		inputs = Collections.synchronizedSet(EnumSet.noneOf(VirtualController.class));
+		keyHandler = new KeyHandler();
 	}
 	
 	public static GameLoop get() {
@@ -27,24 +24,30 @@ public class GameLoop extends AnimationTimer {
 		return instance;
 	}
 	
-	public void addInput(VirtualController input) {
-		inputs.add(input);
-	}
-	
-	public void removeInput(VirtualController input) {
-		inputs.remove(input);
-	}
-	
 	public void runInputs() {
-		var inputs = this.inputs.toArray(new VirtualController[0]);
+		var released = keyHandler.getReleased();
+		var pressed = keyHandler.getPressed();
 		
-		for (var i : inputs) {
-			switch (i) {
+		for (var key : pressed) {
+			switch (key) {
 				case WALK_RIGHT:
-					Player.get().applyVelocity(new Vector(10, 0));
+					Player.get().applyForce(new Vector(10, 0));
 					break;
 				case WALK_LEFT:
-					Player.get().applyVelocity(new Vector(-10, 0));
+					Player.get().applyForce(new Vector(-10, 0));
+					break;
+				default:
+					break;
+			}
+		}
+		
+		for (var key : released) {
+			switch (key) {
+				case WALK_RIGHT:
+					Player.get().applyForce(new Vector(-10, 0));
+					break;
+				case WALK_LEFT:
+					Player.get().applyForce(new Vector(10, 0));
 					break;
 				default:
 					break;
@@ -55,11 +58,15 @@ public class GameLoop extends AnimationTimer {
 	@Override
 	public void handle(long now) {
 		var delta = now - lastRun;
-		if (delta >= tickSpeed) {
+		if (delta >= TICK_SPEED) {
 			lastRun = now;
 			runInputs();
 			
 			Player.get().update();
 		}
+	}
+	
+	public KeyHandler getKeyHandler() {
+		return keyHandler;
 	}
 }
