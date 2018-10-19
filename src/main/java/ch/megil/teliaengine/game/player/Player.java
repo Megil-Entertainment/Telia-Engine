@@ -45,13 +45,13 @@ public final class Player {
 	}
 	
 	public void applyForce(Vector f) {
-		acceleration = f;
+		acceleration = acceleration.add(f);
 	}
 	
 	public void update() {
-		velocity = acceleration;
+		velocity = velocity.add(acceleration);
 		//terminate velocity
-		position = velocity;
+		position = position.add(velocity);
 		acceleration = Vector.ZERO;
 	}
 	
