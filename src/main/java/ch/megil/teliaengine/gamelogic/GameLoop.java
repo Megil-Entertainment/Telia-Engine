@@ -31,10 +31,10 @@ public class GameLoop extends AnimationTimer {
 		for (var key : pressed) {
 			switch (key) {
 				case WALK_RIGHT:
-					Player.get().applyAcceleration(new Vector(10, 0));
+					Player.get().applyVelocity(new Vector(10, 0));
 					break;
 				case WALK_LEFT:
-					Player.get().applyAcceleration(new Vector(-10, 0));
+					Player.get().applyVelocity(new Vector(-10, 0));
 					break;
 				default:
 					break;
@@ -44,10 +44,10 @@ public class GameLoop extends AnimationTimer {
 		for (var key : released) {
 			switch (key) {
 				case WALK_RIGHT:
-					Player.get().applyAcceleration(new Vector(-10, 0));
+					Player.get().applyVelocity(new Vector(-10, 0));
 					break;
 				case WALK_LEFT:
-					Player.get().applyAcceleration(new Vector(10, 0));
+					Player.get().applyVelocity(new Vector(10, 0));
 					break;
 				default:
 					break;
