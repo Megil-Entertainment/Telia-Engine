@@ -10,18 +10,16 @@ public class Hitbox {
 	}
 	
 	public boolean checkCollision(Hitbox hitbox) {
-		boolean collision = false;
-		double vectorEndpointX = origin.addVectors(size).getX();
-		double vectorEndpointY = origin.addVectors(size).getY();
-		double hitboxEndpointX = hitbox.origin.addVectors(hitbox.size).getX();
-		double hitboxEndpointY = hitbox.origin.addVectors(hitbox.size).getY();
+		var collision = false;
+		var endpoint = origin.add(size);
+		var hitboxEndpoint = hitbox.origin.add(hitbox.size);
 		
-		if(((origin.getY() >= hitbox.origin.getY() && origin.getY() <= hitboxEndpointY) ||
-				(vectorEndpointY >= hitbox.origin.getY() && vectorEndpointY <= hitboxEndpointY)) &&
-			((origin.getX() >= hitbox.origin.getX() && origin.getX() <= hitboxEndpointX) ||
-				(vectorEndpointX >= hitbox.origin.getX() && vectorEndpointX <= hitboxEndpointX)) ||
-			(origin.getY() <= hitbox.origin.getY() && vectorEndpointY >= hitboxEndpointY && 
-				origin.getX() <= hitbox.origin.getX() && vectorEndpointX >= hitboxEndpointX)) {
+		if(((origin.getY() >= hitbox.origin.getY() && origin.getY() <= hitboxEndpoint.getY()) ||
+				(endpoint.getY() >= hitbox.origin.getY() && endpoint.getY() <= hitboxEndpoint.getY())) &&
+			((origin.getX() >= hitbox.origin.getX() && origin.getX() <= hitboxEndpoint.getX()) ||
+				(endpoint.getX() >= hitbox.origin.getX() && endpoint.getX() <= hitboxEndpoint.getX())) ||
+			(origin.getY() <= hitbox.origin.getY() && endpoint.getY() >= hitboxEndpoint.getY() && 
+				origin.getX() <= hitbox.origin.getX() && endpoint.getX() >= hitboxEndpoint.getX())) {
 			collision = true;
 		}
 		

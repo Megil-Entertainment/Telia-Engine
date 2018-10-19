@@ -36,10 +36,7 @@ public class Vector {
 		return y;
 	}
 	
-	public Vector addVectors(Vector vector) {
-		double newX = this.getX() + vector.getX();
-		double newY = this.getY() + vector.getY();
-		
-		return new Vector(newX, newY);
+	public Vector add(Vector vector) {
+		return new Vector(this.getX() + vector.getX(), this.getY() + vector.getY());
 	}
 }

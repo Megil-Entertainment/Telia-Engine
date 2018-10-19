@@ -29,15 +29,15 @@ public class HitboxTest {
 	public void testHitboxSizes() {
 		assertEquals(5, hitbox1.origin.getX(),0);
 		assertEquals(5, hitbox1.size.getX(),0);
-		assertEquals(10, hitbox1.origin.addVectors(hitbox1.size).getX(),0);
+		assertEquals(10, hitbox1.origin.add(hitbox1.size).getX(),0);
 		
 		assertEquals(3, hitbox2.origin.getX(),0);
 		assertEquals(5, hitbox2.size.getX(),0);
-		assertEquals(8, hitbox2.origin.addVectors(hitbox2.size).getX(),0);
+		assertEquals(8, hitbox2.origin.add(hitbox2.size).getX(),0);
 		
 		assertEquals(20, hitbox3.origin.getX(),0);
 		assertEquals(5, hitbox3.size.getX(),0);
-		assertEquals(25, hitbox3.origin.addVectors(hitbox3.size).getX(),0);
+		assertEquals(25, hitbox3.origin.add(hitbox3.size).getX(),0);
 	}
 	
 	@Test
