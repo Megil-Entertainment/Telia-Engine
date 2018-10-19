@@ -1,6 +1,5 @@
 package ch.megil.teliaengine.ui;
 
-import ch.megil.teliaengine.file.PlayerLoad;
 import ch.megil.teliaengine.game.Map;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
