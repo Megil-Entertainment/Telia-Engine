@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.input.VirtualController;
 import javafx.animation.AnimationTimer;
@@ -40,10 +41,10 @@ public class GameLoop extends AnimationTimer {
 		for (var i : inputs) {
 			switch (i) {
 				case WALK_RIGHT:
-					Player.get().setPosX(Player.get().getPosX() + 10);
+					Player.get().applyVelocity(new Vector(10, 0));
 					break;
 				case WALK_LEFT:
-					Player.get().setPosX(Player.get().getPosX() - 10);
+					Player.get().applyVelocity(new Vector(-10, 0));
 					break;
 				default:
 					break;
@@ -57,6 +58,8 @@ public class GameLoop extends AnimationTimer {
 		if (delta >= tickSpeed) {
 			lastRun = now;
 			runInputs();
+			
+			Player.get().update();
 		}
 	}
 }

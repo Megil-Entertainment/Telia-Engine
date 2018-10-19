@@ -12,10 +12,12 @@ public final class Player {
 	private Node depiction;
 	
 	private Vector acceleration;
+	private Vector oneTimeVelocity;
 	private Vector velocity;
 	
 	protected Player(Node depiction) {
 		acceleration = Vector.ZERO;
+		oneTimeVelocity = Vector.ZERO;
 		velocity = Vector.ZERO;
 		
 		this.depiction = depiction;
@@ -48,11 +50,19 @@ public final class Player {
 		acceleration = acceleration.add(f);
 	}
 	
+	public void applyVelocity(Vector v) {
+		oneTimeVelocity = oneTimeVelocity.add(v);
+	}
+	
 	public void update() {
+		System.out.println(position.getX());
 		velocity = velocity.add(acceleration);
 		//terminate velocity
-		position = position.add(velocity);
+		var np = position.add(velocity).add(oneTimeVelocity);
+		position.setX(np.getX());
+		position.setY(np.getY());
 		acceleration = Vector.ZERO;
+		oneTimeVelocity = Vector.ZERO;
 	}
 	
 	public double getPosX() {
@@ -60,7 +70,7 @@ public final class Player {
 	}
 	
 	public void setPosX(double posX) {
-		this.position.setX(posX);;
+		this.position.setX(posX);
 	}
 
 	public double getPosY() {
