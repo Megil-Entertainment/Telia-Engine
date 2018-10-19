@@ -1,5 +1,6 @@
 package ch.megil.teliaengine.gamelogic;
 
+import ch.megil.teliaengine.configuration.PhysicsConstants;
 import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.input.KeyHandler;
@@ -31,10 +32,10 @@ public class GameLoop extends AnimationTimer {
 		for (var key : pressed) {
 			switch (key) {
 				case WALK_RIGHT:
-					Player.get().applyVelocity(new Vector(10, 0));
+					Player.get().applyVelocity(PhysicsConstants.WALK_SPEED_RIGHT.get());
 					break;
 				case WALK_LEFT:
-					Player.get().applyVelocity(new Vector(-10, 0));
+					Player.get().applyVelocity(PhysicsConstants.WALK_SPEED_LEFT.get());
 					break;
 				default:
 					break;
@@ -44,10 +45,10 @@ public class GameLoop extends AnimationTimer {
 		for (var key : released) {
 			switch (key) {
 				case WALK_RIGHT:
-					Player.get().applyVelocity(new Vector(-10, 0));
+					Player.get().applyVelocity(PhysicsConstants.WALK_SPEED_RIGHT.get().negate());
 					break;
 				case WALK_LEFT:
-					Player.get().applyVelocity(new Vector(10, 0));
+					Player.get().applyVelocity(PhysicsConstants.WALK_SPEED_LEFT.get().negate());
 					break;
 				default:
 					break;

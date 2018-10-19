@@ -8,14 +8,15 @@ import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.logging.LogHandler;
 
 public enum PhysicsConstants {
-	WALK_SPEED("walkSpeed");
+	WALK_SPEED_RIGHT("walkSpeedR"),
+	WALK_SPEED_LEFT("walkSpeedL");
 	
 	private static Properties physicsProperties;
 	
 	static {
 		physicsProperties = new XProperties();
 
-		try (var in = new FileInputStream(ConfigurationContstants.GAME_CONFIGURATION)) {
+		try (var in = new FileInputStream(ConfigurationContstants.PHYSIC_CONSTANTS)) {
 			physicsProperties.load(in);
 		} catch (Exception e) {
 			LogHandler.log(e, Level.SEVERE);
