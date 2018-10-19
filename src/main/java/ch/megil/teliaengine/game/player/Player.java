@@ -58,7 +58,6 @@ public final class Player {
 		var np = position.add(velocity);
 		position.setX(np.getX());
 		position.setY(np.getY());
-		acceleration = Vector.ZERO;
 	}
 	
 	public double getPosX() {
