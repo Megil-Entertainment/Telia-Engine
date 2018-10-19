@@ -55,7 +55,6 @@ public final class Player {
 	}
 	
 	public void update() {
-		System.out.println(position.getX());
 		velocity = velocity.add(acceleration);
 		//terminate velocity
 		var np = position.add(velocity).add(oneTimeVelocity);
