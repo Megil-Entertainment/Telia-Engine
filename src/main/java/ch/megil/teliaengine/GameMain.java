@@ -3,6 +3,7 @@ package ch.megil.teliaengine;
 import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
+import ch.megil.teliaengine.gamelogic.GameLoop;
 import ch.megil.teliaengine.ui.game.GameMap;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -33,8 +34,11 @@ public class GameMain extends Application {
 //		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 		primaryStage.setScene(scene);
 		primaryStage.setTitle(SystemConfiguration.GAME_NAME.getConfiguration());
+		primaryStage.setOnHidden(e -> GameLoop.get().stop());
 		primaryStage.show();
 		root.requestFocus();
+		
+		GameLoop.get().start();
 	}
 
 	public static void main(String[] args) {

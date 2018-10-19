@@ -1,9 +1,10 @@
-package ch.megil.teliaengine.input;
+package ch.megil.teliaengine.gamelogic;
 
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+import ch.megil.teliaengine.input.VirtualController;
 import javafx.animation.AnimationTimer;
 
 public class GameLoop extends AnimationTimer {
@@ -11,12 +12,23 @@ public class GameLoop extends AnimationTimer {
 	
 	private Set<VirtualController> inputs;
 	
-	public GameLoop() {
+	protected GameLoop() {
 		inputs = Collections.synchronizedSet(EnumSet.noneOf(VirtualController.class));
 	}
 	
-	public void doInput(VirtualController input) {
+	public static GameLoop get() {
+		if (instance == null) {
+			instance = new GameLoop();
+		}
+		return instance;
+	}
+	
+	public void addInput(VirtualController input) {
 		inputs.add(input);
+	}
+	
+	public void removeInput(VirtualController input) {
+		inputs.remove(input);
 	}
 	
 	public void runInputs() {
@@ -36,6 +48,6 @@ public class GameLoop extends AnimationTimer {
 
 	@Override
 	public void handle(long now) {
-		
+		System.out.println("test");
 	}
 }
