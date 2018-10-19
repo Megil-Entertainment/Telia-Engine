@@ -35,4 +35,8 @@ public class Vector {
 	public DoubleProperty yProperty() {
 		return y;
 	}
+	
+	public Vector add(Vector vector) {
+		return new Vector(this.getX() + vector.getX(), this.getY() + vector.getY());
+	}
 }
