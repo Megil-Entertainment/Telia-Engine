@@ -7,7 +7,6 @@ import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.gamelogic.GameLoop;
-import ch.megil.teliaengine.input.KeyHandler;
 import javafx.scene.layout.Pane;
 
 public class GameMap extends Pane {

@@ -44,13 +44,17 @@ public final class Player {
 		return engine;
 	}
 	
-	public void applyForce(Vector f) {
-		acceleration = acceleration.add(f);
+	public void applyAcceleration(Vector a) {
+		acceleration = acceleration.add(a);
+	}
+	
+	public void applyVelocity(Vector v) {
+		velocity = velocity.add(v);
 	}
 	
 	public void update() {
 		velocity = velocity.add(acceleration);
-		//terminate velocity
+		//TODO: terminate velocity
 		var np = position.add(velocity);
 		position.setX(np.getX());
 		position.setY(np.getY());
