@@ -38,6 +38,10 @@ public class Vector {
 		return y;
 	}
 	
+	public Vector negate() {
+		return new Vector(-getX(), -getY());
+	}
+	
 	public Vector add(Vector vector) {
 		return new Vector(this.getX() + vector.getX(), this.getY() + vector.getY());
 	}
