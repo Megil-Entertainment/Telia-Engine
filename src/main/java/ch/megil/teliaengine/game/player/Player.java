@@ -11,7 +11,13 @@ public final class Player {
 	private Vector position;
 	private Node depiction;
 	
+	private Vector acceleration;
+	private Vector velocity;
+	
 	protected Player(Node depiction) {
+		acceleration = Vector.ZERO;
+		velocity = Vector.ZERO;
+		
 		this.depiction = depiction;
 		
 		this.position = new Vector(depiction.getLayoutX(), depiction.getLayoutY());
@@ -36,6 +42,17 @@ public final class Player {
 			engine.position.yProperty().addListener((obs, ov, nv) -> get().position.setY(nv.doubleValue()));
 		}
 		return engine;
+	}
+	
+	public void applyForce(Vector f) {
+		acceleration = f;
+	}
+	
+	public void update() {
+		velocity = acceleration;
+		//terminate velocity
+		position = velocity;
+		acceleration = Vector.ZERO;
 	}
 	
 	public double getPosX() {
