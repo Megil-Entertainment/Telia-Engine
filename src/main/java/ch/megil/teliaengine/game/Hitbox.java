@@ -1,8 +1,8 @@
 package ch.megil.teliaengine.game;
 
 public class Hitbox {
-	Vector origin;
-	Vector size;
+	private Vector origin;
+	private Vector size;
 	
 	public Hitbox(Vector origin, double width, double height) {
 		this.origin = origin;
