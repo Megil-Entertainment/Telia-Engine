@@ -6,10 +6,12 @@ public class GameObject {
 	private String name;
 	private Vector position;
 	private Node depiction;
+	private Hitbox hitbox;
 	
-	public GameObject(String name, Node depiction) {
+	public GameObject(String name, Node depiction, Hitbox hitbox) {
 		this.name = name;
 		this.depiction = depiction;
+		this.hitbox = hitbox;
 		
 		this.position = new Vector(depiction.getLayoutX(), depiction.getLayoutY());
 		
@@ -17,8 +19,8 @@ public class GameObject {
 		this.depiction.layoutYProperty().bindBidirectional(position.yProperty());
 	}
 	
-	public GameObject(String name, Node depiction, double posX, double posY) {
-		this(name, depiction);
+	public GameObject(String name, Node depiction, Hitbox hitbox, double posX, double posY) {
+		this(name, depiction, hitbox);
 		this.position.setX(posX);
 		this.position.setY(posY);
 	}
@@ -45,5 +47,10 @@ public class GameObject {
 
 	public Node getDepiction() {
 		return depiction;
+	}
+	
+	public Hitbox getHitbox() {
+		hitbox.setOrigin(position);
+		return hitbox;
 	}
 }
