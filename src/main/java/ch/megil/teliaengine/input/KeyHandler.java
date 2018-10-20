@@ -1,6 +1,8 @@
 package ch.megil.teliaengine.input;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 import javafx.scene.input.KeyCode;
@@ -17,21 +19,33 @@ public class KeyHandler {
 		released = EnumSet.noneOf(VirtualController.class);
 	}
 	
-	public Set<VirtualController> getPressed() {
+	/**
+	 * @return 2 Sets of VirtualController inputs since last call,
+	 * 				<b>0</b> are pressed and <b>1</b> are released
+	 */
+	public List<Set<VirtualController>> getKeyStrokes() {
+		var ret = new ArrayList<Set<VirtualController>>(2);
+		
 		synchronized (this) {
-			var ret = pressed.clone();
-			repeat.addAll(pressed);
-			pressed.clear();
-			return ret;
+			ret.add(getPressed());
+			ret.add(getReleased());
 		}
+		
+		return ret;
 	}
 	
-	public Set<VirtualController> getReleased() {
-		synchronized (this) {
-			var ret = released.clone();
-			released.clear();
-			return ret;
-		}
+	private Set<VirtualController> getPressed() {
+		var ret = pressed.clone();
+		repeat.addAll(pressed);
+		repeat.removeAll(released);
+		pressed.clear();
+		return ret;
+	}
+	
+	private Set<VirtualController> getReleased() {
+		var ret = released.clone();
+		released.clear();
+		return ret;
 	}
 	
 	public void press(KeyEvent e) {

@@ -1,7 +1,6 @@
 package ch.megil.teliaengine.gamelogic;
 
 import ch.megil.teliaengine.configuration.PhysicsConstants;
-import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.input.KeyHandler;
 import javafx.animation.AnimationTimer;
@@ -26,8 +25,9 @@ public class GameLoop extends AnimationTimer {
 	}
 	
 	public void runInputs() {
-		var released = keyHandler.getReleased();
-		var pressed = keyHandler.getPressed();
+		var strokes = keyHandler.getKeyStrokes();
+		var pressed = strokes.get(0);
+		var released = strokes.get(1);
 		
 		for (var key : pressed) {
 			switch (key) {
