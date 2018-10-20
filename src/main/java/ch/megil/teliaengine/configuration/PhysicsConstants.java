@@ -9,7 +9,8 @@ import ch.megil.teliaengine.logging.LogHandler;
 
 public enum PhysicsConstants {
 	WALK_SPEED_RIGHT("walkSpeedR"),
-	WALK_SPEED_LEFT("walkSpeedL");
+	WALK_SPEED_LEFT("walkSpeedL"),
+	JUMP_ACCELERATION("jumpAcceleration");
 	
 	private static Properties physicsProperties;
 	
