@@ -6,6 +6,8 @@ import java.util.Scanner;
 import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.GameConfiguration;
+import ch.megil.teliaengine.game.Hitbox;
+import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.game.player.PlayerConstructor;
 import ch.megil.teliaengine.logging.LogHandler;
@@ -20,11 +22,15 @@ public class PlayerLoad {
 		var depiction = new Rectangle(Double.parseDouble(GameConfiguration.PLAYER_WIDTH.getConfiguration()),
 				Double.parseDouble(GameConfiguration.PLAYER_HEIGHT.getConfiguration()), Color.BLACK);
 		
+		var hitbox = new Hitbox(Vector.ZERO, Double.parseDouble(GameConfiguration.PLAYER_WIDTH.getConfiguration()),
+				Double.parseDouble(GameConfiguration.PLAYER_HEIGHT.getConfiguration()));
+		
 		try (var scanner = new Scanner(file)) {
 			scanner.useDelimiter(GameConfiguration.SEPARATOR_ENTRY.getConfiguration());
 			
 			var spec = scanner.next().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			depiction =  new Rectangle(Double.parseDouble(spec[0]), Double.parseDouble(spec[1]), Color.web(spec[2]));
+			hitbox =  new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 		} catch (IOException e) {
 			LogHandler.info("Player spec not found.");
 			LogHandler.log(e, Level.INFO);
@@ -32,6 +38,6 @@ public class PlayerLoad {
 			LogHandler.severe("Player spec not correctly formated.");
 		}
 		
-		return constructor.invoke(depiction);
+		return constructor.invoke(depiction, hitbox);
 	}
 }

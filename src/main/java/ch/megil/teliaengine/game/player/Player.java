@@ -1,6 +1,7 @@
 package ch.megil.teliaengine.game.player;
 
 import ch.megil.teliaengine.file.PlayerLoad;
+import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
 import javafx.scene.Node;
 
@@ -10,15 +11,17 @@ public final class Player {
 	
 	private Vector position;
 	private Node depiction;
+	private Hitbox hitbox;
 	
 	private Vector acceleration;
 	private Vector velocity;
 	
-	protected Player(Node depiction) {
+	protected Player(Node depiction, Hitbox hitbox) {
 		acceleration = Vector.ZERO;
 		velocity = Vector.ZERO;
 		
 		this.depiction = depiction;
+		this.hitbox = hitbox;
 		
 		this.position = new Vector(depiction.getLayoutX(), depiction.getLayoutY());
 		
@@ -78,5 +81,10 @@ public final class Player {
 
 	public Node getDepiction() {
 		return depiction;
+	}
+	
+	public Hitbox getHitbox() {
+		hitbox.setOrigin(position);
+		return hitbox;
 	}
 }
