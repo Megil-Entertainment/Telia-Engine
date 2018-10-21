@@ -4,6 +4,8 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 
 public class Vector {
+	public static final Vector ZERO = new Vector(0, 0);
+	
 	private DoubleProperty x;
 	private DoubleProperty y;
 	
@@ -34,6 +36,10 @@ public class Vector {
 	
 	public DoubleProperty yProperty() {
 		return y;
+	}
+	
+	public Vector negate() {
+		return new Vector(-getX(), -getY());
 	}
 	
 	public Vector add(Vector vector) {

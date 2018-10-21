@@ -2,6 +2,7 @@ package ch.megil.teliaengine.ui.component;
 
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
+import ch.megil.teliaengine.game.player.Player;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -58,6 +59,6 @@ public class MapEditor extends Pane{
 		
 		this.map = map;
 		map.getMapObjects().forEach(o -> getChildren().add(o.getDepiction()));
-		getChildren().add(map.getPlayer().getDepiction());
+		getChildren().add(Player.getEngine().getDepiction());
 	}
 }

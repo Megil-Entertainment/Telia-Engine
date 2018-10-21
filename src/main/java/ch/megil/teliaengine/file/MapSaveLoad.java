@@ -12,6 +12,7 @@ import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.Map;
+import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.logging.LogHandler;
 
 public class MapSaveLoad {
@@ -31,7 +32,7 @@ public class MapSaveLoad {
 		
 		try (var writer = new BufferedWriter(new FileWriter(fileName))) {
 			writer.write(map.getWidth() + propSeperator + map.getHeight() + entrySeperator);
-			writer.write(map.getPlayer().getPosX() + propSeperator + map.getPlayer().getPosY() + entrySeperator);
+			writer.write(Player.get().getPosX() + propSeperator + Player.get().getPosY() + entrySeperator);
 			for (var o : map.getMapObjects()) {
 				writer.write(o.getName() + propSeperator + o.getPosX() + propSeperator + o.getPosY() + entrySeperator);
 			}
@@ -51,8 +52,11 @@ public class MapSaveLoad {
 			var mapSize = scanner.next().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			var playerPos = scanner.next().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			
-			var player = new PlayerLoad().load(Double.parseDouble(playerPos[0]), Double.parseDouble(playerPos[1]));
-			var map = new Map(mapName, Double.parseDouble(mapSize[0]), Double.parseDouble(mapSize[1]), player);
+			var player = Player.get();
+			player.setPosX(Double.parseDouble(playerPos[0]));
+			player.setPosY(Double.parseDouble(playerPos[1]));
+			
+			var map = new Map(mapName, Double.parseDouble(mapSize[0]), Double.parseDouble(mapSize[1]));
 
 			var objectLoader = new GameObjectSaveLoad();
 			while (scanner.hasNext()) {

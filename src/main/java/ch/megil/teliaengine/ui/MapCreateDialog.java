@@ -1,6 +1,5 @@
 package ch.megil.teliaengine.ui;
 
-import ch.megil.teliaengine.file.PlayerLoad;
 import ch.megil.teliaengine.game.Map;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
@@ -54,7 +53,7 @@ public class MapCreateDialog extends Dialog<Map> {
 		getDialogPane().setContent(grid);
 		
 		setResultConverter(b -> b.equals(createType)
-				? new Map(mapName.getText(), Integer.parseInt(width.getText()), Integer.parseInt(height.getText()), new PlayerLoad().load(0, 0))
+				? new Map(mapName.getText(), Integer.parseInt(width.getText()), Integer.parseInt(height.getText()))
 				: null);
 	}
 	

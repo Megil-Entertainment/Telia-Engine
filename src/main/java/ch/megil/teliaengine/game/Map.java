@@ -7,18 +7,16 @@ public class Map {
 	private String name;
 	private double width;
 	private double height;
-	private Player player;
 	private List<GameObject> mapObjects;
 	
-	public Map(double width, double height, Player player) {
+	public Map(double width, double height) {
 		this.width = width;
 		this.height = height;
-		this.player = player;
 		this.mapObjects = new ArrayList<>();
 	}
 	
-	public Map(String name, double width, double height, Player player) {
-		this(width, height, player);
+	public Map(String name, double width, double height) {
+		this(width, height);
 		this.name = name;
 	}
 	
@@ -36,10 +34,6 @@ public class Map {
 
 	public double getHeight() {
 		return height;
-	}
-
-	public Player getPlayer() {
-		return player;
 	}
 
 	public void addObject(GameObject object) {
