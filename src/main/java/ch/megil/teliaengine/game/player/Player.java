@@ -2,6 +2,7 @@ package ch.megil.teliaengine.game.player;
 
 import java.util.List;
 
+import ch.megil.teliaengine.configuration.PhysicsConstants;
 import ch.megil.teliaengine.file.PlayerLoad;
 import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
@@ -62,7 +63,7 @@ public final class Player {
 	
 	public void update(List<Hitbox> possibleCollisions) {
 		velocity = velocity.add(acceleration);
-		//TODO: terminate velocity
+		velocity = new Vector(velocity.getX(), Math.min(velocity.getY(), PhysicsConstants.TERMINAL_FALL_VELOCITY.get().getY()));
 		
 		for (var v : velocity.splitToComponentSizeOne()) {
 			//x collision

@@ -11,7 +11,8 @@ public enum PhysicsConstants {
 	WALK_SPEED_RIGHT("walkSpeedR"),
 	WALK_SPEED_LEFT("walkSpeedL"),
 	JUMP_ACCELERATION("jumpAcceleration"),
-	GRAVITY("gravity");
+	GRAVITY("gravity"),
+	TERMINAL_FALL_VELOCITY("terminalFallVelocity");
 	
 	private static Properties physicsProperties;
 	
