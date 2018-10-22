@@ -1,5 +1,7 @@
 package ch.megil.teliaengine.gamelogic;
 
+import java.util.stream.Collectors;
+
 import ch.megil.teliaengine.configuration.PhysicsConstants;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.player.Player;
@@ -67,7 +69,8 @@ public class GameLoop extends AnimationTimer {
 			lastRun = now;
 			runInputs();
 			
-			Player.get().update(GameState.get().getMap().getMapObjects().stream().map(GameObject::getHitbox));
+			Player.get().applyAcceleration(PhysicsConstants.GRAVITY.get());
+			Player.get().update(GameState.get().getMap().getMapObjects().stream().map(GameObject::getHitbox).collect(Collectors.toList()));
 		}
 	}
 	

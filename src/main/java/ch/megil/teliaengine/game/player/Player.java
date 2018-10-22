@@ -1,5 +1,7 @@
 package ch.megil.teliaengine.game.player;
 
+import java.util.List;
+
 import ch.megil.teliaengine.file.PlayerLoad;
 import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
@@ -12,11 +14,14 @@ public final class Player {
 	private Vector position;
 	private Node depiction;
 	private Hitbox hitbox;
+	private boolean onGround;
 	
 	private Vector acceleration;
 	private Vector velocity;
 	
 	protected Player(Node depiction, Hitbox hitbox) {
+		onGround = false;
+		
 		acceleration = Vector.ZERO;
 		velocity = Vector.ZERO;
 		
@@ -55,12 +60,35 @@ public final class Player {
 		velocity = velocity.add(v);
 	}
 	
-	public void update() {
+	public void update(List<Hitbox> possibleCollisions) {
 		velocity = velocity.add(acceleration);
 		//TODO: terminate velocity
-		var np = position.add(velocity);
-		position.setX(np.getX());
-		position.setY(np.getY());
+		
+		for (var v : velocity.splitToComponentSizeOne()) {
+			//x collision
+			var np = position.add(v.xVector());
+			position.setX(np.getX());
+			position.setY(np.getY());
+			if (possibleCollisions.stream().anyMatch(getHitbox()::checkCollision)) {
+				np = position.add(v.xVector().negate());
+				position.setX(np.getX());
+				position.setY(np.getY());
+			}
+			
+			//y collision
+			np = position.add(v.yVector());
+			position.setX(np.getX());
+			position.setY(np.getY());
+			if (possibleCollisions.stream().anyMatch(getHitbox()::checkCollision)) {
+				if (v.getY() > 0) {
+					acceleration = new Vector(acceleration.getX(), 0);
+					velocity = new Vector(velocity.getX(), 0);
+				}
+				np = position.add(v.yVector().negate());
+				position.setX(np.getX());
+				position.setY(np.getY());
+			}
+		}
 	}
 	
 	public double getPosX() {
@@ -86,5 +114,9 @@ public final class Player {
 	public Hitbox getHitbox() {
 		hitbox.setOrigin(position);
 		return hitbox;
+	}
+	
+	public boolean isOnGround() {
+		return onGround;
 	}
 }
