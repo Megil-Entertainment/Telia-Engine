@@ -1,6 +1,7 @@
 package ch.megil.teliaengine.gamelogic;
 
 import ch.megil.teliaengine.configuration.PhysicsConstants;
+import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.input.KeyHandler;
 import javafx.animation.AnimationTimer;
@@ -66,7 +67,7 @@ public class GameLoop extends AnimationTimer {
 			lastRun = now;
 			runInputs();
 			
-			Player.get().update();
+			Player.get().update(GameState.get().getMap().getMapObjects().stream().map(GameObject::getHitbox));
 		}
 	}
 	
