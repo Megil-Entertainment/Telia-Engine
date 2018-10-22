@@ -14,13 +14,13 @@ public final class Player {
 	private Vector position;
 	private Node depiction;
 	private Hitbox hitbox;
-	private boolean onGround;
+	private boolean jumpUsed;
 	
 	private Vector acceleration;
 	private Vector velocity;
 	
 	protected Player(Node depiction, Hitbox hitbox) {
-		onGround = false;
+		jumpUsed = false;
 		
 		acceleration = Vector.ZERO;
 		velocity = Vector.ZERO;
@@ -81,6 +81,7 @@ public final class Player {
 			position.setY(np.getY());
 			if (possibleCollisions.stream().anyMatch(getHitbox()::checkCollision)) {
 				if (v.getY() > 0) {
+					jumpUsed = false;
 					acceleration = new Vector(acceleration.getX(), 0);
 					velocity = new Vector(velocity.getX(), 0);
 				}
@@ -116,7 +117,11 @@ public final class Player {
 		return hitbox;
 	}
 	
-	public boolean isOnGround() {
-		return onGround;
+	public boolean isJumpUsed() {
+		return jumpUsed;
+	}
+	
+	public void useJump() {
+		jumpUsed = true;
 	}
 }

@@ -41,7 +41,10 @@ public class GameLoop extends AnimationTimer {
 					Player.get().applyVelocity(PhysicsConstants.WALK_SPEED_LEFT.get());
 					break;
 				case JUMP:
-					Player.get().applyAcceleration(PhysicsConstants.JUMP_ACCELERATION.get());
+					if (!Player.get().isJumpUsed()) {
+						Player.get().useJump();
+						Player.get().applyAcceleration(PhysicsConstants.JUMP_ACCELERATION.get());
+					}
 					break;
 				default:
 					break;
