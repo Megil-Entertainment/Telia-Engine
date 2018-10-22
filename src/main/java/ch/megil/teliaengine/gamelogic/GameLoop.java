@@ -1,6 +1,9 @@
 package ch.megil.teliaengine.gamelogic;
 
+import java.util.stream.Collectors;
+
 import ch.megil.teliaengine.configuration.PhysicsConstants;
+import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.input.KeyHandler;
 import javafx.animation.AnimationTimer;
@@ -37,6 +40,12 @@ public class GameLoop extends AnimationTimer {
 				case WALK_LEFT:
 					Player.get().applyVelocity(PhysicsConstants.WALK_SPEED_LEFT.get());
 					break;
+				case JUMP:
+					if (!Player.get().isJumpUsed()) {
+						Player.get().useJump();
+						Player.get().applyAcceleration(PhysicsConstants.JUMP_ACCELERATION.get());
+					}
+					break;
 				default:
 					break;
 			}
@@ -63,7 +72,8 @@ public class GameLoop extends AnimationTimer {
 			lastRun = now;
 			runInputs();
 			
-			Player.get().update();
+			Player.get().applyAcceleration(PhysicsConstants.GRAVITY.get());
+			Player.get().update(GameState.get().getMap().getMapObjects().stream().map(GameObject::getHitbox).collect(Collectors.toList()));
 		}
 	}
 	

@@ -1,9 +1,11 @@
 package ch.megil.teliaengine;
 
 import ch.megil.teliaengine.configuration.SystemConfiguration;
+import ch.megil.teliaengine.file.MapSaveLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.gamelogic.GameLoop;
+import ch.megil.teliaengine.gamelogic.GameState;
 import ch.megil.teliaengine.ui.game.GameMap;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -21,7 +23,8 @@ public class GameMain extends Application {
 
 	public GameMain(String mapName) throws AssetNotFoundException, AssetFormatException {
 		super();
-		root = new GameMap(mapName);
+		GameState.get().setMap(new MapSaveLoad().load(mapName, false));
+		root = new GameMap();
 	}
 
 	@Override

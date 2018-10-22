@@ -76,6 +76,10 @@ public class KeyHandler {
 			case LEFT:
 				vCode = VirtualController.WALK_LEFT;
 				break;
+			case W:
+			case UP:
+				vCode = VirtualController.JUMP;
+				break;
 			default:
 				break;
 		}

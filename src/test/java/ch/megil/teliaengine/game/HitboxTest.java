@@ -8,12 +8,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class HitboxTest {
-	Vector vector1;
-	Vector vector2;
-	Vector vector3;
-	Hitbox hitbox1;
-	Hitbox hitbox2;
-	Hitbox hitbox3;
+	private Vector vector1;
+	private Vector vector2;
+	private Vector vector3;
+	private Hitbox hitbox1;
+	private Hitbox hitbox2;
+	private Hitbox hitbox3;
 	
 	@Before
 	public void setUp() {
@@ -27,17 +27,17 @@ public class HitboxTest {
 	
 	@Test
 	public void testHitboxSizes() {
-		assertEquals(5, hitbox1.origin.getX(),0);
-		assertEquals(5, hitbox1.size.getX(),0);
-		assertEquals(10, hitbox1.origin.add(hitbox1.size).getX(),0);
+		assertEquals(5, hitbox1.getOrigin().getX(),0);
+		assertEquals(5, hitbox1.getVectorSize().getX(),0);
+		assertEquals(10, hitbox1.getOrigin().add(hitbox1.getVectorSize()).getX(),0);
 		
-		assertEquals(3, hitbox2.origin.getX(),0);
-		assertEquals(5, hitbox2.size.getX(),0);
-		assertEquals(8, hitbox2.origin.add(hitbox2.size).getX(),0);
+		assertEquals(3, hitbox2.getOrigin().getX(),0);
+		assertEquals(5, hitbox2.getVectorSize().getX(),0);
+		assertEquals(8, hitbox2.getOrigin().add(hitbox2.getVectorSize()).getX(),0);
 		
-		assertEquals(20, hitbox3.origin.getX(),0);
-		assertEquals(5, hitbox3.size.getX(),0);
-		assertEquals(25, hitbox3.origin.add(hitbox3.size).getX(),0);
+		assertEquals(20, hitbox3.getOrigin().getX(),0);
+		assertEquals(5, hitbox3.getVectorSize().getX(),0);
+		assertEquals(25, hitbox3.getOrigin().add(hitbox3.getVectorSize()).getX(),0);
 	}
 	
 	@Test
@@ -53,12 +53,12 @@ public class HitboxTest {
 	@Test
 	public void testSetOrigin() {
 		hitbox1.setOrigin(vector2);
-		assertEquals(3, hitbox1.origin.getX(),0);
+		assertEquals(3, hitbox1.getOrigin().getX(),0);
 	}
 	
 	@Test
 	public void testSetVectorSize() {
 		hitbox1.setVectorSize(10, 10);
-		assertEquals(10, hitbox1.size.getX(),0);
+		assertEquals(10, hitbox1.getVectorSize().getX(),0);
 	}
 }

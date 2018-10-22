@@ -5,16 +5,18 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.megil.teliaengine.game.player.Player;
+import ch.megil.teliaengine.game.Hitbox;
 import javafx.scene.Node;
 import javafx.scene.shape.Rectangle;
 
 public class PlayerTest {
 	private Node depiction;
+	private Hitbox hitbox;
 	
 	@Before
 	public void setUp() throws Exception {
 		depiction = new Rectangle(50, 50);
+		hitbox = new Hitbox(null, 50, 50);
 	}
 
 	@Test
@@ -22,7 +24,7 @@ public class PlayerTest {
 		depiction.setLayoutX(10);
 		depiction.setLayoutY(20);
 
-		var player = new Player(depiction);
+		var player = new Player(depiction, hitbox);
 		player.setPosX(5);
 		player.setPosY(15);
 
@@ -35,7 +37,7 @@ public class PlayerTest {
 	
 	@Test
 	public void testPositionBinding() {
-		var player = new Player(depiction);
+		var player = new Player(depiction, hitbox);
 		player.setPosX(0);
 		player.setPosY(0);
 
@@ -53,5 +55,16 @@ public class PlayerTest {
 
 		assertEquals(15, depiction.getLayoutX(), 0);
 		assertEquals(5, depiction.getLayoutY(), 0);
+	}
+	
+	@Test
+	public void testHitbox() {
+		var player = new Player(depiction, hitbox);
+		
+		player.setPosX(20);
+		player.setPosY(30);
+		
+		assertEquals(20, player.getHitbox().getOrigin().getX(), 0);
+		assertEquals(30, player.getHitbox().getOrigin().getY(), 0);
 	}
 }

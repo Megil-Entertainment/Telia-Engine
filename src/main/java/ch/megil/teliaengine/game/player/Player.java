@@ -1,6 +1,10 @@
 package ch.megil.teliaengine.game.player;
 
+import java.util.List;
+
+import ch.megil.teliaengine.configuration.PhysicsConstants;
 import ch.megil.teliaengine.file.PlayerLoad;
+import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
 import javafx.scene.Node;
 
@@ -10,15 +14,20 @@ public final class Player {
 	
 	private Vector position;
 	private Node depiction;
+	private Hitbox hitbox;
+	private boolean jumpUsed;
 	
 	private Vector acceleration;
 	private Vector velocity;
 	
-	protected Player(Node depiction) {
+	protected Player(Node depiction, Hitbox hitbox) {
+		jumpUsed = false;
+		
 		acceleration = Vector.ZERO;
 		velocity = Vector.ZERO;
 		
 		this.depiction = depiction;
+		this.hitbox = hitbox;
 		
 		this.position = new Vector(depiction.getLayoutX(), depiction.getLayoutY());
 		
@@ -52,12 +61,36 @@ public final class Player {
 		velocity = velocity.add(v);
 	}
 	
-	public void update() {
+	public void update(List<Hitbox> possibleCollisions) {
 		velocity = velocity.add(acceleration);
-		//TODO: terminate velocity
-		var np = position.add(velocity);
-		position.setX(np.getX());
-		position.setY(np.getY());
+		velocity = new Vector(velocity.getX(), Math.min(velocity.getY(), PhysicsConstants.TERMINAL_FALL_VELOCITY.get().getY()));
+		
+		for (var v : velocity.splitToComponentSizeOne()) {
+			//x collision
+			var np = position.add(v.xVector());
+			position.setX(np.getX());
+			position.setY(np.getY());
+			if (possibleCollisions.stream().anyMatch(getHitbox()::checkCollision)) {
+				np = position.add(v.xVector().negate());
+				position.setX(np.getX());
+				position.setY(np.getY());
+			}
+			
+			//y collision
+			np = position.add(v.yVector());
+			position.setX(np.getX());
+			position.setY(np.getY());
+			if (possibleCollisions.stream().anyMatch(getHitbox()::checkCollision)) {
+				if (v.getY() > 0) {
+					jumpUsed = false;
+					acceleration = new Vector(acceleration.getX(), 0);
+					velocity = new Vector(velocity.getX(), 0);
+				}
+				np = position.add(v.yVector().negate());
+				position.setX(np.getX());
+				position.setY(np.getY());
+			}
+		}
 	}
 	
 	public double getPosX() {
@@ -78,5 +111,18 @@ public final class Player {
 
 	public Node getDepiction() {
 		return depiction;
+	}
+	
+	public Hitbox getHitbox() {
+		hitbox.setOrigin(position);
+		return hitbox;
+	}
+	
+	public boolean isJumpUsed() {
+		return jumpUsed;
+	}
+	
+	public void useJump() {
+		jumpUsed = true;
 	}
 }

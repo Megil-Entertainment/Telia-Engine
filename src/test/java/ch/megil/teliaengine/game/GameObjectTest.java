@@ -10,10 +10,12 @@ import javafx.scene.shape.Rectangle;
 
 public class GameObjectTest {
 	private Node depiction;
+	private Hitbox hitbox;
 
 	@Before
 	public void setUp() throws Exception {
 		depiction = new Rectangle(50, 50);
+		hitbox = new Hitbox(Vector.ZERO, 50, 50);
 	}
 
 	@Test
@@ -21,7 +23,7 @@ public class GameObjectTest {
 		depiction.setLayoutX(10);
 		depiction.setLayoutY(20);
 
-		var obj = new GameObject("testObject", depiction);
+		var obj = new GameObject("testObject", depiction, hitbox);
 
 		assertEquals(depiction, obj.getDepiction());
 		assertEquals(10, obj.getPosX(), 0);
@@ -30,7 +32,7 @@ public class GameObjectTest {
 
 	@Test
 	public void testGameObjectStringNodeDoubleDouble() {
-		var obj = new GameObject("testObject", depiction, 30, 40);
+		var obj = new GameObject("testObject", depiction, hitbox, 30, 40);
 
 
 		assertEquals(depiction, obj.getDepiction());
@@ -42,7 +44,7 @@ public class GameObjectTest {
 
 	@Test
 	public void testPositionBinding() {
-		var obj = new GameObject("testObject", depiction);
+		var obj = new GameObject("testObject", depiction, hitbox);
 
 		assertEquals(0, obj.getPosX(), 0);
 		assertEquals(0, obj.getPosY(), 0);
@@ -58,5 +60,16 @@ public class GameObjectTest {
 
 		assertEquals(15, depiction.getLayoutX(), 0);
 		assertEquals(5, depiction.getLayoutY(), 0);
+	}
+	
+	@Test
+	public void testHitbox() {
+		var obj = new GameObject("testObject", depiction, hitbox);
+		
+		obj.setPosX(20);
+		obj.setPosY(30);
+		
+		assertEquals(20, obj.getHitbox().getOrigin().getX(), 0);
+		assertEquals(30, obj.getHitbox().getOrigin().getY(), 0);
 	}
 }
