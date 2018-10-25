@@ -3,6 +3,7 @@
 
 # Log file
 *.log
+/log
 
 # Package Files #
 *.jar
@@ -19,3 +20,6 @@
 .gradle
 /build
 !gradle-wrapper.jar
+
+# dev env assets #
+/assets/maps

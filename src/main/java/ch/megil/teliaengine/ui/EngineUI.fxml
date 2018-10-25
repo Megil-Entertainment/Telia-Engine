@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.Pane?>
+<?import ch.megil.teliaengine.ui.component.MapEditor?>
+<?import ch.megil.teliaengine.ui.component.ObjectExplorer?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="ch.megil.teliaengine.ui.EngineUIController">
+	<top>
+		<MenuBar>
+			<menus>
+				<Menu text="File">
+					<MenuItem text="New Map" onAction="#fileNewMap" />
+					<MenuItem text="Save Map" onAction="#fileSaveMap" />
+					<MenuItem text="Load Map" onAction="#fileLoadMap" />
+				</Menu>
+				<Menu text="Game">
+					<MenuItem text="Run" onAction="#gameRun" />
+				</Menu>
+				<Menu text="Help">
+					<MenuItem text="About" onAction="#helpAbout" />
+				</Menu>
+			</menus>
+		</MenuBar>
+	</top>
+
+	<center>
+		<SplitPane>
+			<items>
+				<MapEditor fx:id="mapEditor"/>
+				<ObjectExplorer fx:id="objectExplorer"/>
+			</items>
+		</SplitPane>
+	</center>
+</BorderPane>
