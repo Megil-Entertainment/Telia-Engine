@@ -1,11 +1,42 @@
+import org.gradle.internal.os.OperatingSystem
+
 plugins {
     id 'java'
+}
+
+project.ext.lwjglVersion = "3.2.0"
+
+switch ( OperatingSystem.current() ) {
+	case OperatingSystem.WINDOWS:
+		project.ext.lwjglNatives = "natives-windows"
+		break
+	case OperatingSystem.LINUX:
+		project.ext.lwjglNatives = "natives-linux"
+	break
+	case OperatingSystem.MAC_OS:
+		project.ext.lwjglNatives = "natives-macos"
+		break
 }
 
 sourceCompatibility = 10
 targetCompatibility = 10
 
 dependencies {
+    compile "org.lwjgl:lwjgl:$lwjglVersion"
+	compile "org.lwjgl:lwjgl-assimp:$lwjglVersion"
+	compile "org.lwjgl:lwjgl-glfw:$lwjglVersion"
+	compile "org.lwjgl:lwjgl-openal:$lwjglVersion"
+	compile "org.lwjgl:lwjgl-stb:$lwjglVersion"
+	compile "org.lwjgl:lwjgl-vma:$lwjglVersion"
+	compile "org.lwjgl:lwjgl-vulkan:$lwjglVersion"
+	compile "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
+	compile "org.lwjgl:lwjgl-assimp:$lwjglVersion:$lwjglNatives"
+	compile "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
+	compile "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNatives"
+	compile "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
+	compile "org.lwjgl:lwjgl-vma:$lwjglVersion:$lwjglNatives"
+	compile "org.lwjgl:lwjgl-vulkan:$lwjglVersion:$lwjglNatives"
+
     testImplementation 'junit:junit:4.12'
 	testImplementation 'org.mockito:mockito-core:2.23.0'
 }
