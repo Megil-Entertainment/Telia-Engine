@@ -41,6 +41,22 @@ public class MapEditor extends Pane{
 		var source = (Node) event.getSource();
 		source.setLayoutX(event.getSceneX() + dx);
 		source.setLayoutY(event.getSceneY() + dy);
+		checkBoundries(source, map);
+	}
+	
+	private void checkBoundries(Node source, Map map) {
+		if(source.getLayoutX() < 0) {
+			source.setLayoutX(0);
+		}
+		if(source.getLayoutX() > map.getWidth()) {
+			source.setLayoutX(map.getWidth());
+		}
+		if(source.getLayoutY() < 0) {
+			source.setLayoutY(0);
+		}
+		if(source.getLayoutY() > map.getWidth()) {
+			source.setLayoutY(map.getHeight());
+		}
 	}
 	
 	public void onDragNode(MouseEvent event) {
