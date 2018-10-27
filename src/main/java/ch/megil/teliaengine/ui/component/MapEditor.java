@@ -1,5 +1,8 @@
 package ch.megil.teliaengine.ui.component;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
@@ -10,11 +13,13 @@ import javafx.scene.layout.Pane;
 
 public class MapEditor extends Pane{
 	private Map map;
+	private HashMap<Node, Integer> gameObjectIndexes;
 	
 	private double dx;
 	private double dy;
 	
 	public MapEditor() {
+		gameObjectIndexes = new HashMap<>();
 		getChildren().addListener((ListChangeListener<Node>) c -> {
 			while(c.next()) {
 				c.getAddedSubList().forEach(n -> {
@@ -28,6 +33,7 @@ public class MapEditor extends Pane{
 		if (map != null) {
 			map.addObject(obj);
 			getChildren().add(obj.getDepiction());
+			gameObjectIndexes.put(obj.getDepiction(), map.getMapObjects().indexOf(obj));
 		}
 	}
 	
@@ -45,17 +51,21 @@ public class MapEditor extends Pane{
 	}
 	
 	private void checkBoundries(Node source, Map map) {
+		int sourceIndex = gameObjectIndexes.get(source);
+		double sourceWidth = map.getMapObjects().get(sourceIndex).getHitbox().getVectorSize().getX();
+		double sourceHeight = map.getMapObjects().get(sourceIndex).getHitbox().getVectorSize().getY();
+		System.out.println(sourceIndex);
 		if(source.getLayoutX() < 0) {
 			source.setLayoutX(0);
 		}
-		if(source.getLayoutX() > map.getWidth()) {
-			source.setLayoutX(map.getWidth());
+		if(source.getLayoutX() + sourceWidth > map.getWidth()) {
+			source.setLayoutX(map.getWidth() - sourceWidth);
 		}
 		if(source.getLayoutY() < 0) {
 			source.setLayoutY(0);
 		}
-		if(source.getLayoutY() > map.getWidth()) {
-			source.setLayoutY(map.getHeight());
+		if(source.getLayoutY() + sourceHeight > map.getHeight()) {
+			source.setLayoutY(map.getHeight() - sourceHeight);
 		}
 	}
 	
