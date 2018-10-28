@@ -1,6 +1,5 @@
 package ch.megil.teliaengine.ui.component;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import ch.megil.teliaengine.game.GameObject;
@@ -14,12 +13,17 @@ import javafx.scene.layout.Pane;
 public class MapEditor extends Pane{
 	private Map map;
 	private HashMap<Node, Integer> gameObjectIndexes;
+	private Player player;
+	private double playerWidth;
+	private double playerHeight;
 	
 	private double dx;
 	private double dy;
 	
 	public MapEditor() {
 		gameObjectIndexes = new HashMap<>();
+		playerWidth = Player.getEngine().getHitbox().getVectorSize().getX();
+		playerHeight = Player.getEngine().getHitbox().getVectorSize().getY();
 		getChildren().addListener((ListChangeListener<Node>) c -> {
 			while(c.next()) {
 				c.getAddedSubList().forEach(n -> {
@@ -51,12 +55,19 @@ public class MapEditor extends Pane{
 	}
 	
 	private void checkBoundries(Node source, Map map) {
-		int sourceIndex = gameObjectIndexes.get(source);
-		double sourceWidth = map.getMapObjects().get(sourceIndex).getHitbox().getVectorSize().getX();
-		double sourceHeight = map.getMapObjects().get(sourceIndex).getHitbox().getVectorSize().getY();
-		System.out.println(sourceIndex);
+		double sourceWidth;
+		double sourceHeight;
+		if(gameObjectIndexes.containsKey(source)) {
+			int sourceIndex = gameObjectIndexes.get(source);
+			sourceWidth = map.getMapObjects().get(sourceIndex).getHitbox().getVectorSize().getX();
+			sourceHeight = map.getMapObjects().get(sourceIndex).getHitbox().getVectorSize().getY();
+		}else {
+			sourceWidth = playerWidth;
+			sourceHeight = playerHeight;
+		}
+
 		if(source.getLayoutX() < 0) {
-			source.setLayoutX(0);
+		source.setLayoutX(0);
 		}
 		if(source.getLayoutX() + sourceWidth > map.getWidth()) {
 			source.setLayoutX(map.getWidth() - sourceWidth);
@@ -86,5 +97,7 @@ public class MapEditor extends Pane{
 		this.map = map;
 		map.getMapObjects().forEach(o -> getChildren().add(o.getDepiction()));
 		getChildren().add(Player.getEngine().getDepiction());
+		player = Player.getEngine();
+		
 	}
 }
