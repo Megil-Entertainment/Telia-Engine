@@ -94,10 +94,10 @@ public class ClearScreenDemo {
         // This includes stuff like the Window System Interface extensions to actually render something on a window.
         //
         // We also add the debug extension so that validation layers and other things can send log messages to us.
-        ByteBuffer VK_EXT_DEBUG_REPORT_EXTENSION = memUTF8(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+//        ByteBuffer VK_EXT_DEBUG_REPORT_EXTENSION = memUTF8(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
         PointerBuffer ppEnabledExtensionNames = memAllocPointer(requiredExtensions.remaining() + 1);
         ppEnabledExtensionNames.put(requiredExtensions) // <- platform-dependent required extensions
-                               .put(VK_EXT_DEBUG_REPORT_EXTENSION) // <- the debug extensions
+//                               .put(VK_EXT_DEBUG_REPORT_EXTENSION) // <- the debug extensions
                                .flip();
 
         // Now comes the validation layers. These layers sit between our application (the Vulkan client) and the
@@ -137,7 +137,7 @@ public class ClearScreenDemo {
         // Now we can free/deallocate everything
         pCreateInfo.free();
         memFree(ppEnabledLayerNames);
-        memFree(VK_EXT_DEBUG_REPORT_EXTENSION);
+//        memFree(VK_EXT_DEBUG_REPORT_EXTENSION);
         memFree(ppEnabledExtensionNames);
         memFree(appInfo.pApplicationName());
         memFree(appInfo.pEngineName());
@@ -869,7 +869,7 @@ public class ClearScreenDemo {
                 return 0;
             }
         };
-        final long debugCallbackHandle = setupDebugging(instance, VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT, debugCallback);
+//        final long debugCallbackHandle = setupDebugging(instance, VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT, debugCallback);
         final VkPhysicalDevice physicalDevice = getFirstPhysicalDevice(instance);
         final DeviceAndGraphicsQueueFamily deviceAndGraphicsQueueFamily = createDeviceAndGetGraphicsQueueFamily(physicalDevice);
         final VkDevice device = deviceAndGraphicsQueueFamily.device;
@@ -1056,7 +1056,7 @@ public class ClearScreenDemo {
         memFree(pSwapchains);
         memFree(pCommandBuffers);
 
-        vkDestroyDebugReportCallbackEXT(instance, debugCallbackHandle, null);
+//        vkDestroyDebugReportCallbackEXT(instance, debugCallbackHandle, null);
 
         windowSizeCallback.free();
         keyCallback.free();

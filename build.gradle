@@ -79,6 +79,10 @@ dependencies {
 	compile "org.lwjgl:lwjgl-xxhash:$lwjglVersion:$lwjglNatives"
 	compile "org.lwjgl:lwjgl-yoga:$lwjglVersion:$lwjglNatives"
 	compile "org.lwjgl:lwjgl-zstd:$lwjglVersion:$lwjglNatives"
+	
+	if ( OperatingSystem.current() == OperatingSystem.MAC_OS ) {
+		compile "org.lwjgl:lwjgl-vulkan:$lwjglVersion:$lwjglNatives"
+	}
 
     testImplementation 'junit:junit:4.12'
 	testImplementation 'org.mockito:mockito-core:2.23.0'
