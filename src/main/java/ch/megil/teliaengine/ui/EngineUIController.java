@@ -106,7 +106,7 @@ public class EngineUIController {
 		var stage = new Stage();
 		try {
 			var main = new GameMain(mapEditor.getMap().getName());
-			main.start(stage);
+			main.run();
 		} catch (Exception e) {
 			stage.hide();
 			LogHandler.log(e, Level.SEVERE);
