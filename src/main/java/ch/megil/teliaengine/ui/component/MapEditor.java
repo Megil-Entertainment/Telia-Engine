@@ -5,6 +5,7 @@ import java.util.HashMap;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
+import ch.megil.teliaengine.ui.MyImageView;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -36,8 +37,8 @@ public class MapEditor extends Pane{
 	public void addGameObject(GameObject obj) {
 		if (map != null) {
 			map.addObject(obj);
-			getChildren().add(obj.getDepiction());
-			gameObjectIndexes.put(obj.getDepiction(), map.getMapObjects().indexOf(obj));
+			getChildren().add(new MyImageView(obj));
+			gameObjectIndexes.put(new MyImageView(obj), map.getMapObjects().indexOf(obj));
 		}
 	}
 	
@@ -95,8 +96,8 @@ public class MapEditor extends Pane{
 		getChildren().clear();
 		
 		this.map = map;
-		map.getMapObjects().forEach(o -> getChildren().add(o.getDepiction()));
-		getChildren().add(Player.getEngine().getDepiction());
+		map.getMapObjects().forEach(o -> getChildren().add(new MyImageView(o)));
+		getChildren().add(new MyImageView(Player.getEngine()));
 		player = Player.getEngine();
 		
 	}

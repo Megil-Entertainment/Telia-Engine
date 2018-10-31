@@ -4,35 +4,33 @@ import java.util.List;
 
 import ch.megil.teliaengine.configuration.PhysicsConstants;
 import ch.megil.teliaengine.file.PlayerLoad;
+import ch.megil.teliaengine.game.GameElement;
 import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 
-public final class Player {
+public final class Player extends GameElement{
 	private static Player instance;
 	private static Player engine;
 	
-	private Vector position;
-	private Node depiction;
-	private Hitbox hitbox;
 	private boolean jumpUsed;
 	
 	private Vector acceleration;
 	private Vector velocity;
+
 	
-	protected Player(Node depiction, Hitbox hitbox) {
+	protected Player(Image depiction, Hitbox hitbox) {
+		super(depiction, hitbox);
 		jumpUsed = false;
 		
 		acceleration = Vector.ZERO;
 		velocity = Vector.ZERO;
 		
-		this.depiction = depiction;
-		this.hitbox = hitbox;
+		super.setPosition(Vector.ZERO);
 		
-		this.position = new Vector(depiction.getLayoutX(), depiction.getLayoutY());
-		
-		this.depiction.layoutXProperty().bindBidirectional(position.xProperty());
-		this.depiction.layoutYProperty().bindBidirectional(position.yProperty());
+		//this.depiction.layoutXProperty().bindBidirectional(position.xProperty());
+		//this.depiction.layoutYProperty().bindBidirectional(position.yProperty());
 	}
 	
 	public static Player get() {
@@ -47,8 +45,8 @@ public final class Player {
 			engine = new PlayerLoad().load(Player::new);
 			engine.setPosX(get().getPosX());
 			engine.setPosY(get().getPosY());
-			engine.position.xProperty().addListener((obs, ov, nv) -> get().position.setX(nv.doubleValue()));
-			engine.position.yProperty().addListener((obs, ov, nv) -> get().position.setY(nv.doubleValue()));
+			engine.getPosition().xProperty().addListener((obs, ov, nv) -> get().setPosX(nv.doubleValue()));
+			engine.getPosition().yProperty().addListener((obs, ov, nv) -> get().setPosY(nv.doubleValue()));
 		}
 		return engine;
 	}
@@ -67,8 +65,8 @@ public final class Player {
 		
 		for (var v : velocity.splitToComponentSizeOne()) {
 			//x collision
-			var np = position.add(v.xVector());
-			position.setX(np.getX());
+			var np = add(v.xVector());
+			setPosX(np.getX());
 			position.setY(np.getY());
 			if (possibleCollisions.stream().anyMatch(getHitbox()::checkCollision)) {
 				np = position.add(v.xVector().negate());
@@ -91,31 +89,6 @@ public final class Player {
 				position.setY(np.getY());
 			}
 		}
-	}
-	
-	public double getPosX() {
-		return position.getX();
-	}
-	
-	public void setPosX(double posX) {
-		this.position.setX(posX);
-	}
-
-	public double getPosY() {
-		return position.getY();
-	}
-	
-	public void setPosY(double posY) {
-		this.position.setY(posY);
-	}
-
-	public Node getDepiction() {
-		return depiction;
-	}
-	
-	public Hitbox getHitbox() {
-		hitbox.setOrigin(position);
-		return hitbox;
 	}
 	
 	public boolean isJumpUsed() {
