@@ -65,28 +65,28 @@ public final class Player extends GameElement{
 		
 		for (var v : velocity.splitToComponentSizeOne()) {
 			//x collision
-			var np = add(v.xVector());
+			var np = getPosition().add(v.xVector());
 			setPosX(np.getX());
-			position.setY(np.getY());
+			setPosY(np.getY());
 			if (possibleCollisions.stream().anyMatch(getHitbox()::checkCollision)) {
-				np = position.add(v.xVector().negate());
-				position.setX(np.getX());
-				position.setY(np.getY());
+				np = getPosition().add(v.xVector().negate());
+				setPosX(np.getX());
+				setPosY(np.getY());
 			}
 			
 			//y collision
-			np = position.add(v.yVector());
-			position.setX(np.getX());
-			position.setY(np.getY());
+			np = getPosition().add(v.yVector());
+			setPosX(np.getX());
+			setPosY(np.getY());
 			if (possibleCollisions.stream().anyMatch(getHitbox()::checkCollision)) {
 				if (v.getY() > 0) {
 					jumpUsed = false;
 					acceleration = new Vector(acceleration.getX(), 0);
 					velocity = new Vector(velocity.getX(), 0);
 				}
-				np = position.add(v.yVector().negate());
-				position.setX(np.getX());
-				position.setY(np.getY());
+				np = getPosition().add(v.yVector().negate());
+				setPosX(np.getX());
+				setPosY(np.getY());
 			}
 		}
 	}
