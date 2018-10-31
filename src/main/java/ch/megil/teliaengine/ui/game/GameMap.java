@@ -9,7 +9,7 @@ import javafx.scene.layout.Pane;
 
 public class GameMap extends Pane {
 	public GameMap() {
-		GameState.get().getMap().getMapObjects().stream().map(GameObject::getDepiction).forEach(getChildren()::add());
+		//GameState.get().getMap().getMapObjects().stream().map(GameObject::getDepiction).forEach(getChildren()::add());
 		getChildren().add(new MyImageView(Player.get()));
 		
 		setOnKeyPressed(GameLoop.get().getKeyHandler()::press);
