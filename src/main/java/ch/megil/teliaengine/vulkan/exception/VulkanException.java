@@ -10,7 +10,7 @@ public class VulkanException extends Exception {
 	}
 	
 	public VulkanException(int resultCode) {
-		this(translateVulkanResult(resultCode));
+		this(String.format("[Error Code: %d] %s", resultCode, translateVulkanResult(resultCode)));
 	}
 	
 	private static String translateVulkanResult(int result) {

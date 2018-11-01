@@ -2,15 +2,20 @@ package ch.megil.teliaengine;
 
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFWVulkan.glfwVulkanSupported;
-import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.system.MemoryUtil.memAllocInt;
 import static org.lwjgl.system.MemoryUtil.memAllocPointer;
 import static org.lwjgl.system.MemoryUtil.memFree;
 import static org.lwjgl.system.MemoryUtil.memUTF8;
 import static org.lwjgl.vulkan.VK10.*;
 
+import java.nio.IntBuffer;
+
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.vulkan.VkApplicationInfo;
 import org.lwjgl.vulkan.VkInstance;
 import org.lwjgl.vulkan.VkInstanceCreateInfo;
+import org.lwjgl.vulkan.VkPhysicalDevice;
+import org.lwjgl.vulkan.VkPhysicalDeviceProperties;
 
 import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.file.MapSaveLoad;
@@ -49,6 +54,8 @@ public class GameMain {
 		}
 		
 		instance = createInstance();
+		
+		getPhysicalDevice();
 	}
 	
 	private VkInstance createInstance() throws VulkanException {
@@ -60,18 +67,21 @@ public class GameMain {
 		
 		var instInfo = VkInstanceCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO)
-				.pNext(NULL)
+				//TODO: delete: .pNext(NULL)
 				.pApplicationInfo(appInfo);
 		
 		var pInst = memAllocPointer(1);
 		var res = vkCreateInstance(instInfo, null, pInst);
 		
 		try {
-			errorCheck(res);
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
+			
 			var instance = new VkInstance(pInst.get(0), instInfo);
 			return instance;
 		} finally {
-			pInst.free();
+			memFree(pInst);
 			instInfo.free();
 			memFree(appInfo.pApplicationName());
 			memFree(appInfo.pEngineName());
@@ -79,9 +89,38 @@ public class GameMain {
 		}
 	}
 	
-	private void errorCheck(int resultCode) throws VulkanException {
-		if (resultCode != VK_SUCCESS) {
-			throw new VulkanException(resultCode);
+	private VkPhysicalDevice getPhysicalDevice() throws VulkanException {
+		var gpuCount = memAllocInt(1);
+		var res = vkEnumeratePhysicalDevices(instance, gpuCount, null);
+		
+		if (res != VK_SUCCESS) {
+			memFree(gpuCount);
+			throw new VulkanException(res);
+		}
+		
+		var gpus = memAllocPointer(gpuCount.get(0));
+		res = vkEnumeratePhysicalDevices(instance, gpuCount, gpus);
+		
+		try {
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
+			
+			for (var i = 0; i < gpuCount.get(0); i++) {
+				var prop = VkPhysicalDeviceProperties.calloc();
+				var d = new VkPhysicalDevice(gpus.get(i), instance);
+				
+				vkGetPhysicalDeviceProperties(d, prop);
+				
+				System.out.println(prop.deviceNameString() + ":" + (prop.deviceType() == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU));
+				
+				prop.free();
+			}
+			
+			return null;
+		} finally {
+			memFree(gpuCount);
+			memFree(gpus);
 		}
 	}
 
