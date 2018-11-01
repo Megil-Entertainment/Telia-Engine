@@ -20,7 +20,7 @@ public class PlayerLoad {
 		var fileName = GameConfiguration.ASSET_PLAYER.getConfiguration();
 		var file = new File(fileName);
 		
-		var depiction = new Image("www.zhaw.ch");
+		var depiction = new Image("https://picsum.photos/10/10");
 		
 		var hitbox = new Hitbox(Vector.ZERO, Double.parseDouble(GameConfiguration.PLAYER_WIDTH.getConfiguration()),
 				Double.parseDouble(GameConfiguration.PLAYER_HEIGHT.getConfiguration()));
@@ -29,7 +29,7 @@ public class PlayerLoad {
 			scanner.useDelimiter(GameConfiguration.SEPARATOR_ENTRY.getConfiguration());
 			
 			var spec = scanner.next().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
-			depiction = new Image("www.zhaw.ch");
+			depiction = new Image("https://picsum.photos/10/10");
 			hitbox =  new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 		} catch (IOException e) {
 			LogHandler.info("Player spec not found.");

@@ -1,7 +1,5 @@
 package ch.megil.teliaengine.ui.component;
 
-import java.util.HashMap;
-
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
@@ -13,18 +11,10 @@ import javafx.scene.layout.Pane;
 
 public class MapEditor extends Pane{
 	private Map map;
-	private HashMap<Node, Integer> gameObjectIndexes;
-	private Player player;
-	private double playerWidth;
-	private double playerHeight;
-	
 	private double dx;
 	private double dy;
 	
 	public MapEditor() {
-		gameObjectIndexes = new HashMap<>();
-		playerWidth = Player.getEngine().getHitbox().getVectorSize().getX();
-		playerHeight = Player.getEngine().getHitbox().getVectorSize().getY();
 		getChildren().addListener((ListChangeListener<Node>) c -> {
 			while(c.next()) {
 				c.getAddedSubList().forEach(n -> {
@@ -38,7 +28,6 @@ public class MapEditor extends Pane{
 		if (map != null) {
 			map.addObject(obj);
 			getChildren().add(new MyImageView(obj));
-			gameObjectIndexes.put(new MyImageView(obj), map.getMapObjects().indexOf(obj));
 		}
 	}
 	
@@ -49,35 +38,29 @@ public class MapEditor extends Pane{
 	}
 	
 	private void moveNode(MouseEvent event) {
-		var source = (Node) event.getSource();
-		source.setLayoutX(event.getSceneX() + dx);
-		source.setLayoutY(event.getSceneY() + dy);
-		checkBoundries(source, map);
+		var source = (MyImageView) event.getSource();
+		source.setImageViewLayoutX(event.getSceneX() + dx);
+		source.setImageViewLayoutY(event.getSceneY() + dy);
+		checkBoundries(source);
 	}
 	
-	private void checkBoundries(Node source, Map map) {
+	private void checkBoundries(MyImageView imageView) {
 		double sourceWidth;
 		double sourceHeight;
-		if(gameObjectIndexes.containsKey(source)) {
-			int sourceIndex = gameObjectIndexes.get(source);
-			sourceWidth = map.getMapObjects().get(sourceIndex).getHitbox().getVectorSize().getX();
-			sourceHeight = map.getMapObjects().get(sourceIndex).getHitbox().getVectorSize().getY();
-		}else {
-			sourceWidth = playerWidth;
-			sourceHeight = playerHeight;
-		}
+		sourceWidth = imageView.getGameElement().getHitbox().getVectorSize().getX();
+		sourceHeight = imageView.getGameElement().getHitbox().getVectorSize().getY();
 
-		if(source.getLayoutX() < 0) {
-		source.setLayoutX(0);
+		if(imageView.getLayoutX() < 0) {
+		imageView.setImageViewLayoutX(0);
 		}
-		if(source.getLayoutX() + sourceWidth > map.getWidth()) {
-			source.setLayoutX(map.getWidth() - sourceWidth);
+		if(imageView.getLayoutX() + sourceWidth > map.getWidth()) {
+			imageView.setImageViewLayoutX(map.getWidth() - sourceWidth);
 		}
-		if(source.getLayoutY() < 0) {
-			source.setLayoutY(0);
+		if(imageView.getLayoutY() < 0) {
+			imageView.setImageViewLayoutY(0);
 		}
-		if(source.getLayoutY() + sourceHeight > map.getHeight()) {
-			source.setLayoutY(map.getHeight() - sourceHeight);
+		if(imageView.getLayoutY() + sourceHeight > map.getHeight()) {
+			imageView.setImageViewLayoutY(map.getHeight() - sourceHeight);
 		}
 	}
 	
@@ -98,7 +81,6 @@ public class MapEditor extends Pane{
 		this.map = map;
 		map.getMapObjects().forEach(o -> getChildren().add(new MyImageView(o)));
 		getChildren().add(new MyImageView(Player.getEngine()));
-		player = Player.getEngine();
 		
 	}
 }

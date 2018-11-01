@@ -39,8 +39,7 @@ public class Hitbox {
 	}
 	
 	public void setVectorSize(double width, double height) {
-		this.size.setX(width);
-		this.size.setY(height);
+		this.size = new Vector(width, height);
 	}
 	
 }

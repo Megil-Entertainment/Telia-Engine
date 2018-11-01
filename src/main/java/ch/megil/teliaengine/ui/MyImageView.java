@@ -9,6 +9,9 @@ public class MyImageView extends ImageView{
 	public MyImageView(GameElement gameElement) {
 		super(gameElement.getDepiction());
 		this.gameElement = gameElement;
+		
+		setLayoutX(gameElement.getPosX());
+		setLayoutY(gameElement.getPosY());
 	}
 	
 	
@@ -20,5 +23,9 @@ public class MyImageView extends ImageView{
 	public void setImageViewLayoutY(double value) {
 		super.setLayoutY(value);
 		gameElement.setPosY(value);
+	}
+	
+	public GameElement getGameElement() {
+		return gameElement;
 	}
 }

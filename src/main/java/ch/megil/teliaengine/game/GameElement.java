@@ -18,7 +18,7 @@ public class GameElement {
 	}
 	
 	public void setPosX(double posX) {
-		this.getPosition().setX(posX);
+		position = new Vector(posX, position.getY());
 	}
 
 	public double getPosY() {
@@ -26,7 +26,7 @@ public class GameElement {
 	}
 	
 	public void setPosY(double posY) {
-		this.getPosition().setY(posY);
+		position = new Vector(position.getX(), posY);
 	}
 	
 	public Image getDepiction() {

@@ -22,10 +22,6 @@ public class Vector {
 		return x.get();
 	}
 	
-	public void setX(double x) {
-		this.x.set(x);
-	}
-	
 	public DoubleProperty xProperty() {
 		return x;
 	}
@@ -34,9 +30,6 @@ public class Vector {
 		return y.get();
 	}
 	
-	public void setY(double y) {
-		this.y.set(y);
-	}
 	
 	public DoubleProperty yProperty() {
 		return y;

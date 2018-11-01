@@ -26,8 +26,7 @@ public class GameObjectSaveLoad {
 		
 		try (var reader = new BufferedReader(new FileReader(file))) {
 			var spec = reader.readLine().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
-			var depiction = new Image("url");
-			//var depiction =  new Rectangle(Double.parseDouble(spec[0]), Double.parseDouble(spec[1]), Color.web(spec[2]));
+			var depiction = new Image("https://picsum.photos/50/50");
 			var hitbox = new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			
 			var obj = new GameObject(name, depiction, hitbox);
