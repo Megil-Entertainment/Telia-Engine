@@ -6,6 +6,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.GameConfiguration;
+import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.game.player.Player;
@@ -27,13 +28,16 @@ public class PlayerLoad {
 			scanner.useDelimiter(GameConfiguration.SEPARATOR_ENTRY.getConfiguration());
 			
 			var spec = scanner.next().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
-			depiction = new Image("https://picsum.photos/10/10");
+			depiction = new TextureLoader().load(spec[2], Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			hitbox =  new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 		} catch (IOException e) {
 			LogHandler.info("Player spec not found.");
 			LogHandler.log(e, Level.INFO);
 		} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
 			LogHandler.severe("Player spec not correctly formated.");
+		} catch (AssetNotFoundException e) {
+			LogHandler.severe("Player texture not existing.");
+			LogHandler.log(e, Level.SEVERE);
 		}
 		
 		return constructor.invoke(depiction, hitbox);
