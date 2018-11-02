@@ -7,22 +7,23 @@ import org.junit.Test;
 
 import ch.megil.teliaengine.game.Hitbox;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.shape.Rectangle;
 
 public class PlayerTest {
-	private Node depiction;
+	private Image depiction;
 	private Hitbox hitbox;
 	
 	@Before
 	public void setUp() throws Exception {
-		depiction = new Rectangle(50, 50);
+		depiction = new Image("https://picsum.photos/50/50", 50, 50, false, false);
 		hitbox = new Hitbox(null, 50, 50);
 	}
 
 	@Test
 	public void testPlayer() {
-		depiction.setLayoutX(10);
-		depiction.setLayoutY(20);
+//		depiction.setLayoutX(10);
+//		depiction.setLayoutY(20);
 
 		var player = new Player(depiction, hitbox);
 		player.setPosX(5);
@@ -31,8 +32,8 @@ public class PlayerTest {
 		assertEquals(depiction, player.getDepiction());
 		assertEquals(5, player.getPosX(), 0);
 		assertEquals(15, player.getPosY(), 0);
-		assertEquals(5, depiction.getLayoutX(), 0);
-		assertEquals(15, depiction.getLayoutY(), 0);
+//		assertEquals(5, depiction.getLayoutX(), 0);
+//		assertEquals(15, depiction.getLayoutY(), 0);
 	}
 	
 	@Test
@@ -44,8 +45,8 @@ public class PlayerTest {
 		assertEquals(0, player.getPosX(), 0);
 		assertEquals(0, player.getPosY(), 0);
 
-		depiction.setLayoutX(5);
-		depiction.setLayoutY(15);
+//		depiction.setLayoutX(5);
+//		depiction.setLayoutY(15);
 
 		assertEquals(5, player.getPosX(), 0);
 		assertEquals(15, player.getPosY(), 0);
@@ -53,8 +54,8 @@ public class PlayerTest {
 		player.setPosX(15);
 		player.setPosY(5);
 
-		assertEquals(15, depiction.getLayoutX(), 0);
-		assertEquals(5, depiction.getLayoutY(), 0);
+//		assertEquals(15, depiction.getLayoutX(), 0);
+//		assertEquals(5, depiction.getLayoutY(), 0);
 	}
 	
 	@Test

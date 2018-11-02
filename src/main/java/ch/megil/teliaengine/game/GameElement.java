@@ -8,6 +8,7 @@ public class GameElement {
 	private Image depiction;
 	
 	public GameElement(Image image, Hitbox hitbox) {
+		this.position = Vector.ZERO;
 		this.depiction = image;
 		this.hitbox = hitbox;
 	}

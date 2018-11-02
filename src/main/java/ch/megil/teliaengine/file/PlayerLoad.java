@@ -12,8 +12,6 @@ import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.game.player.PlayerConstructor;
 import ch.megil.teliaengine.logging.LogHandler;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 public class PlayerLoad {
 	public Player load(PlayerConstructor constructor) {

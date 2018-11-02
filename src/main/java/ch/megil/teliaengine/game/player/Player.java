@@ -28,9 +28,7 @@ public final class Player extends GameElement{
 		velocity = Vector.ZERO;
 		
 		super.setPosition(Vector.ZERO);
-		
-		//this.depiction.layoutXProperty().bindBidirectional(position.xProperty());
-		//this.depiction.layoutYProperty().bindBidirectional(position.yProperty());
+
 	}
 	
 	public static Player get() {

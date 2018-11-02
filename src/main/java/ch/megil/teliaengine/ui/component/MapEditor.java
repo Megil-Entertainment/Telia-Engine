@@ -47,8 +47,10 @@ public class MapEditor extends Pane{
 	private void checkBoundries(MyImageView imageView) {
 		double sourceWidth;
 		double sourceHeight;
-		sourceWidth = imageView.getGameElement().getHitbox().getVectorSize().getX();
-		sourceHeight = imageView.getGameElement().getHitbox().getVectorSize().getY();
+		sourceWidth = imageView.getImage().getWidth();
+		sourceHeight = imageView.getImage().getHeight();
+		
+		System.out.println(map.getWidth() + ":" + imageView.getLayoutX() + ":" + sourceWidth);
 
 		if(imageView.getLayoutX() < 0) {
 		imageView.setImageViewLayoutX(0);

@@ -55,9 +55,8 @@ public class GameObjectSaveLoadTest {
 		assertEquals(testObjectDir.getRoot().getName() + "/red", obj.getName());
 		assertEquals(0.0, obj.getPosX(), 0);
 		assertEquals(0.0, obj.getPosY(), 0);
-		assertEquals(50.0, ((Rectangle) obj.getDepiction()).getWidth(), 0);
-		assertEquals(60.0, ((Rectangle) obj.getDepiction()).getHeight(), 0);
-		assertEquals(Color.RED, ((Rectangle) obj.getDepiction()).getFill());
+		assertEquals(50.0, (obj.getDepiction()).getWidth(), 0);
+		assertEquals(60.0, (obj.getDepiction()).getHeight(), 0);
 	}
 	
 	@Test(expected = AssetNotFoundException.class)
