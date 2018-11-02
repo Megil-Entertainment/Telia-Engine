@@ -1,15 +1,18 @@
 package ch.megil.teliaengine.game;
 
 import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 import javafx.scene.image.Image;
 
 public class GameElementTest {
 	private GameElement gameElement;
+	private Vector vector;
 	
 	@Mock
 	private Image image;
@@ -18,9 +21,38 @@ public class GameElementTest {
 	private Hitbox hitbox;
 	
 	@Before
-	private void setUp() {
+	public void setUp() {
 		image = mock(Image.class);
 		hitbox = spy(new Hitbox(Vector.ZERO, 5, 5));
+		gameElement = new GameElement(image,hitbox);
+		vector = new Vector(2, 2);
 	}
+	
+	@Test
+	public void testPositions() {
+		assertEquals(0, gameElement.getPosX(),0);
+		assertEquals(0, gameElement.getPosY(),0);
+		gameElement.setPosition(vector);
+		assertEquals(vector, gameElement.getPosition());
+		assertEquals(2, gameElement.getPosX(),0);
+		assertEquals(2, gameElement.getPosY(),0);
+		gameElement.setPosX(4);
+		gameElement.setPosY(5);
+		assertEquals(4, gameElement.getPosX(),0);
+		assertEquals(5, gameElement.getPosY(),0);
+		assertEquals(image, gameElement.getDepiction());
+	}
+	
+	@Test
+	public void testGameElementHitbox() {
+		assertEquals(0, gameElement.getHitbox().getOrigin().getX(),0);
+		assertEquals(0, gameElement.getHitbox().getOrigin().getY(),0);
+		assertEquals(5, gameElement.getHitbox().getVectorSize().getX(),0);
+		assertEquals(5, gameElement.getHitbox().getVectorSize().getY(),0);
+		gameElement.setPosition(vector);
+		assertEquals(2, gameElement.getHitbox().getOrigin().getX(),0);
+		assertEquals(2, gameElement.getHitbox().getOrigin().getY(),0);
+	}
+	
 
 }
