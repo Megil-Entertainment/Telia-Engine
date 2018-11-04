@@ -39,7 +39,7 @@ public class GameObjectSaveLoadTest {
 
 		var red = testObjectDir.newFile("red.tobj");
 		try (var writer = new BufferedWriter(new FileWriter(red))) {
-			writer.write("50.0:60.0:FF0000");
+			writer.write("50.0:60.0:red");
 		}
 		
 		var fail = testObjectDir.newFile("fail.tobj");
