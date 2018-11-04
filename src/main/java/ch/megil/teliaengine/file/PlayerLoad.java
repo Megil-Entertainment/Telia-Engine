@@ -15,11 +15,11 @@ import ch.megil.teliaengine.logging.LogHandler;
 import javafx.scene.image.Image;
 
 public class PlayerLoad {
+	private Image depiction;
+	
 	public Player load(PlayerConstructor constructor) {
 		var fileName = GameConfiguration.ASSET_PLAYER.getConfiguration();
 		var file = new File(fileName);
-		
-		var depiction = new Image("https://picsum.photos/10/10");
 		
 		var hitbox = new Hitbox(Vector.ZERO, Double.parseDouble(GameConfiguration.PLAYER_WIDTH.getConfiguration()),
 				Double.parseDouble(GameConfiguration.PLAYER_HEIGHT.getConfiguration()));
