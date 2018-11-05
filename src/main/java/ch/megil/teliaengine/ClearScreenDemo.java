@@ -847,6 +847,7 @@ public class ClearScreenDemo {
     private static int width, height;
     private static VkCommandBuffer[] renderCommandBuffers;
 
+    //TODO: main
     public static void main(String[] args) {
         if (!glfwInit()) {
             throw new RuntimeException("Failed to initialize GLFW");

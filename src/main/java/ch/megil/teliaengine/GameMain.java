@@ -8,9 +8,6 @@ import static org.lwjgl.system.MemoryUtil.memFree;
 import static org.lwjgl.system.MemoryUtil.memUTF8;
 import static org.lwjgl.vulkan.VK10.*;
 
-import java.nio.IntBuffer;
-
-import org.lwjgl.PointerBuffer;
 import org.lwjgl.vulkan.VkApplicationInfo;
 import org.lwjgl.vulkan.VkInstance;
 import org.lwjgl.vulkan.VkInstanceCreateInfo;
@@ -28,6 +25,7 @@ public class GameMain {
 	private static final int VK_VERSION = VK_MAKE_VERSION(1, 0, 2);
 	
 	private VkInstance instance;
+	private VkPhysicalDevice physicalDevice;
 	
 	public GameMain() {}
 	
@@ -35,11 +33,14 @@ public class GameMain {
 		GameState.get().setMap(new MapSaveLoad().load(mapName, false));
 	}
 
-	public void run() throws VulkanException {
+	public void run() throws IllegalStateException, VulkanException {
+		if (instance != null) {
+			throw new IllegalStateException("Vulkan is already initialized.");
+		}
+		
 		init();
 		
-		vkDestroyInstance(instance, null);
-		instance = null;
+		cleanUp();
 		
 		//GameLoop.get().start();
 		//primaryStage.setOnHidden(e -> GameLoop.get().stop());
@@ -54,11 +55,27 @@ public class GameMain {
 		}
 		
 		instance = createInstance();
+		physicalDevice = getPhysicalDevice();
 		
-		getPhysicalDevice();
+		//TODO: remove later
+		var deviceProperties = VkPhysicalDeviceProperties.calloc();
+		vkGetPhysicalDeviceProperties(physicalDevice, deviceProperties);
+		System.out.println("Using GPU: " + deviceProperties.deviceNameString());
+		deviceProperties.free();
+		
+		
+	}
+	
+	public void cleanUp() {
+		if (instance == null) {return;};
+		vkDestroyInstance(instance, null);
+		instance = null;
+		physicalDevice = null;
 	}
 	
 	private VkInstance createInstance() throws VulkanException {
+		//TODO: extensions
+		
 		var appInfo = VkApplicationInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_APPLICATION_INFO)
 				.pApplicationName(memUTF8(SystemConfiguration.GAME_NAME.getConfiguration()))
@@ -101,27 +118,40 @@ public class GameMain {
 		var gpus = memAllocPointer(gpuCount.get(0));
 		res = vkEnumeratePhysicalDevices(instance, gpuCount, gpus);
 		
+		var deviceProperties = VkPhysicalDeviceProperties.calloc();
+		
 		try {
 			if (res != VK_SUCCESS) {
 				throw new VulkanException(res);
 			}
 			
-			for (var i = 0; i < gpuCount.get(0); i++) {
-				var prop = VkPhysicalDeviceProperties.calloc();
-				var d = new VkPhysicalDevice(gpus.get(i), instance);
-				
-				vkGetPhysicalDeviceProperties(d, prop);
-				
-				System.out.println(prop.deviceNameString() + ":" + (prop.deviceType() == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU));
-				
-				prop.free();
+			// get first, if not discrete gpu check if there is one discrete, otherwise use first device
+			var physicalDevice = new VkPhysicalDevice(gpus.get(0), instance);
+			
+			vkGetPhysicalDeviceProperties(physicalDevice, deviceProperties);
+			
+			if (deviceProperties.deviceType() != VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
+				for (var i = 1; i < gpuCount.get(0); i++) {
+					var tempDevice = new VkPhysicalDevice(gpus.get(i), instance);
+					vkGetPhysicalDeviceProperties(tempDevice, deviceProperties);
+					
+					if (deviceProperties.deviceType() == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
+						physicalDevice = tempDevice;
+						break;
+					}
+				}
 			}
 			
-			return null;
+			return physicalDevice;
 		} finally {
 			memFree(gpuCount);
 			memFree(gpus);
+			deviceProperties.free();
 		}
+	}
+	
+	private void createLogicalDevice() {
+		
 	}
 
 	public static void main(String[] args) throws Exception {
