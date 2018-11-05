@@ -40,6 +40,8 @@ public class MapSaveLoadTest {
 	private static GameObject obj2;
 	@Mock
 	private static Map testMap;
+	@Mock
+	private static Player player;
 
 	private MapSaveLoad mapSaveLoad;
 
@@ -66,6 +68,10 @@ public class MapSaveLoadTest {
 		when(testMap.getWidth()).thenReturn(150.0);
 		when(testMap.getHeight()).thenReturn(100.0);
 		when(testMap.getMapObjects()).thenReturn(Arrays.asList(obj1, obj2));
+		
+		player = mock(Player.class);
+		when(player.getPosX()).thenReturn(20.0);
+		when(player.getPosY()).thenReturn(80.0);
 	}
 	
 	@Before
@@ -128,10 +134,8 @@ public class MapSaveLoadTest {
 	@Test
 	public void testSave() throws Exception {
 		when(testMap.getName()).thenReturn(testMapsDir.getRoot().getName() + "/testSave");
-		Player.get().setPosX(20);
-		Player.get().setPosY(80);
 		
-		mapSaveLoad.save(testMap);
+		mapSaveLoad.save(testMap,player);
 		var file = testMapsDir.getRoot().listFiles((f, n) -> n.startsWith("testSave."))[0];
 
 		try (var reader = new BufferedReader(new FileReader(file))) {

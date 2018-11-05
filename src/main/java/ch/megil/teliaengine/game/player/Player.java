@@ -9,9 +9,8 @@ import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
 import javafx.scene.image.Image;
 
-public final class Player extends GameElement{
+public class Player extends GameElement{
 	private static Player instance;
-	private static Player engine;
 	
 	private boolean jumpUsed;
 	
@@ -37,11 +36,14 @@ public final class Player extends GameElement{
 		return instance;
 	}
 	
-	public static Player getEngine() {
-		if (engine == null) {
-			engine = new PlayerLoad().load(Player::new);
-		}
-		return engine;
+	public static Player getEngineCopy() {
+		var player = get();
+		var hitboxSize = player.getHitbox().getVectorSize();
+		
+		var enginePlayer = new Player(player.getDepiction(), new Hitbox(player.getPosition(), hitboxSize.getX(), hitboxSize.getY()));
+		enginePlayer.setPosition(player.getPosition());
+		
+		return enginePlayer;
 	}
 	
 	public void applyAcceleration(Vector a) {

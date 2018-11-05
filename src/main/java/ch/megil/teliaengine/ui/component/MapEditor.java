@@ -11,6 +11,8 @@ import javafx.scene.layout.Pane;
 
 public class MapEditor extends Pane{
 	private Map map;
+	private Player player;
+	
 	private double dx;
 	private double dy;
 	
@@ -50,8 +52,6 @@ public class MapEditor extends Pane{
 		sourceWidth = imageView.getImage().getWidth();
 		sourceHeight = imageView.getImage().getHeight();
 		
-		System.out.println(map.getWidth() + ":" + imageView.getLayoutX() + ":" + sourceWidth);
-
 		if(imageView.getLayoutX() < 0) {
 		imageView.setImageViewLayoutX(0);
 		}
@@ -77,12 +77,17 @@ public class MapEditor extends Pane{
 		return map;
 	}
 	
+	public Player getPlayer() {
+		return player;
+	}
+	
 	public void setMap(Map map) {
 		getChildren().clear();
 		
 		this.map = map;
 		map.getMapObjects().forEach(o -> getChildren().add(new MyImageView(o)));
-		getChildren().add(new MyImageView(Player.getEngine()));
+		this.player = Player.getEngineCopy();
+		getChildren().add(new MyImageView(player));
 		
 	}
 }
