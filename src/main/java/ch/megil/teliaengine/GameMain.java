@@ -16,6 +16,7 @@ import ch.megil.teliaengine.file.MapSaveLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.gamelogic.GameState;
+import ch.megil.teliaengine.vulkan.VkDeviceAndQueueFamily;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
 public class GameMain {
@@ -23,7 +24,7 @@ public class GameMain {
 	
 	private VkInstance instance;
 	private VkPhysicalDevice physicalDevice;
-	private VkDevice logicalDevice;
+	private VkDeviceAndQueueFamily deviceAndQueueFam;
 	
 	public GameMain() {}
 	
@@ -61,14 +62,14 @@ public class GameMain {
 		System.out.println("Using GPU: " + deviceProperties.deviceNameString());
 		deviceProperties.free();
 		
-		logicalDevice = createLogicalDevice();
+		deviceAndQueueFam = createLogicalDevice();
 	}
 	
 	public void cleanUp() {
 		// Destroy bottom up
-		if (logicalDevice != null) {
-			vkDestroyDevice(logicalDevice, null);
-			logicalDevice = null;
+		if (deviceAndQueueFam != null) {
+			vkDestroyDevice(deviceAndQueueFam.getDevice(), null);
+			deviceAndQueueFam = null;
 		}
 		
 		physicalDevice = null;
@@ -156,7 +157,7 @@ public class GameMain {
 		}
 	}
 	
-	private VkDevice createLogicalDevice() throws VulkanException {
+	private VkDeviceAndQueueFamily createLogicalDevice() throws VulkanException {
 		//TODO: extensions
 
 		var queueFamilyCount = memAllocInt(1);
@@ -197,7 +198,8 @@ public class GameMain {
 			}
 			
 			var logicalDevice = new VkDevice(pDevice.get(0), physicalDevice, deviceCreateInfo);
-			return logicalDevice;
+			
+			return new VkDeviceAndQueueFamily(logicalDevice, queueFamilyIndex);
 		} finally {
 			memFree(queueFamilyCount);
 			queueFamilyProperties.free();
