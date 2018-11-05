@@ -2,11 +2,7 @@ package ch.megil.teliaengine;
 
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFWVulkan.glfwVulkanSupported;
-import static org.lwjgl.system.MemoryUtil.memAllocFloat;
-import static org.lwjgl.system.MemoryUtil.memAllocInt;
-import static org.lwjgl.system.MemoryUtil.memAllocPointer;
-import static org.lwjgl.system.MemoryUtil.memFree;
-import static org.lwjgl.system.MemoryUtil.memUTF8;
+import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.vulkan.VK10.*;
 
 import org.lwjgl.vulkan.*;
@@ -25,6 +21,7 @@ public class GameMain {
 	private VkInstance instance;
 	private VkPhysicalDevice physicalDevice;
 	private VkDeviceAndQueueFamily deviceAndQueueFam;
+	private long commandPool;
 	
 	public GameMain() {}
 	
@@ -63,10 +60,16 @@ public class GameMain {
 		deviceProperties.free();
 		
 		deviceAndQueueFam = createLogicalDevice();
+		commandPool = createCommandPool();
 	}
 	
 	public void cleanUp() {
 		// Destroy bottom up
+		if (commandPool != NULL) {
+			vkDestroyCommandPool(deviceAndQueueFam.getDevice(), commandPool, null);
+			commandPool = NULL;
+		}
+		
 		if (deviceAndQueueFam != null) {
 			vkDestroyDevice(deviceAndQueueFam.getDevice(), null);
 			deviceAndQueueFam = null;
@@ -151,9 +154,9 @@ public class GameMain {
 			
 			return physicalDevice;
 		} finally {
-			memFree(gpuCount);
-			memFree(gpus);
 			deviceProperties.free();
+			memFree(gpus);
+			memFree(gpuCount);
 		}
 	}
 	
@@ -198,15 +201,36 @@ public class GameMain {
 			}
 			
 			var logicalDevice = new VkDevice(pDevice.get(0), physicalDevice, deviceCreateInfo);
-			
 			return new VkDeviceAndQueueFamily(logicalDevice, queueFamilyIndex);
 		} finally {
-			memFree(queueFamilyCount);
-			queueFamilyProperties.free();
-			memFree(queuePriorities);
-			queueCreateInfo.free();
-			deviceCreateInfo.free();
 			memFree(pDevice);
+			deviceCreateInfo.free();
+			queueCreateInfo.free();
+			memFree(queuePriorities);
+			queueFamilyProperties.free();
+			memFree(queueFamilyCount);
+		}
+	}
+	
+	private long createCommandPool() throws VulkanException {
+		var commandPoolCreateInfo = VkCommandPoolCreateInfo.calloc()
+				.sType(VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO)
+				.queueFamilyIndex(deviceAndQueueFam.getQueueFamilyIndex())
+				.flags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+		
+		var pCmdPool = memAllocLong(1);
+		var res = vkCreateCommandPool(deviceAndQueueFam.getDevice(), commandPoolCreateInfo, null, pCmdPool);
+		
+		try {
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
+			
+			var cmdPool = pCmdPool.get(0);
+			return cmdPool;
+		} finally {
+			memFree(pCmdPool);
+			commandPoolCreateInfo.free();
 		}
 	}
 
