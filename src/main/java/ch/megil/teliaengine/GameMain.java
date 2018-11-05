@@ -2,17 +2,14 @@ package ch.megil.teliaengine;
 
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFWVulkan.glfwVulkanSupported;
+import static org.lwjgl.system.MemoryUtil.memAllocFloat;
 import static org.lwjgl.system.MemoryUtil.memAllocInt;
 import static org.lwjgl.system.MemoryUtil.memAllocPointer;
 import static org.lwjgl.system.MemoryUtil.memFree;
 import static org.lwjgl.system.MemoryUtil.memUTF8;
 import static org.lwjgl.vulkan.VK10.*;
 
-import org.lwjgl.vulkan.VkApplicationInfo;
-import org.lwjgl.vulkan.VkInstance;
-import org.lwjgl.vulkan.VkInstanceCreateInfo;
-import org.lwjgl.vulkan.VkPhysicalDevice;
-import org.lwjgl.vulkan.VkPhysicalDeviceProperties;
+import org.lwjgl.vulkan.*;
 
 import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.file.MapSaveLoad;
@@ -26,6 +23,7 @@ public class GameMain {
 	
 	private VkInstance instance;
 	private VkPhysicalDevice physicalDevice;
+	private VkDevice logicalDevice;
 	
 	public GameMain() {}
 	
@@ -63,14 +61,22 @@ public class GameMain {
 		System.out.println("Using GPU: " + deviceProperties.deviceNameString());
 		deviceProperties.free();
 		
-		
+		logicalDevice = createLogicalDevice();
 	}
 	
 	public void cleanUp() {
-		if (instance == null) {return;};
-		vkDestroyInstance(instance, null);
-		instance = null;
+		// Destroy bottom up
+		if (logicalDevice != null) {
+			vkDestroyDevice(logicalDevice, null);
+			logicalDevice = null;
+		}
+		
 		physicalDevice = null;
+		
+		if (instance != null) {
+			vkDestroyInstance(instance, null);
+			instance = null;
+		}
 	}
 	
 	private VkInstance createInstance() throws VulkanException {
@@ -150,8 +156,56 @@ public class GameMain {
 		}
 	}
 	
-	private void createLogicalDevice() {
+	private VkDevice createLogicalDevice() throws VulkanException {
+		//TODO: extensions
+
+		var queueFamilyCount = memAllocInt(1);
+		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, queueFamilyCount, null);
+
+		var queueFamilyProperties = VkQueueFamilyProperties.calloc(queueFamilyCount.get(0));
+		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, queueFamilyCount, queueFamilyProperties);
+
+		int queueFamilyIndex;
+		for (queueFamilyIndex = 0; queueFamilyIndex < queueFamilyCount.get(0); queueFamilyIndex++) {
+			if ((queueFamilyProperties.get(queueFamilyIndex).queueFlags() & VK_QUEUE_GRAPHICS_BIT) != 0) {
+				break;
+			}
+		}
+
+		var queueCount = queueFamilyProperties.get(queueFamilyIndex).queueCount();
+		var queuePriorities = memAllocFloat(queueCount).put(new float[queueCount]);
+		var queueCreateInfo = VkDeviceQueueCreateInfo.calloc(1)
+				.sType(VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO)
+				.pQueuePriorities(queuePriorities);
+		// set queueCount explicitly to have the correct number -> lwjgl bug?
+		// if not done queueCount is always zero
+		VkDeviceQueueCreateInfo.nqueueCount(queueCreateInfo.get(0).address(), queueCount);
+
+		var deviceCreateInfo = VkDeviceCreateInfo.calloc()
+				.sType(VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO)
+				.pQueueCreateInfos(queueCreateInfo);
+		// set queueCreateInfoCount explicitly to have the correct number -> lwjgl bug?
+		// if not done queueCreateInfoCount is always zero
+		VkDeviceCreateInfo.nqueueCreateInfoCount(deviceCreateInfo.address(), 1);
+
+		var pDevice = memAllocPointer(1);
+		var res = vkCreateDevice(physicalDevice, deviceCreateInfo, null, pDevice);
 		
+		try {
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
+			
+			var logicalDevice = new VkDevice(pDevice.get(0), physicalDevice, deviceCreateInfo);
+			return logicalDevice;
+		} finally {
+			memFree(queueFamilyCount);
+			queueFamilyProperties.free();
+			memFree(queuePriorities);
+			queueCreateInfo.free();
+			deviceCreateInfo.free();
+			memFree(pDevice);
+		}
 	}
 
 	public static void main(String[] args) throws Exception {
