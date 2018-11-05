@@ -30,6 +30,14 @@ public class GameElement {
 		position = new Vector(position.getX(), posY);
 	}
 	
+	public Vector getPosition() {
+		return position;
+	}
+	
+	public void setPosition(Vector position) {
+		this.position = position;
+	}
+	
 	public Image getDepiction() {
 		return depiction;
 	}
@@ -37,14 +45,5 @@ public class GameElement {
 	public Hitbox getHitbox() {
 		hitbox.setOrigin(getPosition());
 		return hitbox;
-	}
-	
-	public Vector getPosition() {
-		return position;
-	}
-
-
-	public void setPosition(Vector position) {
-		this.position = position;
 	}
 }

@@ -13,13 +13,15 @@ import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.game.player.PlayerConstructor;
 import ch.megil.teliaengine.logging.LogHandler;
 import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 
 public class PlayerLoad {
-	private Image depiction;
-	
 	public Player load(PlayerConstructor constructor) {
 		var fileName = GameConfiguration.ASSET_PLAYER.getConfiguration();
 		var file = new File(fileName);
+		
+		Image depiction = new WritableImage(Integer.parseInt(GameConfiguration.PLAYER_WIDTH.getConfiguration()),
+				Integer.parseInt(GameConfiguration.PLAYER_HEIGHT.getConfiguration()));
 		
 		var hitbox = new Hitbox(Vector.ZERO, Double.parseDouble(GameConfiguration.PLAYER_WIDTH.getConfiguration()),
 				Double.parseDouble(GameConfiguration.PLAYER_HEIGHT.getConfiguration()));
