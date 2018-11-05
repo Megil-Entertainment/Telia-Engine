@@ -11,6 +11,13 @@ public class GameMap extends Pane {
 		GameState.get().getMap().getMapObjects().stream().map(MyImageView::new).forEach(getChildren()::add);
 		getChildren().add(new MyImageView(Player.get()));
 		
+		for(var iv : getChildren()) {
+			((MyImageView)iv).getGameElement().setOnPositionUpdate(v->{
+				iv.setLayoutX(v.getX());
+				iv.setLayoutY(v.getY());
+			});
+		}
+		
 		setOnKeyPressed(GameLoop.get().getKeyHandler()::press);
 		setOnKeyReleased(GameLoop.get().getKeyHandler()::release);
 	}

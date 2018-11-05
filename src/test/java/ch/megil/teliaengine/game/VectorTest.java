@@ -11,9 +11,6 @@ public class VectorTest {
 		
 		assertEquals(vec.getX(), 5, 0);
 		assertEquals(vec.getY(), 10, 0);
-		
-		assertEquals(vec.xProperty().get(), 5, 0);
-		assertEquals(vec.yProperty().get(), 10, 0);
 	}
 
 }

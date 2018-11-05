@@ -7,7 +7,6 @@ import ch.megil.teliaengine.file.PlayerLoad;
 import ch.megil.teliaengine.game.GameElement;
 import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
-import javafx.scene.Node;
 import javafx.scene.image.Image;
 
 public final class Player extends GameElement{
@@ -41,10 +40,6 @@ public final class Player extends GameElement{
 	public static Player getEngine() {
 		if (engine == null) {
 			engine = new PlayerLoad().load(Player::new);
-			engine.setPosX(get().getPosX());
-			engine.setPosY(get().getPosY());
-			engine.getPosition().xProperty().addListener((obs, ov, nv) -> get().setPosX(nv.doubleValue()));
-			engine.getPosition().yProperty().addListener((obs, ov, nv) -> get().setPosY(nv.doubleValue()));
 		}
 		return engine;
 	}

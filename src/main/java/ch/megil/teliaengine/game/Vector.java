@@ -10,56 +10,47 @@ import javafx.beans.property.SimpleDoubleProperty;
 public class Vector {
 	public static final Vector ZERO = new Vector(0, 0);
 	
-	private DoubleProperty x;
-	private DoubleProperty y;
+	private double x;
+	private double y;
 	
 	public Vector(double x, double y) {
-		this.x = new SimpleDoubleProperty(x);
-		this.y = new SimpleDoubleProperty(y);
+		this.x = x;
+		this.y = y;
 	}
 	
 	public double getX() {
-		return x.get();
-	}
-	
-	public DoubleProperty xProperty() {
 		return x;
 	}
 	
 	public double getY() {
-		return y.get();
-	}
-	
-	
-	public DoubleProperty yProperty() {
 		return y;
 	}
 	
 	public Vector negate() {
-		return new Vector(-getX(), -getY());
+		return new Vector(-x, -y);
 	}
 	
 	public Vector add(Vector vector) {
-		return new Vector(this.getX() + vector.getX(), this.getY() + vector.getY());
+		return new Vector(this.x + vector.x, this.y + vector.y);
 	}
 	
 	public Vector xVector() {
-		return new Vector(getX(), 0);
+		return new Vector(x, 0);
 	}
 	
 	public Vector yVector() {
-		return new Vector(0, getY());
+		return new Vector(0, y);
 	}
 	
 	public List<Vector> splitToComponentSizeOne() {
-		var tx = (int) Math.abs(getX());
-		var ty = (int) Math.abs(getY());
+		var tx = (int) Math.abs(x);
+		var ty = (int) Math.abs(y);
 		if (tx == 0 && ty == 0) {
 			return new ArrayList<>();
 		} else if (tx > ty) {
-			return Collections.nCopies(tx, new Vector(getX()/tx, getY()/tx));
+			return Collections.nCopies(tx, new Vector(x/tx, y/tx));
 		} else {
-			return Collections.nCopies(ty, new Vector(getX()/ty, getY()/ty));
+			return Collections.nCopies(ty, new Vector(x/ty, y/ty));
 		}
 	}
 }
