@@ -1,12 +1,18 @@
 package ch.megil.teliaengine;
 
-import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
+import static org.lwjgl.glfw.GLFWVulkan.glfwGetRequiredInstanceExtensions;
 import static org.lwjgl.glfw.GLFWVulkan.glfwVulkanSupported;
 import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.vulkan.VK10.*;
 
+import java.nio.LongBuffer;
+
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.vulkan.*;
 
+import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.file.MapSaveLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
@@ -17,6 +23,9 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
 public class GameMain {
 	private static final int VK_VERSION = VK_MAKE_VERSION(1, 0, 2);
+	
+	private long window;
+	private long windowSurface;
 	
 	private VkInstance instance;
 	private VkPhysicalDevice physicalDevice;
@@ -37,6 +46,7 @@ public class GameMain {
 		
 		try {
 			init();
+			loop();
 		} finally {
 			cleanUp();
 		}
@@ -63,8 +73,18 @@ public class GameMain {
 		deviceProperties.free();
 		
 		deviceAndQueueFam = createLogicalDevice();
+		window = createGlfwWindow();
+		windowSurface = createGlfwWindowSurface();
 		commandPool = createCommandPool();
 		commandBuffer = createCommandBuffer();
+		
+		glfwShowWindow(window);
+	}
+	
+	private void loop() {
+		while(!glfwWindowShouldClose(window)) {
+			//TODO: render loop
+		}
 	}
 	
 	public void cleanUp() {
@@ -79,6 +99,8 @@ public class GameMain {
 			commandPool = NULL;
 		}
 		
+		glfwDestroyWindow(window);
+		
 		if (deviceAndQueueFam != null) {
 			vkDestroyDevice(deviceAndQueueFam.getDevice(), null);
 			deviceAndQueueFam = null;
@@ -90,21 +112,56 @@ public class GameMain {
 			vkDestroyInstance(instance, null);
 			instance = null;
 		}
+		
+		glfwTerminate();
 	}
 	
+	private long createGlfwWindow() {
+		glfwDefaultWindowHints();
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+//		var window = glfwCreateWindow(1920, 1080, SystemConfiguration.GAME_NAME.getConfiguration(), glfwGetPrimaryMonitor(), NULL);
+		var window = glfwCreateWindow(800, 600, SystemConfiguration.GAME_NAME.getConfiguration(), NULL, NULL);
+
+		return window;
+	}
+	
+	private long createGlfwWindowSurface() throws VulkanException {
+		var pSurface = memAllocLong(1);
+		var res = glfwCreateWindowSurface(instance, window, null, pSurface);
+
+		try {
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
+			
+			var surface = pSurface.get(0);
+			return surface;
+		} finally {
+			memFree(pSurface);
+		}
+	}
+
 	private VkInstance createInstance() throws VulkanException {
-		//TODO: extensions
-		
+		var requiredExtensions = glfwGetRequiredInstanceExtensions();
+        if (requiredExtensions == null) {
+            throw new VulkanException("Failed to find list of required extensions");
+        }
 		var appInfo = VkApplicationInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_APPLICATION_INFO)
 				.pApplicationName(memUTF8(SystemConfiguration.GAME_NAME.getConfiguration()))
 				.pEngineName(memUTF8(SystemConfiguration.APP_NAME.getConfiguration()))
 				.apiVersion(VK_VERSION);
 		
+		var enabledExtensionNames = memAllocPointer(requiredExtensions.capacity())
+				.put(requiredExtensions).flip();
+		
 		var instInfo = VkInstanceCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO)
 				//TODO: delete: .pNext(NULL)
-				.pApplicationInfo(appInfo);
+				.pApplicationInfo(appInfo)
+				.ppEnabledExtensionNames(enabledExtensionNames);
 		
 		var pInst = memAllocPointer(1);
 		var res = vkCreateInstance(instInfo, null, pInst);
@@ -119,6 +176,7 @@ public class GameMain {
 		} finally {
 			memFree(pInst);
 			instInfo.free();
+			memFree(enabledExtensionNames);
 			memFree(appInfo.pApplicationName());
 			memFree(appInfo.pEngineName());
 			appInfo.free();
