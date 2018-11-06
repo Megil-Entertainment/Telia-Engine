@@ -22,6 +22,7 @@ public class GameMain {
 	private VkPhysicalDevice physicalDevice;
 	private VkDeviceAndQueueFamily deviceAndQueueFam;
 	private long commandPool;
+	private VkCommandBuffer commandBuffer;
 	
 	public GameMain() {}
 	
@@ -34,9 +35,11 @@ public class GameMain {
 			throw new IllegalStateException("Vulkan is already initialized.");
 		}
 		
-		init();
-		
-		cleanUp();
+		try {
+			init();
+		} finally {
+			cleanUp();
+		}
 		
 		//GameLoop.get().start();
 		//primaryStage.setOnHidden(e -> GameLoop.get().stop());
@@ -61,10 +64,16 @@ public class GameMain {
 		
 		deviceAndQueueFam = createLogicalDevice();
 		commandPool = createCommandPool();
+		commandBuffer = createCommandBuffer();
 	}
 	
 	public void cleanUp() {
 		// Destroy bottom up
+		if (commandBuffer != null) {
+			vkFreeCommandBuffers(deviceAndQueueFam.getDevice(), commandPool, commandBuffer);
+			commandBuffer = null;
+		}
+		
 		if (commandPool != NULL) {
 			vkDestroyCommandPool(deviceAndQueueFam.getDevice(), commandPool, null);
 			commandPool = NULL;
@@ -231,6 +240,29 @@ public class GameMain {
 		} finally {
 			memFree(pCmdPool);
 			commandPoolCreateInfo.free();
+		}
+	}
+	
+	private VkCommandBuffer createCommandBuffer() throws VulkanException {
+		var cmdBufferAllocInfo = VkCommandBufferAllocateInfo.calloc()
+				.sType(VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO)
+				.commandPool(commandPool)
+				.level(VK_COMMAND_BUFFER_LEVEL_PRIMARY)
+				.commandBufferCount(1);
+		
+		var pCmdBuffer = memAllocPointer(1);
+		var res = vkAllocateCommandBuffers(deviceAndQueueFam.getDevice(), cmdBufferAllocInfo, pCmdBuffer);
+		
+		try {
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
+			
+			var cmdBuffer = new VkCommandBuffer(pCmdBuffer.get(0), deviceAndQueueFam.getDevice());
+			return cmdBuffer;
+		} finally {
+			memFree(pCmdBuffer);
+			cmdBufferAllocInfo.free();
 		}
 	}
 
