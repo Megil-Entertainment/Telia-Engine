@@ -17,13 +17,12 @@ public class GameElementTest {
 	@Mock
 	private Image image;
 	
-	@Spy
 	private Hitbox hitbox;
 	
 	@Before
 	public void setUp() {
 		image = mock(Image.class);
-		hitbox = spy(new Hitbox(Vector.ZERO, 5, 5));
+		hitbox = new Hitbox(Vector.ZERO, 5, 5);
 		gameElement = new GameElement(image,hitbox);
 		vector = new Vector(2, 2);
 	}
