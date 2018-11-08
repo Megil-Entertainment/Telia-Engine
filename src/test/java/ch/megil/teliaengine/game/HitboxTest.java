@@ -11,18 +11,23 @@ public class HitboxTest {
 	private Vector vector1;
 	private Vector vector2;
 	private Vector vector3;
+	private Vector vector4;
 	private Hitbox hitbox1;
 	private Hitbox hitbox2;
 	private Hitbox hitbox3;
+	private Hitbox hitbox4;
 	
 	@Before
 	public void setUp() {
 		vector1 = new Vector(5,5);
 		vector2 = new Vector(3,3);
 		vector3 = new Vector(20,20);
+		vector4 = new Vector(3,8);
+		
 		hitbox1 = new Hitbox(vector1, 5, 5);
 		hitbox2 = new Hitbox(vector2, 5, 5);
 		hitbox3 = new Hitbox(vector3, 5, 5);
+		hitbox4 = new Hitbox(vector4, 5, 5);
 	}
 	
 	@Test
@@ -46,6 +51,7 @@ public class HitboxTest {
 		assertTrue(hitbox2.checkCollision(hitbox1));
 		assertFalse(hitbox1.checkCollision(hitbox3));
 		assertFalse(hitbox2.checkCollision(hitbox3));
+		assertFalse(hitbox2.checkCollision(hitbox4));
 		hitbox2.setOrigin(vector3);
 		assertFalse(hitbox2.checkCollision(hitbox1));
 	}
