@@ -14,11 +14,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import ch.megil.teliaengine.game.GameElement;
-import ch.megil.teliaengine.ui.MyImageView;
+import ch.megil.teliaengine.ui.GameElementImageView;
 import javafx.scene.image.Image;
 
 public class MyImageViewTest {
-	private MyImageView imageView;
+	private GameElementImageView imageView;
 	
 	@Mock
 	private Image depiction;
@@ -30,7 +30,7 @@ public class MyImageViewTest {
 	public void setUp() {
 		depiction = mock(Image.class);
 		gameElement = spy(new GameElement(depiction, null));
-		imageView = new MyImageView(gameElement);
+		imageView = new GameElementImageView(gameElement);
 	}
 	
 	@Test

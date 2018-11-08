@@ -3,10 +3,10 @@ package ch.megil.teliaengine.ui;
 import ch.megil.teliaengine.game.GameElement;
 import javafx.scene.image.ImageView;
 
-public class MyImageView extends ImageView{
+public class GameElementImageView extends ImageView{
 	private GameElement gameElement;
 	
-	public MyImageView(GameElement gameElement) {
+	public GameElementImageView(GameElement gameElement) {
 		super(gameElement.getDepiction());
 		this.gameElement = gameElement;
 		

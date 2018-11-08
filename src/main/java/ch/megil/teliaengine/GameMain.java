@@ -44,7 +44,7 @@ public class GameMain extends Application {
 		GameLoop.get().start();
 	}
 
-	public static void main(String[] args) throws AssetNotFoundException, AssetFormatException {
+	public static void main(String[] args) {
 		launch(args);
 	}
 }

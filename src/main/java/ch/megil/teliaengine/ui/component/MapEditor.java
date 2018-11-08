@@ -3,7 +3,7 @@ package ch.megil.teliaengine.ui.component;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
-import ch.megil.teliaengine.ui.MyImageView;
+import ch.megil.teliaengine.ui.GameElementImageView;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -29,7 +29,7 @@ public class MapEditor extends Pane{
 	public void addGameObject(GameObject obj) {
 		if (map != null) {
 			map.addObject(obj);
-			getChildren().add(new MyImageView(obj));
+			getChildren().add(new GameElementImageView(obj));
 		}
 	}
 	
@@ -40,13 +40,13 @@ public class MapEditor extends Pane{
 	}
 	
 	private void moveNode(MouseEvent event) {
-		var source = (MyImageView) event.getSource();
+		var source = (GameElementImageView) event.getSource();
 		source.setImageViewLayoutX(event.getSceneX() + dx);
 		source.setImageViewLayoutY(event.getSceneY() + dy);
 		checkBoundries(source);
 	}
 	
-	private void checkBoundries(MyImageView imageView) {
+	private void checkBoundries(GameElementImageView imageView) {
 		double sourceWidth;
 		double sourceHeight;
 		sourceWidth = imageView.getImage().getWidth();
@@ -85,9 +85,9 @@ public class MapEditor extends Pane{
 		getChildren().clear();
 		
 		this.map = map;
-		map.getMapObjects().forEach(o -> getChildren().add(new MyImageView(o)));
+		map.getMapObjects().forEach(o -> getChildren().add(new GameElementImageView(o)));
 		this.player = Player.getEngineCopy();
-		getChildren().add(new MyImageView(player));
+		getChildren().add(new GameElementImageView(player));
 		
 	}
 }
