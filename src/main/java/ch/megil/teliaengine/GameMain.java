@@ -2,22 +2,27 @@ package ch.megil.teliaengine;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
-import static org.lwjgl.glfw.GLFWVulkan.glfwGetRequiredInstanceExtensions;
 import static org.lwjgl.glfw.GLFWVulkan.glfwVulkanSupported;
-import static org.lwjgl.system.MemoryUtil.*;
-import static org.lwjgl.vulkan.KHRSurface.vkGetPhysicalDeviceSurfaceSupportKHR;
-import static org.lwjgl.vulkan.KHRSwapchain.VK_KHR_SWAPCHAIN_EXTENSION_NAME;
-import static org.lwjgl.vulkan.KHRSwapchain.VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-import static org.lwjgl.vulkan.VK10.*;
+import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.system.MemoryUtil.memAllocLong;
+import static org.lwjgl.system.MemoryUtil.memFree;
+import static org.lwjgl.vulkan.VK10.VK_MAKE_VERSION;
+import static org.lwjgl.vulkan.VK10.VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
+import static org.lwjgl.vulkan.VK10.VK_SUCCESS;
+import static org.lwjgl.vulkan.VK10.vkGetPhysicalDeviceProperties;
 
-import org.lwjgl.vulkan.*;
+import org.lwjgl.vulkan.VkPhysicalDeviceProperties;
 
 import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.file.MapSaveLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.gamelogic.GameState;
-import ch.megil.teliaengine.vulkan.*;
+import ch.megil.teliaengine.vulkan.VulkanCommandPoolAndBuffer;
+import ch.megil.teliaengine.vulkan.VulkanInstance;
+import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
+import ch.megil.teliaengine.vulkan.VulkanPhysicalDevice;
+import ch.megil.teliaengine.vulkan.VulkanSwapchainAndQueue;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
 public class GameMain {
@@ -71,11 +76,7 @@ public class GameMain {
 		instance.init(VK_VERSION);
 		physicalDevice.init(instance, VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU);
 		
-		//TODO: remove later
-		var deviceProperties = VkPhysicalDeviceProperties.calloc();
-		vkGetPhysicalDeviceProperties(physicalDevice.get(), deviceProperties);
-		System.out.println("Using GPU: " + deviceProperties.deviceNameString());
-		deviceProperties.free();
+		System.out.println("Using GPU: " + physicalDevice.getProperties().deviceNameString());
 		
 		window = createGlfwWindow();
 		windowSurface = createGlfwWindowSurface();
@@ -113,6 +114,7 @@ public class GameMain {
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+		//TODO fullscreen?
 //		var window = glfwCreateWindow(1920, 1080, SystemConfiguration.GAME_NAME.getConfiguration(), glfwGetPrimaryMonitor(), NULL);
 		var window = glfwCreateWindow(800, 600, SystemConfiguration.GAME_NAME.getConfiguration(), NULL, NULL);
 
