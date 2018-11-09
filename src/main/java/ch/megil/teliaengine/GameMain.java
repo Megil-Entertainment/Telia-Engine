@@ -17,7 +17,7 @@ import ch.megil.teliaengine.file.MapSaveLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.gamelogic.GameState;
-import ch.megil.teliaengine.vulkan.VkSwapchainAndQueueFamily;
+import ch.megil.teliaengine.vulkan.*;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
 public class GameMain {
@@ -26,27 +26,32 @@ public class GameMain {
 	private long window;
 	private long windowSurface;
 	
-	private VkInstance instance;
-	private VkPhysicalDevice physicalDevice;
-	private VkSwapchainAndQueueFamily swapchainAndQueueFam;
-	private VkDevice device;
-	private long commandPool;
-	private VkCommandBuffer commandBuffer;
+	private VulkanInstance instance;
+	private VulkanPhysicalDevice physicalDevice;
+	private VulkanSwapchainAndQueue swapchainAndQueue;
+	private VulkanLogicalDevice logicalDevice;
+	private VulkanCommandPoolAndBuffer commandPoolAndBuffer;
 	
-	public GameMain() {}
+	public GameMain() {
+		instance = new VulkanInstance();
+		physicalDevice = new VulkanPhysicalDevice();
+		swapchainAndQueue = new VulkanSwapchainAndQueue();
+		logicalDevice = new VulkanLogicalDevice();
+		commandPoolAndBuffer = new VulkanCommandPoolAndBuffer();
+	}
 	
 	public GameMain(String mapName) throws AssetNotFoundException, AssetFormatException {
 		GameState.get().setMap(new MapSaveLoad().load(mapName, false));
 	}
 
 	public void run() throws IllegalStateException, VulkanException {
-		if (instance != null) {
-			throw new IllegalStateException("Vulkan is already initialized.");
+		if (instance.get() != null) {
+			throw new IllegalStateException("Vulkan is already completly or partialy initialized. Use cleanUp first.");
 		}
 		
 		try {
 			init();
-			loop();
+//			loop();
 		} finally {
 			cleanUp();
 		}
@@ -63,21 +68,21 @@ public class GameMain {
 			throw new RuntimeException("Vulkan loader could not be found.");
 		}
 		
-		instance = createInstance();
-		physicalDevice = getPhysicalDevice();
+		instance.init(VK_VERSION);
+		physicalDevice.init(instance, VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU);
 		
 		//TODO: remove later
 		var deviceProperties = VkPhysicalDeviceProperties.calloc();
-		vkGetPhysicalDeviceProperties(physicalDevice, deviceProperties);
+		vkGetPhysicalDeviceProperties(physicalDevice.get(), deviceProperties);
 		System.out.println("Using GPU: " + deviceProperties.deviceNameString());
 		deviceProperties.free();
 		
 		window = createGlfwWindow();
 		windowSurface = createGlfwWindowSurface();
-		swapchainAndQueueFam = createSwapchain();
-		device = createLogicalDevice();
-		commandPool = createCommandPool();
-		commandBuffer = createCommandBuffer();
+		
+		swapchainAndQueue.init(physicalDevice, windowSurface);
+		logicalDevice.init(physicalDevice, swapchainAndQueue);
+		commandPoolAndBuffer.init(logicalDevice, swapchainAndQueue);
 		
 		glfwShowWindow(window);
 	}
@@ -90,32 +95,15 @@ public class GameMain {
 	
 	public void cleanUp() {
 		// Destroy bottom up
-		if (commandBuffer != null) {
-			vkFreeCommandBuffers(device, commandPool, commandBuffer);
-			commandBuffer = null;
-		}
+		commandPoolAndBuffer.cleanUp(logicalDevice);
+		logicalDevice.cleanUp();
+		swapchainAndQueue.cleanUp();
 		
-		if (commandPool != NULL) {
-			vkDestroyCommandPool(device, commandPool, null);
-			commandPool = NULL;
-		}
-		
-		if (device != null) {
-			vkDestroyDevice(device, null);
-			device = null;
-		}
-		
-		//TODO: destroy swapchain
-		
+		//TODO: check if there is a possibility to destroy surface
 		glfwDestroyWindow(window);
 		
-		
-		physicalDevice = null;
-		
-		if (instance != null) {
-			vkDestroyInstance(instance, null);
-			instance = null;
-		}
+		physicalDevice.cleanUp();
+		instance.cleanUp();
 		
 		glfwTerminate();
 	}
@@ -133,7 +121,7 @@ public class GameMain {
 	
 	private long createGlfwWindowSurface() throws VulkanException {
 		var pSurface = memAllocLong(1);
-		var res = glfwCreateWindowSurface(instance, window, null, pSurface);
+		var res = glfwCreateWindowSurface(instance.get(), window, null, pSurface);
 
 		try {
 			if (res != VK_SUCCESS) {
@@ -144,236 +132,6 @@ public class GameMain {
 			return surface;
 		} finally {
 			memFree(pSurface);
-		}
-	}
-
-	private VkInstance createInstance() throws VulkanException {
-		var requiredExtensions = glfwGetRequiredInstanceExtensions();
-        if (requiredExtensions == null) {
-            throw new VulkanException("Failed to find list of required extensions");
-        }
-        
-		var appInfo = VkApplicationInfo.calloc()
-				.sType(VK_STRUCTURE_TYPE_APPLICATION_INFO)
-				.pApplicationName(memUTF8(SystemConfiguration.GAME_NAME.getConfiguration()))
-				.pEngineName(memUTF8(SystemConfiguration.APP_NAME.getConfiguration()))
-				.apiVersion(VK_VERSION);
-		
-		var enabledExtensionNames = memAllocPointer(requiredExtensions.capacity())
-				.put(requiredExtensions).flip();
-		
-		var instInfo = VkInstanceCreateInfo.calloc()
-				.sType(VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO)
-				.pApplicationInfo(appInfo)
-				.ppEnabledExtensionNames(enabledExtensionNames);
-		
-		var pInst = memAllocPointer(1);
-		var res = vkCreateInstance(instInfo, null, pInst);
-		
-		try {
-			if (res != VK_SUCCESS) {
-				throw new VulkanException(res);
-			}
-			
-			var instance = new VkInstance(pInst.get(0), instInfo);
-			return instance;
-		} finally {
-			memFree(pInst);
-			instInfo.free();
-			memFree(enabledExtensionNames);
-			memFree(appInfo.pApplicationName());
-			memFree(appInfo.pEngineName());
-			appInfo.free();
-		}
-	}
-	
-	private VkPhysicalDevice getPhysicalDevice() throws VulkanException {
-		var gpuCount = memAllocInt(1);
-		var res = vkEnumeratePhysicalDevices(instance, gpuCount, null);
-		
-		if (res != VK_SUCCESS) {
-			memFree(gpuCount);
-			throw new VulkanException(res);
-		}
-		
-		var gpus = memAllocPointer(gpuCount.get(0));
-		res = vkEnumeratePhysicalDevices(instance, gpuCount, gpus);
-		
-		var deviceProperties = VkPhysicalDeviceProperties.calloc();
-		
-		try {
-			if (res != VK_SUCCESS) {
-				throw new VulkanException(res);
-			}
-			
-			// get first, if not discrete gpu check if there is one discrete, otherwise use first device
-			var physicalDevice = new VkPhysicalDevice(gpus.get(0), instance);
-			
-			vkGetPhysicalDeviceProperties(physicalDevice, deviceProperties);
-			
-			if (deviceProperties.deviceType() != VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-				for (var i = 1; i < gpuCount.get(0); i++) {
-					var tempDevice = new VkPhysicalDevice(gpus.get(i), instance);
-					vkGetPhysicalDeviceProperties(tempDevice, deviceProperties);
-					
-					if (deviceProperties.deviceType() == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-						physicalDevice = tempDevice;
-						break;
-					}
-				}
-			}
-			
-			return physicalDevice;
-		} finally {
-			deviceProperties.free();
-			memFree(gpus);
-			memFree(gpuCount);
-		}
-	}
-	
-	private VkDevice createLogicalDevice() throws VulkanException {
-		var queueFamilyCount = memAllocInt(1);
-		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, queueFamilyCount, null);
-
-		var queueFamilyProperties = VkQueueFamilyProperties.calloc(queueFamilyCount.get(0));
-		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, queueFamilyCount, queueFamilyProperties);
-
-		var queueCount = queueFamilyProperties.get(swapchainAndQueueFam.getGraphicsQueue()).queueCount();
-		var queuePriorities = memAllocFloat(queueCount).put(new float[queueCount]);
-		var queueCreateInfo = VkDeviceQueueCreateInfo.calloc(1)
-				.sType(VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO)
-				.pQueuePriorities(queuePriorities);
-		// set queueCount explicitly to have the correct number -> lwjgl bug?
-		// if not done queueCount is always zero
-		VkDeviceQueueCreateInfo.nqueueCount(queueCreateInfo.get(0).address(), queueCount);
-		
-		var vkKhrSwapchainExtension = memUTF8(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-		var enabledExtensionNames = memAllocPointer(1)
-				.put(vkKhrSwapchainExtension).flip();
-
-		var deviceCreateInfo = VkDeviceCreateInfo.calloc()
-				.sType(VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO)
-				.pQueueCreateInfos(queueCreateInfo)
-				.ppEnabledExtensionNames(enabledExtensionNames);
-		// set queueCreateInfoCount explicitly to have the correct number -> lwjgl bug?
-		// if not done queueCreateInfoCount is always zero
-		VkDeviceCreateInfo.nqueueCreateInfoCount(deviceCreateInfo.address(), 1);
-
-		var pDevice = memAllocPointer(1);
-		var res = vkCreateDevice(physicalDevice, deviceCreateInfo, null, pDevice);
-		
-		try {
-			if (res != VK_SUCCESS) {
-				throw new VulkanException(res);
-			}
-			
-			var logicalDevice = new VkDevice(pDevice.get(0), physicalDevice, deviceCreateInfo);
-			return logicalDevice;
-		} finally {
-			memFree(pDevice);
-			deviceCreateInfo.free();
-			memFree(enabledExtensionNames);
-			memFree(vkKhrSwapchainExtension);
-			queueCreateInfo.free();
-			memFree(queuePriorities);
-			queueFamilyProperties.free();
-			memFree(queueFamilyCount);
-		}
-	}
-	
-	private long createCommandPool() throws VulkanException {
-		var commandPoolCreateInfo = VkCommandPoolCreateInfo.calloc()
-				.sType(VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO)
-				.queueFamilyIndex(swapchainAndQueueFam.getGraphicsQueue())
-				.flags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-		
-		var pCmdPool = memAllocLong(1);
-		var res = vkCreateCommandPool(device, commandPoolCreateInfo, null, pCmdPool);
-		
-		try {
-			if (res != VK_SUCCESS) {
-				throw new VulkanException(res);
-			}
-			
-			var cmdPool = pCmdPool.get(0);
-			return cmdPool;
-		} finally {
-			memFree(pCmdPool);
-			commandPoolCreateInfo.free();
-		}
-	}
-	
-	private VkCommandBuffer createCommandBuffer() throws VulkanException {
-		var cmdBufferAllocInfo = VkCommandBufferAllocateInfo.calloc()
-				.sType(VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO)
-				.commandPool(commandPool)
-				.level(VK_COMMAND_BUFFER_LEVEL_PRIMARY)
-				.commandBufferCount(1);
-		
-		var pCmdBuffer = memAllocPointer(1);
-		var res = vkAllocateCommandBuffers(device, cmdBufferAllocInfo, pCmdBuffer);
-		
-		try {
-			if (res != VK_SUCCESS) {
-				throw new VulkanException(res);
-			}
-			
-			var cmdBuffer = new VkCommandBuffer(pCmdBuffer.get(0), device);
-			return cmdBuffer;
-		} finally {
-			memFree(pCmdBuffer);
-			cmdBufferAllocInfo.free();
-		}
-	}
-	
-	private VkSwapchainAndQueueFamily createSwapchain() throws VulkanException {
-		var pQueueFamilyCount = memAllocInt(1);
-		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, pQueueFamilyCount, null);
-		var queueFamilyCount = pQueueFamilyCount.get(0);
-
-		var queueFamilyProperties = VkQueueFamilyProperties.calloc(queueFamilyCount);
-		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, pQueueFamilyCount, queueFamilyProperties);
-		
-		var supportsPresent = memAllocInt(1);
-		
-		var graphicsQueueFamInd = Integer.MAX_VALUE;
-		var presentQueueFamInd = Integer.MAX_VALUE;
-		
-		for (int i = 0; i < queueFamilyCount; i++) {
-			vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, windowSurface, supportsPresent);
-			
-			if ((queueFamilyProperties.get(i).queueFlags() & VK_QUEUE_GRAPHICS_BIT) != 0) {
-				if (supportsPresent.get(0) == VK_TRUE) {
-					graphicsQueueFamInd = i;
-					presentQueueFamInd = i;
-					break;
-				}
-				if (graphicsQueueFamInd == Integer.MAX_VALUE) {
-					graphicsQueueFamInd = i;
-				}
-			} else if (supportsPresent.get(0) == VK_TRUE && presentQueueFamInd == Integer.MAX_VALUE) {
-				presentQueueFamInd = i;
-			}
-		}
-		
-		try {
-			if (graphicsQueueFamInd == Integer.MAX_VALUE || presentQueueFamInd == Integer.MAX_VALUE) {
-				throw new VulkanException("No graphics or presentation queue found.");
-			}
-		} finally {
-			memFree(supportsPresent);
-			queueFamilyProperties.free();
-			memFree(pQueueFamilyCount);
-		}
-		
-		var swapchainCreateInfo = VkSwapchainCreateInfoKHR.calloc()
-				.sType(VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR)
-				.surface(windowSurface);
-		
-		try {
-			return new VkSwapchainAndQueueFamily(graphicsQueueFamInd, presentQueueFamInd);
-		} finally {
-			swapchainCreateInfo.free();
 		}
 	}
 
