@@ -20,7 +20,9 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
  */
 public class VulkanSwapchainAndQueue {
 	private int graphicsQueueFamInd;
+	private int graphicsQueueCount;
 	private int presentQueueFamInd;
+	private int presentQueueCount;
 	
 	/**
 	 * @param physicalDevice An initialized {@link VulkanPhysicalDevice}
@@ -60,6 +62,9 @@ public class VulkanSwapchainAndQueue {
 			if (graphicsQueueFamInd == Integer.MAX_VALUE || presentQueueFamInd == Integer.MAX_VALUE) {
 				throw new VulkanException("No graphics or presentation queue found.");
 			}
+			
+			graphicsQueueCount = queueFamilyProperties.get(graphicsQueueFamInd).queueCount();
+			presentQueueCount = queueFamilyProperties.get(presentQueueFamInd).queueCount();
 		} finally {
 			memFree(supportsPresent);
 			queueFamilyProperties.free();
@@ -85,7 +90,15 @@ public class VulkanSwapchainAndQueue {
 		return graphicsQueueFamInd;
 	}
 	
+	public int getGraphicsQueueCount() {
+		return graphicsQueueCount;
+	}
+	
 	public int getPresentQueueFam() {
 		return presentQueueFamInd;
+	}
+	
+	public int getPresentQueueCount() {
+		return presentQueueCount;
 	}
 }
