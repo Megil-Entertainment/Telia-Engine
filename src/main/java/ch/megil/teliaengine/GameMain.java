@@ -18,11 +18,7 @@ import ch.megil.teliaengine.file.MapSaveLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.gamelogic.GameState;
-import ch.megil.teliaengine.vulkan.VulkanCommandPoolAndBuffer;
-import ch.megil.teliaengine.vulkan.VulkanInstance;
-import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
-import ch.megil.teliaengine.vulkan.VulkanPhysicalDevice;
-import ch.megil.teliaengine.vulkan.VulkanSwapchainAndQueue;
+import ch.megil.teliaengine.vulkan.*;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
 public class GameMain {
@@ -33,14 +29,16 @@ public class GameMain {
 	
 	private VulkanInstance instance;
 	private VulkanPhysicalDevice physicalDevice;
-	private VulkanSwapchainAndQueue swapchainAndQueue;
+	private VulkanQueue queue;
+	private VulkanSwapchain swapchain;
 	private VulkanLogicalDevice logicalDevice;
 	private VulkanCommandPoolAndBuffer commandPoolAndBuffer;
 	
 	public GameMain() {
 		instance = new VulkanInstance();
 		physicalDevice = new VulkanPhysicalDevice();
-		swapchainAndQueue = new VulkanSwapchainAndQueue();
+		queue = new VulkanQueue();
+		swapchain = new VulkanSwapchain();
 		logicalDevice = new VulkanLogicalDevice();
 		commandPoolAndBuffer = new VulkanCommandPoolAndBuffer();
 	}
@@ -81,9 +79,11 @@ public class GameMain {
 		window = createGlfwWindow();
 		windowSurface = createGlfwWindowSurface();
 		
-		swapchainAndQueue.init(physicalDevice, windowSurface);
-		logicalDevice.init(physicalDevice, swapchainAndQueue);
-		commandPoolAndBuffer.init(logicalDevice, swapchainAndQueue);
+		queue.init(physicalDevice, windowSurface);
+		swapchain.init(windowSurface);
+		
+		logicalDevice.init(physicalDevice, queue);
+		commandPoolAndBuffer.init(logicalDevice, queue);
 		
 		glfwShowWindow(window);
 	}
@@ -98,7 +98,8 @@ public class GameMain {
 		// Destroy bottom up
 		commandPoolAndBuffer.cleanUp(logicalDevice);
 		logicalDevice.cleanUp();
-		swapchainAndQueue.cleanUp();
+		swapchain.cleanUp();
+		queue.cleanUp();
 		
 		//TODO: check if there is a possibility to destroy surface
 		glfwDestroyWindow(window);

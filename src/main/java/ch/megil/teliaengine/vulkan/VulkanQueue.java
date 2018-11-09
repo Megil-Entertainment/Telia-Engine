@@ -3,14 +3,12 @@ package ch.megil.teliaengine.vulkan;
 import static org.lwjgl.system.MemoryUtil.memAllocInt;
 import static org.lwjgl.system.MemoryUtil.memFree;
 import static org.lwjgl.vulkan.KHRSurface.vkGetPhysicalDeviceSurfaceSupportKHR;
-import static org.lwjgl.vulkan.KHRSwapchain.VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 import static org.lwjgl.vulkan.VK10.VK_QUEUE_GRAPHICS_BIT;
 import static org.lwjgl.vulkan.VK10.VK_TRUE;
 import static org.lwjgl.vulkan.VK10.vkGetPhysicalDeviceQueueFamilyProperties;
 
 import org.lwjgl.glfw.GLFWVulkan;
 import org.lwjgl.vulkan.VkQueueFamilyProperties;
-import org.lwjgl.vulkan.VkSwapchainCreateInfoKHR;
 
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
@@ -18,7 +16,7 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
  * This class needs setup first with {@link #init} and
  * needs to be cleaned up before destruction with {@link #cleanUp}.
  */
-public class VulkanSwapchainAndQueue {
+public class VulkanQueue {
 	private int graphicsQueueFamInd;
 	private int graphicsQueueCount;
 	private int presentQueueFamInd;
@@ -70,23 +68,16 @@ public class VulkanSwapchainAndQueue {
 			queueFamilyProperties.free();
 			memFree(pQueueFamilyCount);
 		}
-		
-		var swapchainCreateInfo = VkSwapchainCreateInfoKHR.calloc()
-				.sType(VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR)
-				.surface(surface);
-		
-		try {
-			//TODO: finish swapchain
-		} finally {
-			swapchainCreateInfo.free();
-		}
 	}
 	
 	public void cleanUp() {
-		//TODO: cleanup
+		graphicsQueueFamInd = Integer.MAX_VALUE;
+		graphicsQueueCount = 0;
+		presentQueueFamInd = Integer.MAX_VALUE;
+		presentQueueCount = 0;
 	}
 	
-	public int getGraphicsQueueFam() {
+	public int getGraphicsFam() {
 		return graphicsQueueFamInd;
 	}
 	
@@ -94,7 +85,7 @@ public class VulkanSwapchainAndQueue {
 		return graphicsQueueCount;
 	}
 	
-	public int getPresentQueueFam() {
+	public int getPresentFam() {
 		return presentQueueFamInd;
 	}
 	

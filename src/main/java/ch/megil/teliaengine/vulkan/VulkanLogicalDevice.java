@@ -27,9 +27,9 @@ public class VulkanLogicalDevice {
 	
 	/**
 	 * @param physicalDevice An initialized {@link VulkanPhysicalDevice}
-	 * @param swapchainAndQueue An initialized {@link VulkanSwapchainAndQueue}
+	 * @param swapchainAndQueue An initialized {@link VulkanQueue}
 	 */
-	public void init(VulkanPhysicalDevice physicalDevice, VulkanSwapchainAndQueue swapchainAndQueue) throws VulkanException {
+	public void init(VulkanPhysicalDevice physicalDevice, VulkanQueue swapchainAndQueue) throws VulkanException {
 		logicalDevice = createDevice(physicalDevice.get(), swapchainAndQueue.getGraphicsQueueCount());
 	}
 	
