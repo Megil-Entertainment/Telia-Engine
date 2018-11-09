@@ -1,6 +1,7 @@
 package ch.megil.teliaengine.ui;
 
 import ch.megil.teliaengine.game.GameElement;
+import ch.megil.teliaengine.game.Vector;
 import javafx.scene.image.ImageView;
 
 public class GameElementImageView extends ImageView{
@@ -10,19 +11,19 @@ public class GameElementImageView extends ImageView{
 		super(gameElement.getDepiction());
 		this.gameElement = gameElement;
 		
-		setLayoutX(gameElement.getPosX());
-		setLayoutY(gameElement.getPosY());
+		setLayoutX(gameElement.getPosition().getX());
+		setLayoutY(gameElement.getPosition().getY());
 	}
 	
 	
 	public void setImageViewLayoutX(double value) {
 		super.setLayoutX(value);
-		gameElement.setPosX(value);
+		gameElement.setPosition(new Vector(value, gameElement.getPosition().getY()));
 	}
 	
 	public void setImageViewLayoutY(double value) {
 		super.setLayoutY(value);
-		gameElement.setPosY(value);
+		gameElement.setPosition(new Vector(gameElement.getPosition().getX(), value));
 	}
 	
 	public GameElement getGameElement() {

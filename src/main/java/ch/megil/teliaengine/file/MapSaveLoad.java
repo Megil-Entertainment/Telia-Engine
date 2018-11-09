@@ -32,9 +32,9 @@ public class MapSaveLoad {
 		
 		try (var writer = new BufferedWriter(new FileWriter(fileName))) {
 			writer.write(map.getWidth() + propSeperator + map.getHeight() + entrySeperator);
-			writer.write(player.getPosX() + propSeperator + player.getPosY() + entrySeperator);
+			writer.write(player.getPosition().getX() + propSeperator + player.getPosition().getY() + entrySeperator);
 			for (var o : map.getMapObjects()) {
-				writer.write(o.getName() + propSeperator + o.getPosX() + propSeperator + o.getPosY() + entrySeperator);
+				writer.write(o.getName() + propSeperator + o.getPosition().getX() + propSeperator + o.getPosition().getY() + entrySeperator);
 			}
 		} catch (IOException e) {
 			LogHandler.log(e, Level.SEVERE);

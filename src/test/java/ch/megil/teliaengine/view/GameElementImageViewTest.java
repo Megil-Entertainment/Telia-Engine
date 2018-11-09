@@ -35,9 +35,9 @@ public class GameElementImageViewTest {
 	@Test
 	public void setImageViewLayout() {
 		imageView.setImageViewLayoutX(5);
-		assertEquals(5, gameElement.getPosX(),0);
+		assertEquals(5, gameElement.getPosition().getX(),0);
 		imageView.setImageViewLayoutY(5);
-		assertEquals(5, gameElement.getPosY(),0);
+		assertEquals(5, gameElement.getPosition().getY(),0);
 	}
 	
 	@Test

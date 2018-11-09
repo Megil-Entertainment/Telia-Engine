@@ -53,8 +53,8 @@ public class GameObjectSaveLoadTest {
 		var obj = gameObjectSaveLoad.load(testObjectDir.getRoot().getName() + "/red");
 
 		assertEquals(testObjectDir.getRoot().getName() + "/red", obj.getName());
-		assertEquals(0.0, obj.getPosX(), 0);
-		assertEquals(0.0, obj.getPosY(), 0);
+		assertEquals(0.0, obj.getPosition().getX(), 0);
+		assertEquals(0.0, obj.getPosition().getY(), 0);
 		assertEquals(50.0, (obj.getDepiction()).getWidth(), 0);
 		assertEquals(60.0, (obj.getDepiction()).getHeight(), 0);
 	}

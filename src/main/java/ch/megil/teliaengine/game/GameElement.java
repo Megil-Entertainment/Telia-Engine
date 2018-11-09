@@ -21,18 +21,10 @@ public class GameElement {
 		this.onPositionUpdate = onPositionUpdate;
 	}
 	
-	public double getPosX() {
-		return getPosition().getX();
-	}
-	
 	public void setPosX(double posX) {
 		setPosition(new Vector(posX, position.getY()));
 	}
 
-	public double getPosY() {
-		return getPosition().getY();
-	}
-	
 	public void setPosY(double posY) {
 		setPosition(new Vector(position.getX(), posY));
 	}
