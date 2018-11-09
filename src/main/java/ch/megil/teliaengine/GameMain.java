@@ -7,6 +7,7 @@ import static org.lwjgl.glfw.GLFWVulkan.glfwVulkanSupported;
 import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.vulkan.KHRSurface.vkGetPhysicalDeviceSurfaceSupportKHR;
 import static org.lwjgl.vulkan.KHRSwapchain.VK_KHR_SWAPCHAIN_EXTENSION_NAME;
+import static org.lwjgl.vulkan.KHRSwapchain.VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 import static org.lwjgl.vulkan.VK10.*;
 
 import org.lwjgl.vulkan.*;
@@ -325,7 +326,7 @@ public class GameMain {
 		}
 	}
 	
-	private VkSwapchainAndQueueFamily createSwapchain() {
+	private VkSwapchainAndQueueFamily createSwapchain() throws VulkanException {
 		var pQueueFamilyCount = memAllocInt(1);
 		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, pQueueFamilyCount, null);
 		var queueFamilyCount = pQueueFamilyCount.get(0);
@@ -356,11 +357,23 @@ public class GameMain {
 		}
 		
 		try {
-			return new VkSwapchainAndQueueFamily(graphicsQueueFamInd, presentQueueFamInd);
+			if (graphicsQueueFamInd == Integer.MAX_VALUE || presentQueueFamInd == Integer.MAX_VALUE) {
+				throw new VulkanException("No graphics or presentation queue found.");
+			}
 		} finally {
 			memFree(supportsPresent);
 			queueFamilyProperties.free();
 			memFree(pQueueFamilyCount);
+		}
+		
+		var swapchainCreateInfo = VkSwapchainCreateInfoKHR.calloc()
+				.sType(VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR)
+				.surface(windowSurface);
+		
+		try {
+			return new VkSwapchainAndQueueFamily(graphicsQueueFamInd, presentQueueFamInd);
+		} finally {
+			swapchainCreateInfo.free();
 		}
 	}
 
