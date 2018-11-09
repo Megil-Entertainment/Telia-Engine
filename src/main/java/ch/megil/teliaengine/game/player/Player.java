@@ -46,33 +46,30 @@ public class Player extends GameElement{
 		return enginePlayer;
 	}
 	
-	public void applyAcceleration(Vector a) {
-		acceleration = acceleration.add(a);
+	public void applyForce(Vector f) {
+		acceleration = acceleration.add(f);
 	}
 	
-	public void applyVelocity(Vector v) {
-		velocity = velocity.add(v);
+	public void applyAcceleration(Vector a) {
+		velocity = velocity.add(a);
 	}
 	
 	public void update(List<Hitbox> possibleCollisions) {
 		velocity = velocity.add(acceleration);
 		velocity = new Vector(velocity.getX(), Math.min(velocity.getY(), PhysicsConstants.TERMINAL_FALL_VELOCITY.get().getY()));
-		
+
 		for (var v : velocity.splitToComponentSizeOne()) {
 			//x collision
 			var np = getPosition().add(v.xVector());
-			setPosX(np.getX());
-			setPosY(np.getY());
+			setPosition(np);
 			if (possibleCollisions.stream().anyMatch(getHitbox()::checkCollision)) {
 				np = getPosition().add(v.xVector().negate());
-				setPosX(np.getX());
-				setPosY(np.getY());
+				setPosition(np);
 			}
 			
 			//y collision
 			np = getPosition().add(v.yVector());
-			setPosX(np.getX());
-			setPosY(np.getY());
+			setPosition(np);
 			if (possibleCollisions.stream().anyMatch(getHitbox()::checkCollision)) {
 				if (v.getY() > 0) {
 					jumpUsed = false;
@@ -80,10 +77,11 @@ public class Player extends GameElement{
 					velocity = new Vector(velocity.getX(), 0);
 				}
 				np = getPosition().add(v.yVector().negate());
-				setPosX(np.getX());
-				setPosY(np.getY());
+				setPosition(np);
 			}
 		}
+		
+		setPosition(getPosition().round());
 	}
 	
 	public boolean isJumpUsed() {

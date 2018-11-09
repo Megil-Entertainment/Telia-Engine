@@ -28,52 +28,52 @@ public class PlayerTest {
 		playerHitbox = new Hitbox(Vector.ZERO, 50, 50);
 		
 		collision = new ArrayList<>();
-		collision.add(new Hitbox(new Vector(87, 0), 100, 50));
+		collision.add(new Hitbox(new Vector(0, 83), 100, 50));
 	}
 
 	@Test
 	public void testUpdate() {
 		var player = new Player(depiction, playerHitbox);
 		
-		player.applyAcceleration(new Vector(5, 3));
+		assertEquals(0, player.getPosition().getX(), 0);
+		assertEquals(0, player.getPosition().getY(), 0);
+		
+		player.applyForce(new Vector(5, 3));
 		player.update(collision);
 		assertEquals(5, player.getPosition().getX(), 0);
 		assertEquals(3, player.getPosition().getY(), 0);
 		
 		player.update(collision);
-		assertEquals(10, player.getPosition().getX(), 0);
-		assertEquals(6, player.getPosition().getY(), 0);
-		
-		player.applyAcceleration(new Vector(5, 0));
-		player.update(collision);
-		assertEquals(20, player.getPosition().getX(), 0);
+		assertEquals(15, player.getPosition().getX(), 0);
 		assertEquals(9, player.getPosition().getY(), 0);
 		
-		player.applyAcceleration(new Vector(-10, -3));
-		player.update(collision);
-		assertEquals(20, player.getPosition().getX(), 0);
-		assertEquals(9, player.getPosition().getY(), 0);
-		
-		player.applyVelocity(new Vector(5, 3));
+		player.applyForce(new Vector(-5, -3));
 		player.update(collision);
 		assertEquals(25, player.getPosition().getX(), 0);
-		assertEquals(12, player.getPosition().getY(), 0);
-
-		player.update(collision);
-		assertEquals(25, player.getPosition().getX(), 0);
-		assertEquals(12, player.getPosition().getY(), 0);
-		
-		player.applyAcceleration(new Vector(5, 3));
-		player.update(collision);
-		assertEquals(30, player.getPosition().getX(), 0);
 		assertEquals(15, player.getPosition().getY(), 0);
-
+		
+		player.applyAcceleration(new Vector(-10, -6));
 		player.update(collision);
-		assertEquals(35, player.getPosition().getX(), 0);
-		assertEquals(18, player.getPosition().getY(), 0);
-
+		assertEquals(25, player.getPosition().getX(), 0);
+		assertEquals(15, player.getPosition().getY(), 0);
+		
 		player.update(collision);
-		assertEquals(37, player.getPosition().getX(), 0);
-		assertEquals(21, player.getPosition().getY(), 0);
+		assertEquals(25, player.getPosition().getX(), 0);
+		assertEquals(15, player.getPosition().getY(), 0);
+		
+		player.applyForce(new Vector(0, 5));
+		player.applyAcceleration(new Vector(3, 2));
+		player.update(collision);
+		assertEquals(28, player.getPosition().getX(), 0);
+		assertEquals(22, player.getPosition().getY(), 0);
+		
+		player.applyForce(new Vector(0, -5));
+		player.update(collision);
+		assertEquals(31, player.getPosition().getX(), 0);
+		assertEquals(29, player.getPosition().getY(), 0);
+		
+		player.update(collision);
+		assertEquals(34, player.getPosition().getX(), 0);
+		assertEquals(33, player.getPosition().getY(), 0);
 	}
 }

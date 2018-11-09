@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-
 public class Vector {
 	public static final Vector ZERO = new Vector(0, 0);
 	
@@ -17,7 +14,7 @@ public class Vector {
 		this.x = x;
 		this.y = y;
 	}
-	
+
 	public double getX() {
 		return x;
 	}
@@ -52,5 +49,37 @@ public class Vector {
 		} else {
 			return Collections.nCopies(ty, new Vector(x/ty, y/ty));
 		}
+	}
+	
+	public Vector round() {
+		return new Vector(Math.round(x), Math.round(y));
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(x);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(y);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Vector other = (Vector) obj;
+		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
+			return false;
+		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
+			return false;
+		return true;
 	}
 }
