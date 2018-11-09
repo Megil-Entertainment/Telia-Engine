@@ -16,7 +16,7 @@ import ch.megil.teliaengine.file.MapSaveLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.gamelogic.GameState;
-import ch.megil.teliaengine.vulkan.VkDeviceAndQueueFamily;
+import ch.megil.teliaengine.vulkan.VkSwapchainAndQueueFamily;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
 public class GameMain {
@@ -27,7 +27,8 @@ public class GameMain {
 	
 	private VkInstance instance;
 	private VkPhysicalDevice physicalDevice;
-	private VkDeviceAndQueueFamily deviceAndQueueFam;
+	private VkSwapchainAndQueueFamily swapchainAndQueueFam;
+	private VkDevice device;
 	private long commandPool;
 	private VkCommandBuffer commandBuffer;
 	
@@ -70,12 +71,12 @@ public class GameMain {
 		System.out.println("Using GPU: " + deviceProperties.deviceNameString());
 		deviceProperties.free();
 		
-		deviceAndQueueFam = createLogicalDevice();
 		window = createGlfwWindow();
 		windowSurface = createGlfwWindowSurface();
+		swapchainAndQueueFam = createSwapchain();
+		device = createLogicalDevice();
 		commandPool = createCommandPool();
 		commandBuffer = createCommandBuffer();
-		createSwapchain();
 		
 		glfwShowWindow(window);
 	}
@@ -89,21 +90,24 @@ public class GameMain {
 	public void cleanUp() {
 		// Destroy bottom up
 		if (commandBuffer != null) {
-			vkFreeCommandBuffers(deviceAndQueueFam.getDevice(), commandPool, commandBuffer);
+			vkFreeCommandBuffers(device, commandPool, commandBuffer);
 			commandBuffer = null;
 		}
 		
 		if (commandPool != NULL) {
-			vkDestroyCommandPool(deviceAndQueueFam.getDevice(), commandPool, null);
+			vkDestroyCommandPool(device, commandPool, null);
 			commandPool = NULL;
 		}
 		
+		if (device != null) {
+			vkDestroyDevice(device, null);
+			device = null;
+		}
+		
+		//TODO: destroy swapchain
+		
 		glfwDestroyWindow(window);
 		
-		if (deviceAndQueueFam != null) {
-			vkDestroyDevice(deviceAndQueueFam.getDevice(), null);
-			deviceAndQueueFam = null;
-		}
 		
 		physicalDevice = null;
 		
@@ -226,21 +230,14 @@ public class GameMain {
 		}
 	}
 	
-	private VkDeviceAndQueueFamily createLogicalDevice() throws VulkanException {
+	private VkDevice createLogicalDevice() throws VulkanException {
 		var queueFamilyCount = memAllocInt(1);
 		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, queueFamilyCount, null);
 
 		var queueFamilyProperties = VkQueueFamilyProperties.calloc(queueFamilyCount.get(0));
 		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, queueFamilyCount, queueFamilyProperties);
 
-		int queueFamilyIndex;
-		for (queueFamilyIndex = 0; queueFamilyIndex < queueFamilyCount.get(0); queueFamilyIndex++) {
-			if ((queueFamilyProperties.get(queueFamilyIndex).queueFlags() & VK_QUEUE_GRAPHICS_BIT) != 0) {
-				break;
-			}
-		}
-
-		var queueCount = queueFamilyProperties.get(queueFamilyIndex).queueCount();
+		var queueCount = queueFamilyProperties.get(swapchainAndQueueFam.getGraphicsQueue()).queueCount();
 		var queuePriorities = memAllocFloat(queueCount).put(new float[queueCount]);
 		var queueCreateInfo = VkDeviceQueueCreateInfo.calloc(1)
 				.sType(VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO)
@@ -270,7 +267,7 @@ public class GameMain {
 			}
 			
 			var logicalDevice = new VkDevice(pDevice.get(0), physicalDevice, deviceCreateInfo);
-			return new VkDeviceAndQueueFamily(logicalDevice, queueFamilyIndex);
+			return logicalDevice;
 		} finally {
 			memFree(pDevice);
 			deviceCreateInfo.free();
@@ -286,11 +283,11 @@ public class GameMain {
 	private long createCommandPool() throws VulkanException {
 		var commandPoolCreateInfo = VkCommandPoolCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO)
-				.queueFamilyIndex(deviceAndQueueFam.getQueueFamilyIndex())
+				.queueFamilyIndex(swapchainAndQueueFam.getGraphicsQueue())
 				.flags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 		
 		var pCmdPool = memAllocLong(1);
-		var res = vkCreateCommandPool(deviceAndQueueFam.getDevice(), commandPoolCreateInfo, null, pCmdPool);
+		var res = vkCreateCommandPool(device, commandPoolCreateInfo, null, pCmdPool);
 		
 		try {
 			if (res != VK_SUCCESS) {
@@ -313,14 +310,14 @@ public class GameMain {
 				.commandBufferCount(1);
 		
 		var pCmdBuffer = memAllocPointer(1);
-		var res = vkAllocateCommandBuffers(deviceAndQueueFam.getDevice(), cmdBufferAllocInfo, pCmdBuffer);
+		var res = vkAllocateCommandBuffers(device, cmdBufferAllocInfo, pCmdBuffer);
 		
 		try {
 			if (res != VK_SUCCESS) {
 				throw new VulkanException(res);
 			}
 			
-			var cmdBuffer = new VkCommandBuffer(pCmdBuffer.get(0), deviceAndQueueFam.getDevice());
+			var cmdBuffer = new VkCommandBuffer(pCmdBuffer.get(0), device);
 			return cmdBuffer;
 		} finally {
 			memFree(pCmdBuffer);
@@ -328,7 +325,7 @@ public class GameMain {
 		}
 	}
 	
-	private void createSwapchain() {
+	private VkSwapchainAndQueueFamily createSwapchain() {
 		var pQueueFamilyCount = memAllocInt(1);
 		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, pQueueFamilyCount, null);
 		var queueFamilyCount = pQueueFamilyCount.get(0);
@@ -359,7 +356,7 @@ public class GameMain {
 		}
 		
 		try {
-			
+			return new VkSwapchainAndQueueFamily(graphicsQueueFamInd, presentQueueFamInd);
 		} finally {
 			memFree(supportsPresent);
 			queueFamilyProperties.free();
