@@ -5,14 +5,12 @@ import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
 import static org.lwjgl.glfw.GLFWVulkan.glfwGetRequiredInstanceExtensions;
 import static org.lwjgl.glfw.GLFWVulkan.glfwVulkanSupported;
 import static org.lwjgl.system.MemoryUtil.*;
+import static org.lwjgl.vulkan.KHRSurface.vkGetPhysicalDeviceSurfaceSupportKHR;
+import static org.lwjgl.vulkan.KHRSwapchain.VK_KHR_SWAPCHAIN_EXTENSION_NAME;
 import static org.lwjgl.vulkan.VK10.*;
 
-import java.nio.LongBuffer;
-
-import org.lwjgl.PointerBuffer;
 import org.lwjgl.vulkan.*;
 
-import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.file.MapSaveLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
@@ -77,6 +75,7 @@ public class GameMain {
 		windowSurface = createGlfwWindowSurface();
 		commandPool = createCommandPool();
 		commandBuffer = createCommandBuffer();
+		createSwapchain();
 		
 		glfwShowWindow(window);
 	}
@@ -148,6 +147,7 @@ public class GameMain {
         if (requiredExtensions == null) {
             throw new VulkanException("Failed to find list of required extensions");
         }
+        
 		var appInfo = VkApplicationInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_APPLICATION_INFO)
 				.pApplicationName(memUTF8(SystemConfiguration.GAME_NAME.getConfiguration()))
@@ -159,7 +159,6 @@ public class GameMain {
 		
 		var instInfo = VkInstanceCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO)
-				//TODO: delete: .pNext(NULL)
 				.pApplicationInfo(appInfo)
 				.ppEnabledExtensionNames(enabledExtensionNames);
 		
@@ -228,8 +227,6 @@ public class GameMain {
 	}
 	
 	private VkDeviceAndQueueFamily createLogicalDevice() throws VulkanException {
-		//TODO: extensions
-
 		var queueFamilyCount = memAllocInt(1);
 		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, queueFamilyCount, null);
 
@@ -251,10 +248,15 @@ public class GameMain {
 		// set queueCount explicitly to have the correct number -> lwjgl bug?
 		// if not done queueCount is always zero
 		VkDeviceQueueCreateInfo.nqueueCount(queueCreateInfo.get(0).address(), queueCount);
+		
+		var vkKhrSwapchainExtension = memUTF8(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+		var enabledExtensionNames = memAllocPointer(1)
+				.put(vkKhrSwapchainExtension).flip();
 
 		var deviceCreateInfo = VkDeviceCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO)
-				.pQueueCreateInfos(queueCreateInfo);
+				.pQueueCreateInfos(queueCreateInfo)
+				.ppEnabledExtensionNames(enabledExtensionNames);
 		// set queueCreateInfoCount explicitly to have the correct number -> lwjgl bug?
 		// if not done queueCreateInfoCount is always zero
 		VkDeviceCreateInfo.nqueueCreateInfoCount(deviceCreateInfo.address(), 1);
@@ -272,6 +274,8 @@ public class GameMain {
 		} finally {
 			memFree(pDevice);
 			deviceCreateInfo.free();
+			memFree(enabledExtensionNames);
+			memFree(vkKhrSwapchainExtension);
 			queueCreateInfo.free();
 			memFree(queuePriorities);
 			queueFamilyProperties.free();
@@ -321,6 +325,45 @@ public class GameMain {
 		} finally {
 			memFree(pCmdBuffer);
 			cmdBufferAllocInfo.free();
+		}
+	}
+	
+	private void createSwapchain() {
+		var pQueueFamilyCount = memAllocInt(1);
+		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, pQueueFamilyCount, null);
+		var queueFamilyCount = pQueueFamilyCount.get(0);
+
+		var queueFamilyProperties = VkQueueFamilyProperties.calloc(queueFamilyCount);
+		vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, pQueueFamilyCount, queueFamilyProperties);
+		
+		var supportsPresent = memAllocInt(1);
+		
+		var graphicsQueueFamInd = Integer.MAX_VALUE;
+		var presentQueueFamInd = Integer.MAX_VALUE;
+		
+		for (int i = 0; i < queueFamilyCount; i++) {
+			vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, windowSurface, supportsPresent);
+			
+			if ((queueFamilyProperties.get(i).queueFlags() & VK_QUEUE_GRAPHICS_BIT) != 0) {
+				if (supportsPresent.get(0) == VK_TRUE) {
+					graphicsQueueFamInd = i;
+					presentQueueFamInd = i;
+					break;
+				}
+				if (graphicsQueueFamInd == Integer.MAX_VALUE) {
+					graphicsQueueFamInd = i;
+				}
+			} else if (supportsPresent.get(0) == VK_TRUE && presentQueueFamInd == Integer.MAX_VALUE) {
+				presentQueueFamInd = i;
+			}
+		}
+		
+		try {
+			
+		} finally {
+			memFree(supportsPresent);
+			queueFamilyProperties.free();
+			memFree(pQueueFamilyCount);
 		}
 	}
 
