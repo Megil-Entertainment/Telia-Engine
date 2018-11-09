@@ -53,7 +53,7 @@ public class MapEditor extends Pane{
 		sourceHeight = imageView.getImage().getHeight();
 		
 		if(imageView.getLayoutX() < 0) {
-		imageView.setImageViewLayoutX(0);
+			imageView.setImageViewLayoutX(0);
 		}
 		if(imageView.getLayoutX() + sourceWidth > map.getWidth()) {
 			imageView.setImageViewLayoutX(map.getWidth() - sourceWidth);

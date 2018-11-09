@@ -8,7 +8,6 @@ public class GameObject extends GameElement{
 	public GameObject(String name, Image depiction, Hitbox hitbox) {
 		super(depiction, hitbox);
 		this.name = name;
-		this.setPosition(Vector.ZERO);
 	}
 	
 	public GameObject(String name, Image depiction, Hitbox hitbox, double posX, double posY) {
