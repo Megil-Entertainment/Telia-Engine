@@ -15,9 +15,6 @@ import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.logging.LogHandler;
-import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 public class GameObjectSaveLoad {
 	public GameObject load(String name) throws AssetNotFoundException, AssetFormatException {
