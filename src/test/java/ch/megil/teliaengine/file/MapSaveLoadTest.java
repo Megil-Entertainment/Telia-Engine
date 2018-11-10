@@ -23,6 +23,7 @@ import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
+import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.game.player.Player;
 
 public class MapSaveLoadTest {
@@ -42,6 +43,10 @@ public class MapSaveLoadTest {
 	private static Map testMap;
 	@Mock
 	private static Player player;
+	
+	private static Vector vector1;
+	private static Vector vector2;
+	private static Vector playerVector;
 
 	private MapSaveLoad mapSaveLoad;
 
@@ -55,14 +60,14 @@ public class MapSaveLoadTest {
 		}
 		
 		obj1 = mock(GameObject.class);
+		vector1 = new Vector(10.0, 20.0);
 		when(obj1.getName()).thenReturn("red");
-		when(obj1.getPosition().getX()).thenReturn(10.0);
-		when(obj1.getPosition().getY()).thenReturn(20.0);
+		when(obj1.getPosition()).thenReturn(vector1);
 
 		obj2 = mock(GameObject.class);
+		vector2 = new Vector(100.0, 50.0);
 		when(obj2.getName()).thenReturn("blue");
-		when(obj2.getPosition().getX()).thenReturn(100.0);
-		when(obj2.getPosition().getY()).thenReturn(50.0);
+		when(obj2.getPosition()).thenReturn(vector2);
 
 		testMap = mock(Map.class);
 		when(testMap.getWidth()).thenReturn(150.0);
@@ -70,8 +75,8 @@ public class MapSaveLoadTest {
 		when(testMap.getMapObjects()).thenReturn(Arrays.asList(obj1, obj2));
 		
 		player = mock(Player.class);
-		when(player.getPosition().getX()).thenReturn(20.0);
-		when(player.getPosition().getY()).thenReturn(80.0);
+		playerVector = new Vector(20.0, 80.0);
+		when(player.getPosition()).thenReturn(playerVector);
 	}
 	
 	@Before
