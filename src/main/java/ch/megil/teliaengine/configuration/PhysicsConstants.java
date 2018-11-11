@@ -10,7 +10,7 @@ import ch.megil.teliaengine.logging.LogHandler;
 public enum PhysicsConstants {
 	WALK_SPEED_RIGHT("walkSpeedR"),
 	WALK_SPEED_LEFT("walkSpeedL"),
-	JUMP_ACCELERATION("jumpAcceleration"),
+	JUMP_FORCE("jumpForce"),
 	GRAVITY("gravity"),
 	TERMINAL_FALL_VELOCITY("terminalFallVelocity");
 	

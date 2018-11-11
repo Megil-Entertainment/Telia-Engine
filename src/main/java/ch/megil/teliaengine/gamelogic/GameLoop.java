@@ -35,15 +35,15 @@ public class GameLoop extends AnimationTimer {
 		for (var key : pressed) {
 			switch (key) {
 				case WALK_RIGHT:
-					Player.get().applyVelocity(PhysicsConstants.WALK_SPEED_RIGHT.get());
+					Player.get().applyAcceleration(PhysicsConstants.WALK_SPEED_RIGHT.get());
 					break;
 				case WALK_LEFT:
-					Player.get().applyVelocity(PhysicsConstants.WALK_SPEED_LEFT.get());
+					Player.get().applyAcceleration(PhysicsConstants.WALK_SPEED_LEFT.get());
 					break;
 				case JUMP:
 					if (!Player.get().isJumpUsed()) {
 						Player.get().useJump();
-						Player.get().applyAcceleration(PhysicsConstants.JUMP_ACCELERATION.get());
+						Player.get().applyForce(PhysicsConstants.JUMP_FORCE.get());
 					}
 					break;
 				default:
@@ -54,10 +54,10 @@ public class GameLoop extends AnimationTimer {
 		for (var key : released) {
 			switch (key) {
 				case WALK_RIGHT:
-					Player.get().applyVelocity(PhysicsConstants.WALK_SPEED_RIGHT.get().negate());
+					Player.get().applyAcceleration(PhysicsConstants.WALK_SPEED_RIGHT.get().negate());
 					break;
 				case WALK_LEFT:
-					Player.get().applyVelocity(PhysicsConstants.WALK_SPEED_LEFT.get().negate());
+					Player.get().applyAcceleration(PhysicsConstants.WALK_SPEED_LEFT.get().negate());
 					break;
 				default:
 					break;
@@ -72,7 +72,7 @@ public class GameLoop extends AnimationTimer {
 			lastRun = now;
 			runInputs();
 			
-			Player.get().applyAcceleration(PhysicsConstants.GRAVITY.get());
+			Player.get().applyForce(PhysicsConstants.GRAVITY.get());
 			Player.get().update(GameState.get().getMap().getMapObjects().stream().map(GameObject::getHitbox).collect(Collectors.toList()));
 		}
 	}

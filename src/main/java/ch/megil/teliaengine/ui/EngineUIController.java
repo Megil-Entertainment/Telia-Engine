@@ -53,7 +53,7 @@ public class EngineUIController {
 			result.ifPresent(map::setName);
 		}
 		
-		mapSaveLoad.save(map);
+		mapSaveLoad.save(map, mapEditor.getPlayer());
 	}
 	
 	@FXML
