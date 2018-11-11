@@ -23,7 +23,7 @@ public class MapSaveLoad {
 		}
 	}
 	
-	public void save(Map map) {
+	public void save(Map map, Player player) {
 		checkAndCreateDirectory();
 		var fileName = GameConfiguration.ASSETS_MAPS.getConfiguration() + "/" + map.getName() + GameConfiguration.FILE_EXT_MAP.getConfiguration();
 		
@@ -32,9 +32,9 @@ public class MapSaveLoad {
 		
 		try (var writer = new BufferedWriter(new FileWriter(fileName))) {
 			writer.write(map.getWidth() + propSeperator + map.getHeight() + entrySeperator);
-			writer.write(Player.get().getPosX() + propSeperator + Player.get().getPosY() + entrySeperator);
+			writer.write(player.getPosition().getX() + propSeperator + player.getPosition().getY() + entrySeperator);
 			for (var o : map.getMapObjects()) {
-				writer.write(o.getName() + propSeperator + o.getPosX() + propSeperator + o.getPosY() + entrySeperator);
+				writer.write(o.getName() + propSeperator + o.getPosition().getX() + propSeperator + o.getPosition().getY() + entrySeperator);
 			}
 		} catch (IOException e) {
 			LogHandler.log(e, Level.SEVERE);

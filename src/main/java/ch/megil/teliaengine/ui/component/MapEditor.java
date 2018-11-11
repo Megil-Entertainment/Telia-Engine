@@ -3,6 +3,7 @@ package ch.megil.teliaengine.ui.component;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
+import ch.megil.teliaengine.ui.GameElementImageView;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -10,6 +11,7 @@ import javafx.scene.layout.Pane;
 
 public class MapEditor extends Pane{
 	private Map map;
+	private Player player;
 	
 	private double dx;
 	private double dy;
@@ -27,7 +29,7 @@ public class MapEditor extends Pane{
 	public void addGameObject(GameObject obj) {
 		if (map != null) {
 			map.addObject(obj);
-			getChildren().add(obj.getDepiction());
+			getChildren().add(new GameElementImageView(obj));
 		}
 	}
 	
@@ -38,9 +40,30 @@ public class MapEditor extends Pane{
 	}
 	
 	private void moveNode(MouseEvent event) {
-		var source = (Node) event.getSource();
-		source.setLayoutX(event.getSceneX() + dx);
-		source.setLayoutY(event.getSceneY() + dy);
+		var source = (GameElementImageView) event.getSource();
+		source.setImageViewLayoutX(event.getSceneX() + dx);
+		source.setImageViewLayoutY(event.getSceneY() + dy);
+		checkBoundries(source);
+	}
+	
+	private void checkBoundries(GameElementImageView imageView) {
+		double sourceWidth;
+		double sourceHeight;
+		sourceWidth = imageView.getImage().getWidth();
+		sourceHeight = imageView.getImage().getHeight();
+		
+		if(imageView.getLayoutX() < 0) {
+			imageView.setImageViewLayoutX(0);
+		}
+		if(imageView.getLayoutX() + sourceWidth > map.getWidth()) {
+			imageView.setImageViewLayoutX(map.getWidth() - sourceWidth);
+		}
+		if(imageView.getLayoutY() < 0) {
+			imageView.setImageViewLayoutY(0);
+		}
+		if(imageView.getLayoutY() + sourceHeight > map.getHeight()) {
+			imageView.setImageViewLayoutY(map.getHeight() - sourceHeight);
+		}
 	}
 	
 	public void onDragNode(MouseEvent event) {
@@ -54,11 +77,17 @@ public class MapEditor extends Pane{
 		return map;
 	}
 	
+	public Player getPlayer() {
+		return player;
+	}
+	
 	public void setMap(Map map) {
 		getChildren().clear();
 		
 		this.map = map;
-		map.getMapObjects().forEach(o -> getChildren().add(o.getDepiction()));
-		getChildren().add(Player.getEngine().getDepiction());
+		map.getMapObjects().forEach(o -> getChildren().add(new GameElementImageView(o)));
+		this.player = Player.getEngineCopy();
+		getChildren().add(new GameElementImageView(player));
+		
 	}
 }

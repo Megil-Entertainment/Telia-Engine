@@ -3,6 +3,7 @@ package ch.megil.teliaengine.ui.component;
 import java.util.function.Consumer;
 
 import ch.megil.teliaengine.game.GameObject;
+import ch.megil.teliaengine.ui.GameElementImageView;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -50,7 +51,7 @@ public class GameObjectListItem extends AnchorPane{
 	
 	private void gameObjectChangeListener(ObservableValue<? extends GameObject> obj, GameObject oldObj, GameObject newObj) {
 		content.getChildren().clear();
-		content.getChildren().add(newObj.getDepiction());
+		content.getChildren().add(new GameElementImageView(newObj));
 		content.getChildren().add(new Label(newObj.getName()));
 	}
 	
