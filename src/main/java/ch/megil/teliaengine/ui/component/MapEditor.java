@@ -1,6 +1,6 @@
 package ch.megil.teliaengine.ui.component;
 
-import ch.megil.teliaengine.configuration.MapEditorConfiguration;
+import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
@@ -29,8 +29,8 @@ public class MapEditor extends Pane{
 					});
 			}});
 		
-		gridWidth = Integer.parseInt(MapEditorConfiguration.GRID_WIDTH.getConfiguration());
-		gridHeight = Integer.parseInt(MapEditorConfiguration.GRID_HEIGHT.getConfiguration());
+		gridWidth = Integer.parseInt(SystemConfiguration.MAP_GRID_WIDTH.getConfiguration());
+		gridHeight = Integer.parseInt(SystemConfiguration.MAP_GRID_HEIGHT.getConfiguration());
 	}
 	
 	public void addGameObject(GameObject obj) {
