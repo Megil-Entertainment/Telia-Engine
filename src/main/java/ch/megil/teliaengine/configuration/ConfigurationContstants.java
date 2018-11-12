@@ -6,7 +6,6 @@ public class ConfigurationContstants {
 	
 	public static final String SYSTEM_CONFIGURATION = CONFIGURATION_DIR + "system.properties";
 	public static final String GAME_CONFIGURATION = CONFIGURATION_DIR + "game.properties";
-	public static final String MAP_EDITOR_CONFIGURATION = CONFIGURATION_DIR + "mapEditor.properties";
 	
 	public static final String PHYSIC_CONSTANTS = CONSTANT_DIR + "physics.properties";
 }
