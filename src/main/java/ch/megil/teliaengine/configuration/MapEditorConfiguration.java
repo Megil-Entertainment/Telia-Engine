@@ -15,7 +15,7 @@ public enum MapEditorConfiguration {
 	static {
 		mapEditProp = new XProperties();
 
-		try (var in = new FileInputStream(ConfigurationContstants.GAME_CONFIGURATION)) {
+		try (var in = new FileInputStream(ConfigurationContstants.MAP_EDITOR_CONFIGURATION)) {
 			mapEditProp.load(in);
 		} catch (Exception e) {
 			LogHandler.log(e, Level.SEVERE);

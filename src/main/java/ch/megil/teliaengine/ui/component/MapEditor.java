@@ -1,5 +1,6 @@
 package ch.megil.teliaengine.ui.component;
 
+import ch.megil.teliaengine.configuration.MapEditorConfiguration;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
@@ -16,6 +17,9 @@ public class MapEditor extends Pane{
 	private double dx;
 	private double dy;
 	
+	private int gridWidth;
+	private int gridHeight;
+	
 	public MapEditor() {
 		getChildren().addListener((ListChangeListener<Node>) c -> {
 			while(c.next()) {
@@ -24,6 +28,9 @@ public class MapEditor extends Pane{
 					n.setOnMouseDragged(this::onDragNode);
 					});
 			}});
+		
+		gridWidth = Integer.parseInt(MapEditorConfiguration.GRID_WIDTH.getConfiguration());
+		gridHeight = Integer.parseInt(MapEditorConfiguration.GRID_HEIGHT.getConfiguration());
 	}
 	
 	public void addGameObject(GameObject obj) {
@@ -41,9 +48,15 @@ public class MapEditor extends Pane{
 	
 	private void moveNode(MouseEvent event) {
 		var source = (GameElementImageView) event.getSource();
-		source.setImageViewLayoutX(event.getSceneX() + dx);
-		source.setImageViewLayoutY(event.getSceneY() + dy);
+		var sourceX = roundToGridSize((event.getSceneX() + dx), gridWidth);
+		var sourceY = roundToGridSize((event.getSceneY() + dy), gridHeight);
+		source.setImageViewLayoutX(sourceX);
+		source.setImageViewLayoutY(sourceY);
 		checkBoundries(source);
+	}
+	
+	private double roundToGridSize(double value, int gridValue) {
+		return Math.round(value/gridValue) * gridValue;
 	}
 	
 	private void checkBoundries(GameElementImageView imageView) {
