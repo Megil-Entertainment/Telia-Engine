@@ -48,10 +48,10 @@ public class MapEditor extends Pane{
 	
 	private void moveNode(MouseEvent event) {
 		var source = (GameElementImageView) event.getSource();
-		var sourceX = roundToNearest((event.getSceneX() + dx), gridWidth);
-		var sourceY = roundToNearest((event.getSceneY() + dy), gridHeight);
-		source.setImageViewLayoutX(sourceX);
-		source.setImageViewLayoutY(sourceY);
+		source.setImageViewLayoutX(
+				roundToNearest((event.getSceneX() + dx), gridWidth));
+		source.setImageViewLayoutY(
+				roundToNearest((event.getSceneY() + dy), gridHeight));
 		checkBoundries(source);
 	}
 	
