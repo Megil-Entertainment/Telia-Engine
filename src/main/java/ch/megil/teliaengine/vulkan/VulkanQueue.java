@@ -22,6 +22,13 @@ public class VulkanQueue {
 	private int presentQueueFamInd;
 	private int presentQueueCount;
 	
+	public VulkanQueue() {
+		graphicsQueueFamInd = Integer.MAX_VALUE;
+		graphicsQueueCount = 0;
+		presentQueueFamInd = Integer.MAX_VALUE;
+		presentQueueCount = 0;
+	}
+	
 	/**
 	 * @param physicalDevice An initialized {@link VulkanPhysicalDevice}
 	 * @param surface A window surface. See {@link GLFWVulkan#glfwCreateWindowSurface}
@@ -77,7 +84,7 @@ public class VulkanQueue {
 		presentQueueCount = 0;
 	}
 	
-	public int getGraphicsFam() {
+	public int getGraphicsFamily() {
 		return graphicsQueueFamInd;
 	}
 	
@@ -85,11 +92,15 @@ public class VulkanQueue {
 		return graphicsQueueCount;
 	}
 	
-	public int getPresentFam() {
+	public int getPresentFamily() {
 		return presentQueueFamInd;
 	}
 	
 	public int getPresentQueueCount() {
 		return presentQueueCount;
+	}
+	
+	public boolean useDifferentFamilies() {
+		return graphicsQueueFamInd != presentQueueFamInd;
 	}
 }

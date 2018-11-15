@@ -26,7 +26,7 @@ public class VulkanCommandPoolAndBuffer {
 	 * @param swapchainAndQueue An initialized {@link VulkanQueue}
 	 */
 	public void init(VulkanLogicalDevice logicalDevice, VulkanQueue swapchainAndQueue) throws VulkanException {
-		commandPool = createCommandPool(logicalDevice.get(), swapchainAndQueue.getGraphicsFam());
+		commandPool = createCommandPool(logicalDevice.get(), swapchainAndQueue.getGraphicsFamily());
 		commandBuffer = createCommandBuffer(logicalDevice.get(), commandPool);
 	}
 	
@@ -84,9 +84,9 @@ public class VulkanCommandPoolAndBuffer {
 			commandBuffer = null;
 		}
 		
-		if (commandPool != NULL) {
+		if (commandPool != VK_NULL_HANDLE) {
 			vkDestroyCommandPool(device.get(), commandPool, null);
-			commandPool = NULL;
+			commandPool = VK_NULL_HANDLE;
 		}
 	}
 	

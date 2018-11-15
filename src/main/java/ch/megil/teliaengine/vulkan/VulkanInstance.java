@@ -41,7 +41,8 @@ public class VulkanInstance {
 				.apiVersion(vulkanVersion);
 		
 		var enabledExtensionNames = memAllocPointer(requiredExtensions.capacity())
-				.put(requiredExtensions).flip();
+				.put(requiredExtensions)
+				.flip();
 		
 		var instInfo = VkInstanceCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO)

@@ -77,9 +77,9 @@ public class GameMain {
 		windowSurface = createGlfwWindowSurface();
 		
 		queue.init(physicalDevice, windowSurface);
-		swapchain.init(windowSurface);
-		
 		logicalDevice.init(physicalDevice, queue);
+		swapchain.init(physicalDevice, windowSurface, queue, logicalDevice);
+		
 		commandPoolAndBuffer.init(logicalDevice, queue);
 		
 		glfwShowWindow(window);
@@ -93,9 +93,9 @@ public class GameMain {
 	
 	public void cleanUp() {
 		// Destroy bottom up
+		swapchain.cleanUp(logicalDevice);
 		commandPoolAndBuffer.cleanUp(logicalDevice);
 		logicalDevice.cleanUp();
-		swapchain.cleanUp();
 		queue.cleanUp();
 		
 		//TODO: check if there is a possibility to destroy surface
@@ -114,7 +114,7 @@ public class GameMain {
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 		//TODO fullscreen?
 //		var window = glfwCreateWindow(1920, 1080, SystemConfiguration.GAME_NAME.getConfiguration(), glfwGetPrimaryMonitor(), NULL);
-		var window = glfwCreateWindow(800, 600, SystemConfiguration.GAME_NAME.getConfiguration(), NULL, NULL);
+		var window = glfwCreateWindow(1280, 720, SystemConfiguration.GAME_NAME.getConfiguration(), NULL, NULL);
 
 		return window;
 	}

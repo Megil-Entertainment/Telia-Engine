@@ -1,32 +1,238 @@
 package ch.megil.teliaengine.vulkan;
 
+import static org.lwjgl.system.MemoryUtil.memAllocInt;
+import static org.lwjgl.system.MemoryUtil.memAllocLong;
+import static org.lwjgl.system.MemoryUtil.memFree;
+import static org.lwjgl.vulkan.KHRSurface.*;
 import static org.lwjgl.vulkan.KHRSwapchain.VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+import static org.lwjgl.vulkan.KHRSwapchain.vkCreateSwapchainKHR;
+import static org.lwjgl.vulkan.KHRSwapchain.vkDestroySwapchainKHR;
+import static org.lwjgl.vulkan.KHRSwapchain.vkGetSwapchainImagesKHR;
+import static org.lwjgl.vulkan.VK10.*;
 
 import org.lwjgl.glfw.GLFWVulkan;
-import org.lwjgl.vulkan.VkSwapchainCreateInfoKHR;
+import org.lwjgl.vulkan.*;
+
+import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
 /**
  * This class needs setup first with {@link #init} and
  * needs to be cleaned up before destruction with {@link #cleanUp}.
  */
 public class VulkanSwapchain {
+	private long swapchain;
+	private int imgBufferCount;
+	private long[] imgBuffers;
+	private long[] imgBufferViews;
 	
 	/**
+	 * Initializes a swapchain with a tripple buffering vsync strategy.
+	 * 
+	 * @param physicalDevice An initialized {@link VulkanPhysicalDevice}
 	 * @param surface A window surface. See {@link GLFWVulkan#glfwCreateWindowSurface}
 	 */
-	public void init(long surface) {
-		var swapchainCreateInfo = VkSwapchainCreateInfoKHR.calloc()
-				.sType(VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR)
-				.surface(surface);
+	public void init(VulkanPhysicalDevice physicalDevice, long surface, VulkanQueue queue, VulkanLogicalDevice logicalDevice) throws VulkanException {
+		var colorFormat = getColorFormat(physicalDevice.get(), surface);
+		swapchain = createSwapchain(physicalDevice.get(), surface, queue, logicalDevice.get(), colorFormat);
+		imgBuffers = getSwapchainBuffers(logicalDevice.get(), swapchain);
 		
-		try {
-			//TODO: finish swapchain
-		} finally {
-			swapchainCreateInfo.free();
+		imgBufferCount = imgBuffers.length;
+		imgBufferViews = new long[imgBufferCount];
+		for (var i = 0; i < imgBufferCount; i++) {
+			imgBufferViews[i] = createImageView(logicalDevice.get(), colorFormat, imgBuffers[i]);
 		}
 	}
 	
-	public void cleanUp() {
-		//TODO: cleanup
+	private int getColorFormat(VkPhysicalDevice physicalDevice, long surface) throws VulkanException {
+		var preferedFormat = VK_FORMAT_B8G8R8A8_UNORM;
+		
+		var pFormatCount = memAllocInt(1);
+		
+		var res = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, pFormatCount, null);
+		
+		if (res != VK_SUCCESS) {
+			memFree(pFormatCount);
+			throw new VulkanException(res);
+		}
+		var formatCount = pFormatCount.get(0);
+		
+		var formats = VkSurfaceFormatKHR.calloc(formatCount);
+		res = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, pFormatCount, formats);
+		try {
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
+			
+			var colorFormat = formats.get(0).format();
+			if (colorFormat != preferedFormat) {
+				if (formatCount == 1 && colorFormat == VK_FORMAT_UNDEFINED) {
+					colorFormat = preferedFormat;
+				} else {
+					for (int i = 1; i < formatCount; i++) {
+						if (formats.get(i).format() == preferedFormat) {
+							colorFormat = preferedFormat;
+						}
+					}
+				}
+			}
+			
+			return colorFormat;
+		} finally {
+			formats.free();
+			memFree(pFormatCount);
+		}
+	}
+	
+	private long createSwapchain(VkPhysicalDevice physicalDevice, long surface, VulkanQueue queue, VkDevice logicalDevice, int colorFormat) throws VulkanException {
+		var surfaceCapabilities = VkSurfaceCapabilitiesKHR.calloc();
+		var swapchainCreateInfo = VkSwapchainCreateInfoKHR.calloc();
+		
+		var queueFamilyIndices = memAllocInt(2);
+		var pSwapchain = memAllocLong(1);
+		
+		try {
+			var res = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, surfaceCapabilities);
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
+			
+			var preTransform = surfaceCapabilities.currentTransform();
+			if ((surfaceCapabilities.supportedTransforms() & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) != 0) {
+				preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+			}
+			
+			int compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+			if ((surfaceCapabilities.supportedCompositeAlpha() & compositeAlpha) == 0) {
+				for (var alpha : new int[] {
+						VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
+						VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
+						VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR}) {
+					if ((surfaceCapabilities.supportedCompositeAlpha() & alpha) != 0) {
+						compositeAlpha = alpha;
+						break;
+					}
+				}
+			}
+		
+			swapchainCreateInfo
+					.sType(VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR)
+					.surface(surface)
+					.minImageCount(surfaceCapabilities.minImageCount()+1) // minImageCount + 1 results in tripple buffering
+					.imageFormat(colorFormat)
+					.imageColorSpace(VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+					.imageExtent(e ->
+							e.width(surfaceCapabilities.currentExtent().width())
+							.height(surfaceCapabilities.currentExtent().height()))
+					.imageArrayLayers(1)
+					.imageUsage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) //TODO: add more usages?
+					.imageSharingMode(VK_SHARING_MODE_EXCLUSIVE)
+					.pQueueFamilyIndices(null)
+					.preTransform(preTransform)
+					.compositeAlpha(compositeAlpha)
+					.presentMode(VK_PRESENT_MODE_FIFO_KHR) //TODO: add presentation fallback
+					.clipped(true)
+					.oldSwapchain(VK_NULL_HANDLE);
+			
+			if (queue.useDifferentFamilies()) {
+				swapchainCreateInfo.imageSharingMode(VK_SHARING_MODE_CONCURRENT);
+				queueFamilyIndices.put(queue.getGraphicsFamily());
+				queueFamilyIndices.put(queue.getPresentFamily());
+				// set queueFamilyIndexCount explicitly to have the correct number if not done queueFamilyIndexCount is always zero
+				VkSwapchainCreateInfoKHR.nqueueFamilyIndexCount(swapchainCreateInfo.address(), queueFamilyIndices.capacity());
+				swapchainCreateInfo.pQueueFamilyIndices(queueFamilyIndices);
+			}
+			
+			res = vkCreateSwapchainKHR(logicalDevice, swapchainCreateInfo, null, pSwapchain);
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
+			
+			var swapchain = pSwapchain.get(0);
+			return swapchain;
+		} finally {
+			memFree(pSwapchain);
+			memFree(queueFamilyIndices);
+			swapchainCreateInfo.free();
+			surfaceCapabilities.free();
+		}
+	}
+	
+	private long[] getSwapchainBuffers(VkDevice logicalDevice, long swapchain) throws VulkanException {
+		var pImageCount = memAllocInt(1);
+		var res = vkGetSwapchainImagesKHR(logicalDevice, swapchain, pImageCount, null);
+		if (res != VK_SUCCESS) {
+			memFree(pImageCount);
+			throw new VulkanException(res);
+		}
+		
+		var imageCount = pImageCount.get(0);
+		var pSwapchainImages = memAllocLong(imageCount);
+		
+		res = vkGetSwapchainImagesKHR(logicalDevice, swapchain, pImageCount, pSwapchainImages);
+		try {
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
+			
+			var swapchainImages = new long[imageCount];
+			for (var i = 0; i < imageCount; i++) {
+				swapchainImages[i] = pSwapchainImages.get(i);
+			}
+			
+			return swapchainImages;
+		} finally {
+			memFree(pSwapchainImages);
+			memFree(pImageCount);
+		}
+	}
+	
+	private long createImageView(VkDevice logicalDevice, int colorFormat, long bufferHandle) throws VulkanException {
+		var imageViewCreateInfo = VkImageViewCreateInfo.calloc()
+				.sType(VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO)
+				.flags(0)
+				.image(bufferHandle)
+				.viewType(VK_IMAGE_VIEW_TYPE_2D)
+				.format(colorFormat)
+				.components(c ->
+						c.r(VK_COMPONENT_SWIZZLE_IDENTITY)
+						.g(VK_COMPONENT_SWIZZLE_IDENTITY)
+						.b(VK_COMPONENT_SWIZZLE_IDENTITY)
+						.a(VK_COMPONENT_SWIZZLE_IDENTITY))
+				.subresourceRange(sr ->
+						sr.aspectMask(VK_IMAGE_ASPECT_COLOR_BIT)
+						.baseMipLevel(0)
+						.levelCount(1)
+						.baseArrayLayer(0)
+						.layerCount(1));
+		
+		var pView = memAllocLong(1);
+		var res = vkCreateImageView(logicalDevice, imageViewCreateInfo, null, pView);
+		try {
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
+			
+			long imageView = pView.get(0);
+			return imageView;
+		} finally {
+			memFree(pView);
+			imageViewCreateInfo.free();
+		}
+	}
+	
+	public void cleanUp(VulkanLogicalDevice logicalDevice) {
+		for (var i = 0; i < imgBufferCount; i++) {
+			if (imgBufferViews[i] != VK_NULL_HANDLE) {
+				vkDestroyImageView(logicalDevice.get(), imgBufferViews[i], null);
+			}
+		}
+		imgBufferViews = null;
+		imgBuffers = null;
+		imgBufferCount = 0;
+		
+		if (swapchain != VK_NULL_HANDLE) {
+			vkDestroySwapchainKHR(logicalDevice.get(), swapchain, null);
+			swapchain = VK_NULL_HANDLE;
+		}
 	}
 }

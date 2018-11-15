@@ -38,8 +38,7 @@ public class VulkanLogicalDevice {
 		var queueCreateInfo = VkDeviceQueueCreateInfo.calloc(1)
 				.sType(VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO)
 				.pQueuePriorities(queuePriorities);
-		// set queueCount explicitly to have the correct number -> lwjgl bug?
-		// if not done queueCount is always zero
+		// set queueCount explicitly to have the correct number if not done queueCount is always zero
 		VkDeviceQueueCreateInfo.nqueueCount(queueCreateInfo.get(0).address(), queueCount);
 		
 		var vkKhrSwapchainExtension = memUTF8(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
@@ -50,8 +49,7 @@ public class VulkanLogicalDevice {
 				.sType(VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO)
 				.pQueueCreateInfos(queueCreateInfo)
 				.ppEnabledExtensionNames(enabledExtensionNames);
-		// set queueCreateInfoCount explicitly to have the correct number -> lwjgl bug?
-		// if not done queueCreateInfoCount is always zero
+		// set queueCreateInfoCount explicitly to have the correct number if not done queueCreateInfoCount is always zero
 		VkDeviceCreateInfo.nqueueCreateInfoCount(deviceCreateInfo.address(), 1);
 
 		var pDevice = memAllocPointer(1);
