@@ -94,8 +94,9 @@ public class GameMain {
 	
 	public void cleanUp() {
 		// Destroy bottom up
-		swapchain.cleanUp(logicalDevice);
 		commandPoolAndBuffer.cleanUp(logicalDevice);
+		
+		swapchain.cleanUp(logicalDevice);
 		logicalDevice.cleanUp();
 		queue.cleanUp();
 		
