@@ -16,7 +16,6 @@ import javafx.scene.shape.Rectangle;
 public class MapEditor extends Pane {
 	private Map map;
 	private Player player;
-	private Pane pane;
 	
 	private double dx;
 	private double dy;
@@ -25,16 +24,13 @@ public class MapEditor extends Pane {
 	private int gridHeight;
 	
 	public MapEditor() {
-//		pane = new Pane();
-		pane = this;
 		var clip = new Rectangle();
 		clip.widthProperty().bind(this.widthProperty());
 		clip.heightProperty().bind(this.heightProperty());
-		pane.setClip(clip);
-		pane.setOnMousePressed(this::onMapDragStart);
-		pane.setOnMouseDragged(this::onDragMap);
-//		this.getChildren().add(pane);
-		pane.getChildren().addListener((ListChangeListener<Node>) c -> {
+		setClip(clip);
+		setOnMousePressed(this::onMapDragStart);
+		setOnMouseDragged(this::onDragMap);
+		getChildren().addListener((ListChangeListener<Node>) c -> {
 			while(c.next()) {
 				c.getAddedSubList().forEach(n -> {
 					n.setOnMousePressed(this::onDragStart);
@@ -49,7 +45,7 @@ public class MapEditor extends Pane {
 	public void addGameObject(GameObject obj) {
 		if (map != null) {
 			map.addObject(obj);
-			pane.getChildren().add(new GameElementImageView(obj));
+			getChildren().add(new GameElementImageView(obj));
 		}
 	}
 	
@@ -64,9 +60,8 @@ public class MapEditor extends Pane {
 	
 	public void onMapDragStart(MouseEvent event) {
 		if (event.isSecondaryButtonDown()) {
-			var clip = (Rectangle)pane.getClip();
-			dx = clip.getX() - event.getSceneX();
-			dy = clip.getY() - event.getSceneY();
+			dx = getTranslateX() - event.getSceneX();
+			dy = getTranslateY() - event.getSceneY();
 		}
 	}
 	
@@ -80,11 +75,11 @@ public class MapEditor extends Pane {
 	}
 	
 	private void moveMap(MouseEvent event) {
-		var clip = (Rectangle)pane.getClip();
-		clip.setX(event.getSceneX() + dx);
-		clip.setY(event.getSceneY() + dy);
-		pane.setTranslateX(0 - clip.getX());
-		pane.setTranslateY(0 - clip.getY());
+		var clip = (Rectangle) getClip();
+		setTranslateX(event.getSceneX() + dx);
+		setTranslateY(event.getSceneY() + dy);
+		clip.setX(0 - getTranslateX());
+		clip.setY(0 - getTranslateY());
 	}
 	
 	private double roundToNearest(double value, int roundFactor) {
@@ -137,17 +132,12 @@ public class MapEditor extends Pane {
 		getChildren().clear();
 		
 		this.map = map;
-		map.getMapObjects().forEach(o -> pane.getChildren().add(new GameElementImageView(o)));
+		map.getMapObjects().forEach(o -> getChildren().add(new GameElementImageView(o)));
 		this.player = Player.getEngineCopy();
-		pane.getChildren().add(new GameElementImageView(player));
-//		pane.setMinWidth(map.getWidth());
-//		pane.setMaxWidth(map.getWidth());
-//		pane.setMinHeight(map.getHeight());
-//		pane.setMaxHeight(map.getHeight());		
-//		pane.resize(map.getWidth(), map.getHeight());;
-		pane.setTranslateX(0);
-		pane.setTranslateY(0);
-		var clip = (Rectangle)pane.getClip();
+		getChildren().add(new GameElementImageView(player));
+		setTranslateX(0);
+		setTranslateY(0);
+		var clip = (Rectangle) getClip();
 		clip.setX(0);
 		clip.setY(0);
 	}
