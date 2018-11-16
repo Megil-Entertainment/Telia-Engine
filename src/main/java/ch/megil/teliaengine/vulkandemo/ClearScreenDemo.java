@@ -1,4 +1,4 @@
-package ch.megil.teliaengine;
+package ch.megil.teliaengine.vulkandemo;
 
 import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.vulkan.EXTDebugReport.*;
