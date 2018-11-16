@@ -31,59 +31,18 @@ public class VulkanSwapchain {
 	 * @param physicalDevice An initialized {@link VulkanPhysicalDevice}
 	 * @param surface A window surface. See {@link GLFWVulkan#glfwCreateWindowSurface}
 	 */
-	public void init(VulkanPhysicalDevice physicalDevice, long surface, VulkanQueue queue, VulkanLogicalDevice logicalDevice) throws VulkanException {
-		var colorFormat = getColorFormat(physicalDevice.get(), surface);
-		swapchain = createSwapchain(physicalDevice.get(), surface, queue, logicalDevice.get(), colorFormat);
+	public void init(VulkanPhysicalDevice physicalDevice, long surface, VulkanQueue queue, VulkanLogicalDevice logicalDevice, VulkanColor color) throws VulkanException {
+		swapchain = createSwapchain(physicalDevice.get(), surface, queue, logicalDevice.get(), color);
 		imgBuffers = getSwapchainBuffers(logicalDevice.get(), swapchain);
 		
 		imgBufferCount = imgBuffers.length;
 		imgBufferViews = new long[imgBufferCount];
 		for (var i = 0; i < imgBufferCount; i++) {
-			imgBufferViews[i] = createImageView(logicalDevice.get(), colorFormat, imgBuffers[i]);
+			imgBufferViews[i] = createImageView(logicalDevice.get(), color.getFormat(), imgBuffers[i]);
 		}
 	}
 	
-	private int getColorFormat(VkPhysicalDevice physicalDevice, long surface) throws VulkanException {
-		var preferedFormat = VK_FORMAT_B8G8R8A8_UNORM;
-		
-		var pFormatCount = memAllocInt(1);
-		
-		var res = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, pFormatCount, null);
-		
-		if (res != VK_SUCCESS) {
-			memFree(pFormatCount);
-			throw new VulkanException(res);
-		}
-		var formatCount = pFormatCount.get(0);
-		
-		var formats = VkSurfaceFormatKHR.calloc(formatCount);
-		res = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, pFormatCount, formats);
-		try {
-			if (res != VK_SUCCESS) {
-				throw new VulkanException(res);
-			}
-			
-			var colorFormat = formats.get(0).format();
-			if (colorFormat != preferedFormat) {
-				if (formatCount == 1 && colorFormat == VK_FORMAT_UNDEFINED) {
-					colorFormat = preferedFormat;
-				} else {
-					for (int i = 1; i < formatCount; i++) {
-						if (formats.get(i).format() == preferedFormat) {
-							colorFormat = preferedFormat;
-						}
-					}
-				}
-			}
-			
-			return colorFormat;
-		} finally {
-			formats.free();
-			memFree(pFormatCount);
-		}
-	}
-	
-	private long createSwapchain(VkPhysicalDevice physicalDevice, long surface, VulkanQueue queue, VkDevice logicalDevice, int colorFormat) throws VulkanException {
+	private long createSwapchain(VkPhysicalDevice physicalDevice, long surface, VulkanQueue queue, VkDevice logicalDevice, VulkanColor color) throws VulkanException {
 		var surfaceCapabilities = VkSurfaceCapabilitiesKHR.calloc();
 		var swapchainCreateInfo = VkSwapchainCreateInfoKHR.calloc();
 		
@@ -118,8 +77,8 @@ public class VulkanSwapchain {
 					.sType(VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR)
 					.surface(surface)
 					.minImageCount(surfaceCapabilities.minImageCount()+1) // minImageCount + 1 results in tripple buffering
-					.imageFormat(colorFormat)
-					.imageColorSpace(VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+					.imageFormat(color.getFormat())
+					.imageColorSpace(color.getSpace())
 					.imageExtent(e ->
 							e.width(surfaceCapabilities.currentExtent().width())
 							.height(surfaceCapabilities.currentExtent().height()))

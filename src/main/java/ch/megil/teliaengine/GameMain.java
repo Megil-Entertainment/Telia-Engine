@@ -6,6 +6,7 @@ import static org.lwjgl.glfw.GLFWVulkan.glfwVulkanSupported;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.system.MemoryUtil.memAllocLong;
 import static org.lwjgl.system.MemoryUtil.memFree;
+import static org.lwjgl.vulkan.VK10.VK_FORMAT_B8G8R8A8_UNORM;
 import static org.lwjgl.vulkan.VK10.VK_MAKE_VERSION;
 import static org.lwjgl.vulkan.VK10.VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
 import static org.lwjgl.vulkan.VK10.VK_SUCCESS;
@@ -27,16 +28,18 @@ public class GameMain {
 	private VulkanInstance instance;
 	private VulkanPhysicalDevice physicalDevice;
 	private VulkanQueue queue;
-	private VulkanSwapchain swapchain;
 	private VulkanLogicalDevice logicalDevice;
+	private VulkanColor color;
+	private VulkanSwapchain swapchain;
 	private VulkanCommandPoolAndBuffer commandPoolAndBuffer;
 	
 	public GameMain() {
 		instance = new VulkanInstance();
 		physicalDevice = new VulkanPhysicalDevice();
 		queue = new VulkanQueue();
-		swapchain = new VulkanSwapchain();
 		logicalDevice = new VulkanLogicalDevice();
+		color = new VulkanColor();
+		swapchain = new VulkanSwapchain();
 		commandPoolAndBuffer = new VulkanCommandPoolAndBuffer();
 	}
 	
@@ -78,7 +81,8 @@ public class GameMain {
 		
 		queue.init(physicalDevice, windowSurface);
 		logicalDevice.init(physicalDevice, queue);
-		swapchain.init(physicalDevice, windowSurface, queue, logicalDevice);
+		color.init(physicalDevice, windowSurface, VK_FORMAT_B8G8R8A8_UNORM);
+		swapchain.init(physicalDevice, windowSurface, queue, logicalDevice, color);
 		
 		commandPoolAndBuffer.init(logicalDevice, queue);
 		
@@ -97,6 +101,7 @@ public class GameMain {
 		commandPoolAndBuffer.cleanUp(logicalDevice);
 		
 		swapchain.cleanUp(logicalDevice);
+		color.cleanUp();
 		logicalDevice.cleanUp();
 		queue.cleanUp();
 		
