@@ -718,9 +718,12 @@ public class ColoredTriangleDemo {
         FloatBuffer fb = vertexBuffer.asFloatBuffer();
         // The triangle will showup upside-down, because Vulkan does not do proper viewport transformation to
         // account for inverted Y axis between the window coordinate system and clip space/NDC
-        fb.put(-0.5f).put(-0.5f).put(1.0f).put(0.0f).put(0.0f);
-        fb.put( 0.5f).put(-0.5f).put(0.0f).put(1.0f).put(0.0f);
-        fb.put( 0.0f).put( 0.5f).put(0.0f).put(0.0f).put(1.0f);
+//        fb.put(-0.5f).put( 0.5f).put(0.0f).put(0.0f).put(1.0f);
+//        fb.put( 0.5f).put( 0.5f).put(0.0f).put(0.0f).put(1.0f);
+//        fb.put( 0.0f).put(-0.5f).put(1.0f).put(1.0f).put(1.0f);
+        fb.put( 0.5f*(float)Math.cos( 0)).put( 0.5f*(float)Math.sin( 0)).put(0.0f).put(0.0f).put(1.0f);
+        fb.put( 0.5f*(float)Math.cos(P1)).put( 0.5f*(float)Math.sin(P1)).put(0.0f).put(0.0f).put(1.0f);
+        fb.put( 0.5f*(float)Math.cos(P2)).put( 0.5f*(float)Math.sin(P2)).put(1.0f).put(1.0f).put(1.0f);
 
         VkMemoryAllocateInfo memAlloc = VkMemoryAllocateInfo.calloc()
                 .sType(VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO)
@@ -812,6 +815,82 @@ public class ColoredTriangleDemo {
 
         Vertices ret = new Vertices();
         ret.createInfo = vi;
+        ret.verticesBuf = verticesBuf;
+        return ret;
+    }
+    
+    private static final double P1 = 2*Math.PI/3;
+    private static final double P2 = 4*Math.PI/3;
+    
+    private static Vertices createVertices(VkPhysicalDeviceMemoryProperties deviceMemoryProperties, VkDevice device, double angle) {
+        ByteBuffer vertexBuffer = memAlloc(3 * (2 + 3) * 4);
+        FloatBuffer fb = vertexBuffer.asFloatBuffer();
+        // The triangle will showup upside-down, because Vulkan does not do proper viewport transformation to
+        // account for inverted Y axis between the window coordinate system and clip space/NDC
+        fb.put( 0.5f*(float)Math.cos(angle   )).put( 0.5f*(float)Math.sin(angle   )).put(0.0f).put(0.0f).put(1.0f);
+        fb.put( 0.5f*(float)Math.cos(angle+P1)).put( 0.5f*(float)Math.sin(angle+P1)).put(0.0f).put(0.0f).put(1.0f);
+        fb.put( 0.5f*(float)Math.cos(angle+P2)).put( 0.5f*(float)Math.sin(angle+P2)).put(1.0f).put(1.0f).put(1.0f);
+
+        VkMemoryAllocateInfo memAlloc = VkMemoryAllocateInfo.calloc()
+                .sType(VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO)
+                .pNext(NULL)
+                .allocationSize(0)
+                .memoryTypeIndex(0);
+        VkMemoryRequirements memReqs = VkMemoryRequirements.calloc();
+
+        int err;
+
+        // Generate vertex buffer
+        //  Setup
+        VkBufferCreateInfo bufInfo = VkBufferCreateInfo.calloc()
+                .sType(VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO)
+                .pNext(NULL)
+                .size(vertexBuffer.remaining())
+                .usage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
+                .flags(0);
+        LongBuffer pBuffer = memAllocLong(1);
+        err = vkCreateBuffer(device, bufInfo, null, pBuffer);
+        long verticesBuf = pBuffer.get(0);
+        memFree(pBuffer);
+        bufInfo.free();
+        if (err != VK_SUCCESS) {
+            throw new AssertionError("Failed to create vertex buffer: " + translateVulkanResult(err));
+        }
+
+        vkGetBufferMemoryRequirements(device, verticesBuf, memReqs);
+        memAlloc.allocationSize(memReqs.size());
+        IntBuffer memoryTypeIndex = memAllocInt(1);
+        getMemoryType(deviceMemoryProperties, memReqs.memoryTypeBits(), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, memoryTypeIndex);
+        memAlloc.memoryTypeIndex(memoryTypeIndex.get(0));
+        memFree(memoryTypeIndex);
+        memReqs.free();
+
+        LongBuffer pMemory = memAllocLong(1);
+        err = vkAllocateMemory(device, memAlloc, null, pMemory);
+        long verticesMem = pMemory.get(0);
+        memFree(pMemory);
+        if (err != VK_SUCCESS) {
+            throw new AssertionError("Failed to allocate vertex memory: " + translateVulkanResult(err));
+        }
+
+        PointerBuffer pData = memAllocPointer(1);
+        err = vkMapMemory(device, verticesMem, 0, memAlloc.allocationSize(), 0, pData);
+        memAlloc.free();
+        long data = pData.get(0);
+        memFree(pData);
+        if (err != VK_SUCCESS) {
+            throw new AssertionError("Failed to map vertex memory: " + translateVulkanResult(err));
+        }
+
+        memCopy(memAddress(vertexBuffer), data, vertexBuffer.remaining());
+        memFree(vertexBuffer);
+        vkUnmapMemory(device, verticesMem);
+        err = vkBindBufferMemory(device, verticesBuf, verticesMem, 0);
+        if (err != VK_SUCCESS) {
+            throw new AssertionError("Failed to bind memory to vertex buffer: " + translateVulkanResult(err));
+        }
+
+        Vertices ret = new Vertices();
         ret.verticesBuf = verticesBuf;
         return ret;
     }
@@ -1192,6 +1271,7 @@ public class ColoredTriangleDemo {
 
         final class SwapchainRecreator {
             boolean mustRecreate = true;
+            int i = 0;
             void recreate() {
                 // Begin the setup command buffer (the one we will use for swapchain/framebuffer creation)
                 VkCommandBufferBeginInfo cmdBufInfo = VkCommandBufferBeginInfo.calloc()
@@ -1222,6 +1302,8 @@ public class ColoredTriangleDemo {
                 if (renderCommandBuffers != null) {
                     vkResetCommandPool(device, renderCommandPool, VK_FLAGS_NONE);
                 }
+                //TODO
+                Vertices vertices = createVertices(memoryProperties, device, Math.PI/180*(i+=2));
                 renderCommandBuffers = createRenderCommandBuffers(device, renderCommandPool, framebuffers, renderPass, width, height, pipeline,
                         vertices.verticesBuf);
 
@@ -1285,7 +1367,7 @@ public class ColoredTriangleDemo {
             // Handle window messages. Resize events happen exactly here.
             // So it is safe to use the new swapchain images and framebuffers afterwards.
             glfwPollEvents();
-            if (swapchainRecreator.mustRecreate)
+//TODO            if (swapchainRecreator.mustRecreate)
                 swapchainRecreator.recreate();
 
             // Create a semaphore to wait for the swapchain to acquire the next image
