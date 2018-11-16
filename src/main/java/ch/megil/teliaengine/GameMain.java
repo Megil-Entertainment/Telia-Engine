@@ -51,7 +51,7 @@ public class GameMain {
 		
 		try {
 			init();
-//			loop();
+			loop();
 		} finally {
 			cleanUp();
 		}
@@ -87,6 +87,7 @@ public class GameMain {
 	
 	private void loop() {
 		while(!glfwWindowShouldClose(window)) {
+			glfwPollEvents();
 			//TODO: render loop
 		}
 	}

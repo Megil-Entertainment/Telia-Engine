@@ -1302,7 +1302,6 @@ public class ColoredTriangleDemo {
                 if (renderCommandBuffers != null) {
                     vkResetCommandPool(device, renderCommandPool, VK_FLAGS_NONE);
                 }
-                //TODO
                 Vertices vertices = createVertices(memoryProperties, device, Math.PI/180*(i+=2));
                 renderCommandBuffers = createRenderCommandBuffers(device, renderCommandPool, framebuffers, renderPass, width, height, pipeline,
                         vertices.verticesBuf);
