@@ -30,6 +30,9 @@ public class VulkanSwapchain {
 	 * 
 	 * @param physicalDevice An initialized {@link VulkanPhysicalDevice}
 	 * @param surface A window surface. See {@link GLFWVulkan#glfwCreateWindowSurface}
+	 * @param queue An initialized {@link VulkanQueue}
+	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
+	 * @param color An initialized {@link VulkanColor}
 	 */
 	public void init(VulkanPhysicalDevice physicalDevice, long surface, VulkanQueue queue, VulkanLogicalDevice logicalDevice, VulkanColor color) throws VulkanException {
 		swapchain = createSwapchain(physicalDevice.get(), surface, queue, logicalDevice.get(), color);
