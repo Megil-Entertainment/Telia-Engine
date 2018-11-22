@@ -78,6 +78,7 @@ public class MapEditor extends Pane {
 		var clip = (Rectangle) getClip();
 		setTranslateX(event.getSceneX() + dx);
 		setTranslateY(event.getSceneY() + dy);
+		checkMapBoundries(clip);
 		clip.setX(0 - getTranslateX());
 		clip.setY(0 - getTranslateY());
 	}
@@ -103,6 +104,23 @@ public class MapEditor extends Pane {
 		}
 		if(imageView.getLayoutY() + sourceHeight > map.getHeight()) {
 			imageView.setImageViewLayoutY(map.getHeight() - sourceHeight);
+		}
+	}
+	
+	private void checkMapBoundries(Rectangle rectangle) {
+		var offsetX = rectangle.getWidth() - map.getWidth();
+		var offsetY = rectangle.getHeight() - map.getHeight();
+		
+		if(getTranslateX() < offsetX) {
+			setTranslateX(offsetX);
+		} else if (getTranslateX() > 0) {
+			setTranslateX(0);
+		}
+		
+		if(getTranslateY() < offsetY) {
+			setTranslateY(offsetY);
+		} else if (getTranslateY() > 0) {
+			setTranslateY(0);
 		}
 	}
 	
