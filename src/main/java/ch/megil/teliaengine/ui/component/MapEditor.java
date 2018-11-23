@@ -86,21 +86,17 @@ public class MapEditor extends Pane {
 	}
 	
 	private void checkBoundries(GameElementImageView imageView) {
-		double sourceWidth;
-		double sourceHeight;
-		sourceWidth = imageView.getImage().getWidth();
-		sourceHeight = imageView.getImage().getHeight();
+		var sourceWidth = imageView.getImage().getWidth();
+		var sourceHeight = imageView.getImage().getHeight();
 		
 		if(imageView.getLayoutX() < 0) {
 			imageView.setImageViewLayoutX(0);
-		}
-		if(imageView.getLayoutX() + sourceWidth > map.getWidth()) {
+		} else if(imageView.getLayoutX() + sourceWidth > map.getWidth()) {
 			imageView.setImageViewLayoutX(map.getWidth() - sourceWidth);
 		}
 		if(imageView.getLayoutY() < 0) {
 			imageView.setImageViewLayoutY(0);
-		}
-		if(imageView.getLayoutY() + sourceHeight > map.getHeight()) {
+		} else if(imageView.getLayoutY() + sourceHeight > map.getHeight()) {
 			imageView.setImageViewLayoutY(map.getHeight() - sourceHeight);
 		}
 	}
