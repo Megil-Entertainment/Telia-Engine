@@ -32,6 +32,7 @@ public class GameMain {
 	private VulkanColor color;
 	private VulkanSwapchain swapchain;
 	private VulkanCommandPoolAndBuffer commandPoolAndBuffer;
+	private VulkanShader shader;
 	
 	public GameMain() {
 		instance = new VulkanInstance();
@@ -41,6 +42,7 @@ public class GameMain {
 		color = new VulkanColor();
 		swapchain = new VulkanSwapchain();
 		commandPoolAndBuffer = new VulkanCommandPoolAndBuffer();
+		shader = new VulkanShader();
 	}
 	
 	public GameMain(String mapName) throws AssetNotFoundException, AssetFormatException {
@@ -83,8 +85,8 @@ public class GameMain {
 		logicalDevice.init(physicalDevice, queue);
 		color.init(physicalDevice, windowSurface, VK_FORMAT_B8G8R8A8_UNORM);
 		swapchain.init(physicalDevice, windowSurface, queue, logicalDevice, color);
-		
 		commandPoolAndBuffer.init(logicalDevice, queue);
+		shader.init(logicalDevice);
 		
 		glfwShowWindow(window);
 	}
@@ -98,8 +100,8 @@ public class GameMain {
 	
 	public void cleanUp() {
 		// Destroy bottom up
+		shader.cleanUp(logicalDevice);
 		commandPoolAndBuffer.cleanUp(logicalDevice);
-		
 		swapchain.cleanUp(logicalDevice);
 		color.cleanUp();
 		logicalDevice.cleanUp();

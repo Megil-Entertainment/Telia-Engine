@@ -22,10 +22,10 @@ public class VulkanCommandPoolAndBuffer {
 	
 	/**
 	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
-	 * @param swapchainAndQueue An initialized {@link VulkanQueue}
+	 * @param queue An initialized {@link VulkanQueue}
 	 */
-	public void init(VulkanLogicalDevice logicalDevice, VulkanQueue swapchainAndQueue) throws VulkanException {
-		commandPool = createCommandPool(logicalDevice.get(), swapchainAndQueue.getGraphicsFamily());
+	public void init(VulkanLogicalDevice logicalDevice, VulkanQueue queue) throws VulkanException {
+		commandPool = createCommandPool(logicalDevice.get(), queue.getGraphicsFamily());
 		commandBuffer = createCommandBuffer(logicalDevice.get(), commandPool);
 	}
 	

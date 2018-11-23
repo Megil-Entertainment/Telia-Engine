@@ -13,6 +13,10 @@ public class VulkanException extends Exception {
 	public VulkanException(String message) {
 		super(message);
 	}
+	
+	public VulkanException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
 	public VulkanException(int resultCode) {
 		this(String.format("[Error Code: %d] %s", resultCode, translateVulkanResult(resultCode)));
