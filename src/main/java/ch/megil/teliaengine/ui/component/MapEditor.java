@@ -9,8 +9,9 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 
-public class MapEditor extends Pane{
+public class MapEditor extends Pane {
 	private Map map;
 	private Player player;
 	
@@ -21,6 +22,12 @@ public class MapEditor extends Pane{
 	private int gridHeight;
 	
 	public MapEditor() {
+		var clip = new Rectangle();
+		clip.widthProperty().bind(this.widthProperty());
+		clip.heightProperty().bind(this.heightProperty());
+		setClip(clip);
+		setOnMousePressed(this::onMapDragStart);
+		setOnMouseDragged(this::onDragMap);
 		getChildren().addListener((ListChangeListener<Node>) c -> {
 			while(c.next()) {
 				c.getAddedSubList().forEach(n -> {
@@ -41,9 +48,19 @@ public class MapEditor extends Pane{
 	}
 	
 	public void onDragStart(MouseEvent event) {
-		var source = (Node) event.getSource();
-		dx = source.getLayoutX() - event.getSceneX();
-		dy = source.getLayoutY() - event.getSceneY();
+		if (event.isPrimaryButtonDown()) {
+			var source = (Node) event.getSource();
+			
+			dx = source.getLayoutX() - event.getSceneX();
+			dy = source.getLayoutY() - event.getSceneY();
+		}
+	}
+	
+	public void onMapDragStart(MouseEvent event) {
+		if (event.isSecondaryButtonDown()) {
+			dx = getTranslateX() - event.getSceneX();
+			dy = getTranslateY() - event.getSceneY();
+		}
 	}
 	
 	private void moveNode(MouseEvent event) {
@@ -55,33 +72,62 @@ public class MapEditor extends Pane{
 		checkBoundries(source);
 	}
 	
+	private void moveMap(MouseEvent event) {
+		var clip = (Rectangle) getClip();
+		setTranslateX(event.getSceneX() + dx);
+		setTranslateY(event.getSceneY() + dy);
+		checkMapBoundries(clip);
+		clip.setX(0 - getTranslateX());
+		clip.setY(0 - getTranslateY());
+	}
+	
 	private double roundToNearest(double value, int roundFactor) {
 		return Math.round(value/roundFactor) * roundFactor;
 	}
 	
 	private void checkBoundries(GameElementImageView imageView) {
-		double sourceWidth;
-		double sourceHeight;
-		sourceWidth = imageView.getImage().getWidth();
-		sourceHeight = imageView.getImage().getHeight();
+		var sourceWidth = imageView.getImage().getWidth();
+		var sourceHeight = imageView.getImage().getHeight();
 		
 		if(imageView.getLayoutX() < 0) {
 			imageView.setImageViewLayoutX(0);
-		}
-		if(imageView.getLayoutX() + sourceWidth > map.getWidth()) {
+		} else if(imageView.getLayoutX() + sourceWidth > map.getWidth()) {
 			imageView.setImageViewLayoutX(map.getWidth() - sourceWidth);
 		}
 		if(imageView.getLayoutY() < 0) {
 			imageView.setImageViewLayoutY(0);
-		}
-		if(imageView.getLayoutY() + sourceHeight > map.getHeight()) {
+		} else if(imageView.getLayoutY() + sourceHeight > map.getHeight()) {
 			imageView.setImageViewLayoutY(map.getHeight() - sourceHeight);
+		}
+	}
+	
+	private void checkMapBoundries(Rectangle rectangle) {
+		var offsetX = rectangle.getWidth() - map.getWidth();
+		var offsetY = rectangle.getHeight() - map.getHeight();
+		
+		if(getTranslateX() < offsetX) {
+			setTranslateX(offsetX);
+		} else if (getTranslateX() > 0) {
+			setTranslateX(0);
+		}
+		
+		if(getTranslateY() < offsetY) {
+			setTranslateY(offsetY);
+		} else if (getTranslateY() > 0) {
+			setTranslateY(0);
 		}
 	}
 	
 	public void onDragNode(MouseEvent event) {
 		if(event.isPrimaryButtonDown()) {
 			moveNode(event);
+			event.consume();
+		}
+	}
+	
+	public void onDragMap(MouseEvent event) {
+		if(event.isSecondaryButtonDown()) {
+			moveMap(event);
 			event.consume();
 		}
 	}
@@ -101,6 +147,10 @@ public class MapEditor extends Pane{
 		map.getMapObjects().forEach(o -> getChildren().add(new GameElementImageView(o)));
 		this.player = Player.getEngineCopy();
 		getChildren().add(new GameElementImageView(player));
-		
+		setTranslateX(0);
+		setTranslateY(0);
+		var clip = (Rectangle) getClip();
+		clip.setX(0);
+		clip.setY(0);
 	}
 }
