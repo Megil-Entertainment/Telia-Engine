@@ -54,10 +54,6 @@ public class MapEditor extends Pane {
 		
 		nodeDeselected = new DropShadow();
 		nodeDeselected.setColor(Color.TRANSPARENT);
-		nodeDeselected.setOffsetX(0f);
-		nodeDeselected.setOffsetY(0f);
-		nodeDeselected.setWidth(0);
-		nodeDeselected.setHeight(0);
 		
 	}
 	
@@ -70,8 +66,9 @@ public class MapEditor extends Pane {
 	
 	public void onDragStart(MouseEvent event) {
 		if (event.isPrimaryButtonDown()) {
-			var source = (Node) event.getSource();
-			
+			var source = (GameElementImageView) event.getSource();
+			source.setIsSelected(true);
+			source.setEffect(nodeSelected);
 			dx = source.getLayoutX() - event.getSceneX();
 			dy = source.getLayoutY() - event.getSceneY();
 		}
@@ -141,8 +138,6 @@ public class MapEditor extends Pane {
 	public void onDragNode(MouseEvent event) {
 		if(event.isPrimaryButtonDown()) {
 			var source = (GameElementImageView) event.getSource();
-			source.setIsSelected(true);
-			source.setEffect(nodeSelected);
 			moveNode(event, source);
 			event.consume();
 		}
@@ -156,11 +151,10 @@ public class MapEditor extends Pane {
 	}
 	
 	public void onReleaseNode(MouseEvent event) {
-		if(event.isPrimaryButtonDown()) {
 			var source = (GameElementImageView) event.getSource();
 			source.setEffect(nodeDeselected);
 			source.setIsSelected(false);
-		}
+			event.consume();
 	}
 	
 	public Map getMap() {
