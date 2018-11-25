@@ -7,8 +7,10 @@ import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.ui.GameElementImageView;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class MapEditor extends Pane {
@@ -20,6 +22,9 @@ public class MapEditor extends Pane {
 	
 	private int gridWidth;
 	private int gridHeight;
+	
+	private DropShadow nodeSelected;
+	private DropShadow nodeDeselected;
 	
 	public MapEditor() {
 		var clip = new Rectangle();
@@ -33,11 +38,27 @@ public class MapEditor extends Pane {
 				c.getAddedSubList().forEach(n -> {
 					n.setOnMousePressed(this::onDragStart);
 					n.setOnMouseDragged(this::onDragNode);
+					n.setOnMouseReleased(this::onReleaseNode);
 					});
 			}});
 		
 		gridWidth = Integer.parseInt(SystemConfiguration.MAP_GRID_WIDTH.getConfiguration());
 		gridHeight = Integer.parseInt(SystemConfiguration.MAP_GRID_HEIGHT.getConfiguration());
+		
+		nodeSelected = new DropShadow();
+		nodeSelected.setColor(Color.DARKVIOLET);
+		nodeSelected.setOffsetX(0f);
+		nodeSelected.setOffsetY(0f);
+		nodeSelected.setWidth(50);
+		nodeSelected.setHeight(50);
+		
+		nodeDeselected = new DropShadow();
+		nodeDeselected.setColor(Color.TRANSPARENT);
+		nodeDeselected.setOffsetX(0f);
+		nodeDeselected.setOffsetY(0f);
+		nodeDeselected.setWidth(0);
+		nodeDeselected.setHeight(0);
+		
 	}
 	
 	public void addGameObject(GameObject obj) {
@@ -63,8 +84,7 @@ public class MapEditor extends Pane {
 		}
 	}
 	
-	private void moveNode(MouseEvent event) {
-		var source = (GameElementImageView) event.getSource();
+	private void moveNode(MouseEvent event, GameElementImageView source) {
 		source.setImageViewLayoutX(
 				roundToNearest((event.getSceneX() + dx), gridWidth));
 		source.setImageViewLayoutY(
@@ -120,7 +140,10 @@ public class MapEditor extends Pane {
 	
 	public void onDragNode(MouseEvent event) {
 		if(event.isPrimaryButtonDown()) {
-			moveNode(event);
+			var source = (GameElementImageView) event.getSource();
+			source.setIsSelected(true);
+			source.setEffect(nodeSelected);
+			moveNode(event, source);
 			event.consume();
 		}
 	}
@@ -129,6 +152,14 @@ public class MapEditor extends Pane {
 		if(event.isSecondaryButtonDown()) {
 			moveMap(event);
 			event.consume();
+		}
+	}
+	
+	public void onReleaseNode(MouseEvent event) {
+		if(event.isPrimaryButtonDown()) {
+			var source = (GameElementImageView) event.getSource();
+			source.setEffect(nodeDeselected);
+			source.setIsSelected(false);
 		}
 	}
 	
