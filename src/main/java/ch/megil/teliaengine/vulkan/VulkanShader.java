@@ -83,4 +83,12 @@ public class VulkanShader {
 			vertShader = NULL;
 		}
 	}
+	
+	public long getVertShader() {
+		return vertShader;
+	}
+	
+	public long getFragShader() {
+		return fragShader;
+	}
 }
