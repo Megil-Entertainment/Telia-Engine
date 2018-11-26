@@ -21,6 +21,7 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
  */
 public class VulkanSwapchain {
 	private long swapchain;
+	private VkExtent2D swapchainExtent;
 	private int imgBufferCount;
 	private long[] imgBuffers;
 	private long[] imgBufferViews;
@@ -35,7 +36,7 @@ public class VulkanSwapchain {
 	 * @param color An initialized {@link VulkanColor}
 	 */
 	public void init(VulkanPhysicalDevice physicalDevice, long surface, VulkanQueue queue, VulkanLogicalDevice logicalDevice, VulkanColor color) throws VulkanException {
-		swapchain = createSwapchain(physicalDevice.get(), surface, queue, logicalDevice.get(), color);
+		initSwapchain(physicalDevice.get(), surface, queue, logicalDevice.get(), color);
 		imgBuffers = getSwapchainBuffers(logicalDevice.get(), swapchain);
 		
 		imgBufferCount = imgBuffers.length;
@@ -45,7 +46,7 @@ public class VulkanSwapchain {
 		}
 	}
 	
-	private long createSwapchain(VkPhysicalDevice physicalDevice, long surface, VulkanQueue queue, VkDevice logicalDevice, VulkanColor color) throws VulkanException {
+	private void initSwapchain(VkPhysicalDevice physicalDevice, long surface, VulkanQueue queue, VkDevice logicalDevice, VulkanColor color) throws VulkanException {
 		var surfaceCapabilities = VkSurfaceCapabilitiesKHR.calloc();
 		var swapchainCreateInfo = VkSwapchainCreateInfoKHR.calloc();
 		
@@ -75,6 +76,11 @@ public class VulkanSwapchain {
 					}
 				}
 			}
+			
+			swapchainExtent = surfaceCapabilities.currentExtent();
+			if (swapchainExtent.width() == -1) {
+				swapchainExtent.width(200).height(200); //TODO: set dynamic to correct size
+			}
 		
 			swapchainCreateInfo
 					.sType(VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR)
@@ -83,8 +89,8 @@ public class VulkanSwapchain {
 					.imageFormat(color.getFormat())
 					.imageColorSpace(color.getSpace())
 					.imageExtent(e ->
-							e.width(surfaceCapabilities.currentExtent().width())
-							.height(surfaceCapabilities.currentExtent().height()))
+							e.width(swapchainExtent.width())
+							.height(swapchainExtent.height()))
 					.imageArrayLayers(1)
 					.imageUsage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) //TODO: add more usages?
 					.imageSharingMode(VK_SHARING_MODE_EXCLUSIVE)
@@ -109,8 +115,7 @@ public class VulkanSwapchain {
 				throw new VulkanException(res);
 			}
 			
-			var swapchain = pSwapchain.get(0);
-			return swapchain;
+			swapchain = pSwapchain.get(0);
 		} finally {
 			memFree(pSwapchain);
 			memFree(queueFamilyIndices);
@@ -196,5 +201,13 @@ public class VulkanSwapchain {
 			vkDestroySwapchainKHR(logicalDevice.get(), swapchain, null);
 			swapchain = VK_NULL_HANDLE;
 		}
+	}
+	
+	public long get() {
+		return swapchain;
+	}
+	
+	public VkExtent2D getExtent() {
+		return swapchainExtent;
 	}
 }
