@@ -7,7 +7,9 @@ import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.ui.GameElementImageView;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
-import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.InnerShadow;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -23,8 +25,12 @@ public class MapEditor extends Pane {
 	private int gridWidth;
 	private int gridHeight;
 	
-	private DropShadow nodeSelected;
-	private DropShadow nodeDeselected;
+	private InnerShadow nodeSelected;
+	private InnerShadow nodeDeselected;
+	private static final double INNER_SHADOW_RADIUS = 4.0;
+	private static final double INNER_SHADOW_CHOKE = 1.0;
+	
+	private GameElementImageView selected;
 	
 	public MapEditor() {
 		var clip = new Rectangle();
@@ -38,21 +44,17 @@ public class MapEditor extends Pane {
 				c.getAddedSubList().forEach(n -> {
 					n.setOnMousePressed(this::onDragStart);
 					n.setOnMouseDragged(this::onDragNode);
-					n.setOnMouseReleased(this::onReleaseNode);
+					n.setOnKeyPressed(this::onKeyPressed);
 					});
 			}});
 		
 		gridWidth = Integer.parseInt(SystemConfiguration.MAP_GRID_WIDTH.getConfiguration());
 		gridHeight = Integer.parseInt(SystemConfiguration.MAP_GRID_HEIGHT.getConfiguration());
 		
-		nodeSelected = new DropShadow();
-		nodeSelected.setColor(Color.DARKVIOLET);
-		nodeSelected.setOffsetX(0f);
-		nodeSelected.setOffsetY(0f);
-		nodeSelected.setWidth(50);
-		nodeSelected.setHeight(50);
+		nodeSelected = new InnerShadow(INNER_SHADOW_RADIUS, Color.CORNFLOWERBLUE);
+		nodeSelected.setChoke(INNER_SHADOW_CHOKE);
 		
-		nodeDeselected = new DropShadow();
+		nodeDeselected = new InnerShadow();
 		nodeDeselected.setColor(Color.TRANSPARENT);
 		
 	}
@@ -67,14 +69,23 @@ public class MapEditor extends Pane {
 	public void onDragStart(MouseEvent event) {
 		if (event.isPrimaryButtonDown()) {
 			var source = (GameElementImageView) event.getSource();
-			source.setIsSelected(true);
-			source.setEffect(nodeSelected);
+			if(selected != null) {
+				selected.setEffect(nodeDeselected);
+				selected = null;
+			}
+			selected = source;
+			selected.setEffect(nodeSelected);
 			dx = source.getLayoutX() - event.getSceneX();
 			dy = source.getLayoutY() - event.getSceneY();
 		}
+		event.consume();
 	}
 	
 	public void onMapDragStart(MouseEvent event) {
+		if(event.isPrimaryButtonDown() && selected != null) {
+			selected.setEffect(nodeDeselected);
+			selected = null;
+		}
 		if (event.isSecondaryButtonDown()) {
 			dx = getTranslateX() - event.getSceneX();
 			dy = getTranslateY() - event.getSceneY();
@@ -96,6 +107,12 @@ public class MapEditor extends Pane {
 		checkMapBoundries(clip);
 		clip.setX(0 - getTranslateX());
 		clip.setY(0 - getTranslateY());
+	}
+	
+	private void removeNode(KeyEvent event) {
+		var node = (GameElementImageView)event.getSource();
+		getChildren().remove(node);
+		selected = null;
 	}
 	
 	private double roundToNearest(double value, int roundFactor) {
@@ -150,12 +167,20 @@ public class MapEditor extends Pane {
 		}
 	}
 	
-	public void onReleaseNode(MouseEvent event) {
-			var source = (GameElementImageView) event.getSource();
-			source.setEffect(nodeDeselected);
-			source.setIsSelected(false);
+	public void onKeyPressed(KeyEvent event) {
+		if(event.getCode() == KeyCode.D) {
+			System.out.println("Remove node");
+			removeNode(event);
 			event.consume();
+		}
 	}
+	
+//	public void onReleaseNode(MouseEvent event) {
+//			var source = (GameElementImageView) event.getSource();
+//			source.setEffect(nodeDeselected);
+//			source.setIsSelected(false);
+//			event.consume();
+//	}
 	
 	public Map getMap() {
 		return map;

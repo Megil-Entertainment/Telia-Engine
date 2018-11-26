@@ -6,12 +6,10 @@ import javafx.scene.image.ImageView;
 
 public class GameElementImageView extends ImageView{
 	private GameElement gameElement;
-	private boolean isSelected;
 	
 	public GameElementImageView(GameElement gameElement) {
 		super(gameElement.getDepiction());
 		this.gameElement = gameElement;
-		this.isSelected = false;
 		
 		setLayoutX(gameElement.getPosition().getX());
 		setLayoutY(gameElement.getPosition().getY());
@@ -28,11 +26,8 @@ public class GameElementImageView extends ImageView{
 		gameElement.setPosition(new Vector(gameElement.getPosition().getX(), value));
 	}
 	
-	public void setIsSelected(boolean isSelected) {
-		this.isSelected = isSelected;
-	}
-	
 	public GameElement getGameElement() {
 		return gameElement;
 	}
+	
 }
