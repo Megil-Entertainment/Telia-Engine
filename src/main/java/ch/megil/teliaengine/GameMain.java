@@ -89,7 +89,7 @@ public class GameMain {
 		swapchain.init(physicalDevice, windowSurface, queue, logicalDevice, color);
 		commandPoolAndBuffer.init(logicalDevice, queue);
 		shader.init(logicalDevice);
-		pipeline.init(shader);
+		pipeline.init(logicalDevice, swapchain, shader);
 		
 		glfwShowWindow(window);
 	}
@@ -103,7 +103,7 @@ public class GameMain {
 	
 	public void cleanUp() {
 		// Destroy bottom up
-		pipeline.cleanUp();
+		pipeline.cleanUp(logicalDevice);
 		shader.cleanUp(logicalDevice);
 		commandPoolAndBuffer.cleanUp(logicalDevice);
 		swapchain.cleanUp(logicalDevice);

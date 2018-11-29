@@ -78,9 +78,9 @@ public class VulkanSwapchain {
 			}
 			
 			swapchainExtent = surfaceCapabilities.currentExtent();
-			if (swapchainExtent.width() == -1) {
-				swapchainExtent.width(200).height(200); //TODO: set dynamic to correct size
-			}
+			//if (swapchainExtent.width() == -1) {
+			//	swapchainExtent.width(200).height(200); //TODO: set dynamic to correct size
+			//}
 		
 			swapchainCreateInfo
 					.sType(VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR)
