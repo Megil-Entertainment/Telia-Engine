@@ -31,8 +31,6 @@ public class VulkanShader {
 	private long fragShader;
 	
 	/**
-	 * Initializes the vulkan shaders.
-	 * 
 	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
 	 */
 	public void init(VulkanLogicalDevice logicalDevice) throws VulkanException {

@@ -20,8 +20,6 @@ public class VulkanPipeline {
 	private long pipelineLayout;
 	
 	/**
-	 * Initializes the vulkan pipeline.
-	 * 
 	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
 	 * @param swapchain An initialized {@link VulkanSwapchain}
 	 * @param shader An initialized {@link VulkanShader}
