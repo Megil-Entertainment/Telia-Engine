@@ -48,6 +48,7 @@ public class GameMain {
 	}
 	
 	public GameMain(String mapName) throws AssetNotFoundException, AssetFormatException {
+		this();
 		GameState.get().setMap(new MapSaveLoad().load(mapName, false));
 	}
 
