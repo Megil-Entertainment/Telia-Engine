@@ -6,6 +6,8 @@ import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.ui.GameElementImageView;
 import javafx.collections.ListChangeListener;
+import javafx.event.EventType;
+import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.input.KeyCode;
@@ -44,7 +46,6 @@ public class MapEditor extends Pane {
 				c.getAddedSubList().forEach(n -> {
 					n.setOnMousePressed(this::onDragStart);
 					n.setOnMouseDragged(this::onDragNode);
-					n.setOnKeyPressed(this::onKeyPressed);
 					});
 			}});
 		
@@ -57,6 +58,11 @@ public class MapEditor extends Pane {
 		nodeDeselected = new InnerShadow();
 		nodeDeselected.setColor(Color.TRANSPARENT);
 		
+	}
+	
+	@FXML
+	private void initialize() {
+		getScene().addEventHandler(KeyEvent.KEY_RELEASED, this::onKeyPressed);
 	}
 	
 	public void addGameObject(GameObject obj) {
@@ -168,7 +174,8 @@ public class MapEditor extends Pane {
 	}
 	
 	public void onKeyPressed(KeyEvent event) {
-		if(event.getCode() == KeyCode.D) {
+		KeyCode code = event.getCode();
+		if(code.equals(KeyCode.D)) {
 			System.out.println("Remove node");
 			removeNode(event);
 			event.consume();
