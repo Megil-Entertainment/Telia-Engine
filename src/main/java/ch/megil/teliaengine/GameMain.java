@@ -33,6 +33,7 @@ public class GameMain {
 	private VulkanSwapchain swapchain;
 	private VulkanCommandPoolAndBuffer commandPoolAndBuffer;
 	private VulkanShader shader;
+	private VulkanRenderPass renderPass;
 	private VulkanPipeline pipeline;
 	
 	public GameMain() {
@@ -44,6 +45,7 @@ public class GameMain {
 		swapchain = new VulkanSwapchain();
 		commandPoolAndBuffer = new VulkanCommandPoolAndBuffer();
 		shader = new VulkanShader();
+		renderPass = new VulkanRenderPass();
 		pipeline = new VulkanPipeline();
 	}
 	
@@ -90,6 +92,7 @@ public class GameMain {
 		swapchain.init(physicalDevice, windowSurface, queue, logicalDevice, color);
 		commandPoolAndBuffer.init(logicalDevice, queue);
 		shader.init(logicalDevice);
+		renderPass.init(logicalDevice, color);
 		pipeline.init(logicalDevice, swapchain, shader);
 		
 		glfwShowWindow(window);
@@ -105,6 +108,7 @@ public class GameMain {
 	public void cleanUp() {
 		// Destroy bottom up
 		pipeline.cleanUp(logicalDevice);
+		renderPass.cleanUp(logicalDevice);
 		shader.cleanUp(logicalDevice);
 		commandPoolAndBuffer.cleanUp(logicalDevice);
 		swapchain.cleanUp(logicalDevice);
