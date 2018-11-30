@@ -93,7 +93,7 @@ public class GameMain {
 		commandPoolAndBuffer.init(logicalDevice, queue);
 		shader.init(logicalDevice);
 		renderPass.init(logicalDevice, color);
-		pipeline.init(logicalDevice, swapchain, shader);
+		pipeline.init(logicalDevice, swapchain, shader, renderPass);
 		
 		glfwShowWindow(window);
 	}

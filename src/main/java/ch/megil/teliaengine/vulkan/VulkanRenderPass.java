@@ -17,10 +17,13 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
  * needs to be cleaned up before destruction with {@link #cleanUp}.
  */
 public class VulkanRenderPass {
+	public static final int BASE_SUBPASS_INDEX = 0;
+	
 	private long renderPass;
 	
 	/**
-	 *TODO: update
+	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
+	 * @param color An initialized {@link VulkanColor}
 	 */
 	public void init(VulkanLogicalDevice logicalDevice, VulkanColor color) throws VulkanException {
 		var colorAttachment = VkAttachmentDescription.calloc(1)

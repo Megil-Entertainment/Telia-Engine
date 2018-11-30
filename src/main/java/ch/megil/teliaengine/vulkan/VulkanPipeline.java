@@ -18,13 +18,15 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
  */
 public class VulkanPipeline {
 	private long pipelineLayout;
+	private long graphicsPipeline;
 	
 	/**
 	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
 	 * @param swapchain An initialized {@link VulkanSwapchain}
 	 * @param shader An initialized {@link VulkanShader}
+	 * @param renderPass An initialized {@link VulkanRenderPass}
 	 */
-	public void init(VulkanLogicalDevice logicalDevice, VulkanSwapchain swapchain, VulkanShader shader) throws VulkanException {
+	public void init(VulkanLogicalDevice logicalDevice, VulkanSwapchain swapchain, VulkanShader shader, VulkanRenderPass renderPass) throws VulkanException {
 		pipelineLayout = createPipelineLayout(logicalDevice.get());
 		
 		var vertexShader = callocShaderStage(shader.getVertShader(), VK_SHADER_STAGE_VERTEX_BIT);
@@ -88,9 +90,34 @@ public class VulkanPipeline {
 		// set dynamicStateCount explicitly to have the correct number if not done dynamicStateCount is always zero
 		VkPipelineDynamicStateCreateInfo.ndynamicStateCount(dynamicStateInfo.address(), dynamicStates.capacity());
 		
+		var graphicsPipelineInfo = VkGraphicsPipelineCreateInfo.calloc(1)
+				.sType(VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO)
+				.pStages(shaderStageInfoBuffer)
+				.pVertexInputState(vertexInputInfo)
+				.pInputAssemblyState(inputAssemblyInfo)
+				.pRasterizationState(rasterizationInfo)
+				.pMultisampleState(multisamplingInfo)
+				.pColorBlendState(colorBlendInfo)
+				.pDynamicState(dynamicStateInfo)
+				.layout(pipelineLayout)
+				.renderPass(renderPass.get())
+				.subpass(VulkanRenderPass.BASE_SUBPASS_INDEX);
+		// set stageCount explicitly to have the correct number if not done stageCount is always zero
+		VkGraphicsPipelineCreateInfo.nstageCount(graphicsPipelineInfo.address(), shaderStageInfoBuffer.capacity());
+		
+		var pGraphicsPipeline = memAllocLong(1);
+		var res = vkCreateGraphicsPipelines(logicalDevice.get(), VK_NULL_HANDLE, graphicsPipelineInfo, null, pGraphicsPipeline);
+		
 		try {
-	        //TODO: finish pipeline
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
+			
+			graphicsPipeline = pGraphicsPipeline.get();
 		} finally {
+			memFree(pGraphicsPipeline);
+			graphicsPipelineInfo.free();
+			
 			dynamicStateInfo.free();
 			memFree(dynamicStates);
 			
@@ -165,6 +192,11 @@ public class VulkanPipeline {
 	}
 	
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {
+		if (graphicsPipeline != VK_NULL_HANDLE) {
+			vkDestroyPipeline(logicalDevice.get(), graphicsPipeline, null);
+			graphicsPipeline = VK_NULL_HANDLE;
+		}
+		
 		if (pipelineLayout != VK_NULL_HANDLE) {
 			vkDestroyPipelineLayout(logicalDevice.get(), pipelineLayout, null);
 			pipelineLayout = VK_NULL_HANDLE;
