@@ -6,11 +6,7 @@ import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.ui.GameElementImageView;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-import javafx.event.EventType;
-import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.ListView;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -37,7 +33,6 @@ public class MapEditor extends Pane {
 	
 	private GameElementImageView selected;
 	private VBox dropdownBox;
-	private ListView<String> dropdownList;
 	
 	public MapEditor() {
 		var clip = new Rectangle();
@@ -62,11 +57,7 @@ public class MapEditor extends Pane {
 		
 		nodeDeselected = new InnerShadow();
 		nodeDeselected.setColor(Color.TRANSPARENT);
-		
-		dropdownList = new ListView<String>();
-		dropdownList.getItems().add("Delete");
-		dropdownList.setMaxHeight(50);
-		dropdownBox = new VBox(dropdownList);
+		dropdownBox = new DropdownList();
 	}
 	
 	public void addGameObject(GameObject obj) {
