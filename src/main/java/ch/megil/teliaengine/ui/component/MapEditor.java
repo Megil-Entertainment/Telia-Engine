@@ -6,14 +6,17 @@ import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.ui.GameElementImageView;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.ListView;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -33,6 +36,8 @@ public class MapEditor extends Pane {
 	private static final double INNER_SHADOW_CHOKE = 1.0;
 	
 	private GameElementImageView selected;
+	private VBox dropdownBox;
+	private ListView<String> dropdownList;
 	
 	public MapEditor() {
 		var clip = new Rectangle();
@@ -58,11 +63,10 @@ public class MapEditor extends Pane {
 		nodeDeselected = new InnerShadow();
 		nodeDeselected.setColor(Color.TRANSPARENT);
 		
-	}
-	
-	@FXML
-	private void initialize() {
-		getScene().addEventHandler(KeyEvent.KEY_RELEASED, this::onKeyPressed);
+		dropdownList = new ListView<String>();
+		dropdownList.getItems().add("Delete");
+		dropdownList.setMaxHeight(50);
+		dropdownBox = new VBox(dropdownList);
 	}
 	
 	public void addGameObject(GameObject obj) {
@@ -83,14 +87,20 @@ public class MapEditor extends Pane {
 			selected.setEffect(nodeSelected);
 			dx = source.getLayoutX() - event.getSceneX();
 			dy = source.getLayoutY() - event.getSceneY();
+			event.consume();
 		}
-		event.consume();
+		
+		if(event.isSecondaryButtonDown() && selected != null) {
+			showDropdown(event);
+			event.consume();
+		}
 	}
 	
 	public void onMapDragStart(MouseEvent event) {
 		if(event.isPrimaryButtonDown() && selected != null) {
 			selected.setEffect(nodeDeselected);
 			selected = null;
+			getChildren().remove(dropdownBox);
 		}
 		if (event.isSecondaryButtonDown()) {
 			dx = getTranslateX() - event.getSceneX();
@@ -158,6 +168,12 @@ public class MapEditor extends Pane {
 		}
 	}
 	
+	private void showDropdown(MouseEvent event) {
+		dropdownBox.setLayoutX(event.getSceneX());
+		dropdownBox.setLayoutY(event.getSceneY());
+		getChildren().add(dropdownBox);
+	}
+	
 	public void onDragNode(MouseEvent event) {
 		if(event.isPrimaryButtonDown()) {
 			var source = (GameElementImageView) event.getSource();
@@ -181,13 +197,6 @@ public class MapEditor extends Pane {
 			event.consume();
 		}
 	}
-	
-//	public void onReleaseNode(MouseEvent event) {
-//			var source = (GameElementImageView) event.getSource();
-//			source.setEffect(nodeDeselected);
-//			source.setIsSelected(false);
-//			event.consume();
-//	}
 	
 	public Map getMap() {
 		return map;
