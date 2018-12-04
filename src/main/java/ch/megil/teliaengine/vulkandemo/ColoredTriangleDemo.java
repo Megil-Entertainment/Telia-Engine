@@ -721,68 +721,68 @@ public class ColoredTriangleDemo {
 //        fb.put(-0.5f).put( 0.5f).put(0.0f).put(0.0f).put(1.0f);
 //        fb.put( 0.5f).put( 0.5f).put(0.0f).put(0.0f).put(1.0f);
 //        fb.put( 0.0f).put(-0.5f).put(1.0f).put(1.0f).put(1.0f);
-        fb.put( 0.5f*(float)Math.cos( 0)).put( 0.5f*(float)Math.sin( 0)).put(0.0f).put(0.0f).put(1.0f);
-        fb.put( 0.5f*(float)Math.cos(P1)).put( 0.5f*(float)Math.sin(P1)).put(0.0f).put(0.0f).put(1.0f);
-        fb.put( 0.5f*(float)Math.cos(P2)).put( 0.5f*(float)Math.sin(P2)).put(1.0f).put(1.0f).put(1.0f);
+//        fb.put( 0.5f*(float)Math.cos( 0)).put( 0.5f*(float)Math.sin( 0)).put(0.0f).put(0.0f).put(1.0f);
+//        fb.put( 0.5f*(float)Math.cos(P1)).put( 0.5f*(float)Math.sin(P1)).put(0.0f).put(0.0f).put(1.0f);
+//        fb.put( 0.5f*(float)Math.cos(P2)).put( 0.5f*(float)Math.sin(P2)).put(1.0f).put(1.0f).put(1.0f);
 
-        VkMemoryAllocateInfo memAlloc = VkMemoryAllocateInfo.calloc()
-                .sType(VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO)
-                .pNext(NULL)
-                .allocationSize(0)
-                .memoryTypeIndex(0);
-        VkMemoryRequirements memReqs = VkMemoryRequirements.calloc();
+//        VkMemoryAllocateInfo memAlloc = VkMemoryAllocateInfo.calloc()
+//                .sType(VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO)
+//                .pNext(NULL)
+//                .allocationSize(0)
+//                .memoryTypeIndex(0);
+//        VkMemoryRequirements memReqs = VkMemoryRequirements.calloc();
 
         int err;
 
         // Generate vertex buffer
         //  Setup
-        VkBufferCreateInfo bufInfo = VkBufferCreateInfo.calloc()
-                .sType(VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO)
-                .pNext(NULL)
-                .size(vertexBuffer.remaining())
-                .usage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
-                .flags(0);
-        LongBuffer pBuffer = memAllocLong(1);
-        err = vkCreateBuffer(device, bufInfo, null, pBuffer);
-        long verticesBuf = pBuffer.get(0);
-        memFree(pBuffer);
-        bufInfo.free();
-        if (err != VK_SUCCESS) {
-            throw new AssertionError("Failed to create vertex buffer: " + translateVulkanResult(err));
-        }
+//        VkBufferCreateInfo bufInfo = VkBufferCreateInfo.calloc()
+//                .sType(VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO)
+//                .pNext(NULL)
+//                .size(vertexBuffer.remaining())
+//                .usage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
+//                .flags(0);
+//        LongBuffer pBuffer = memAllocLong(1);
+//        err = vkCreateBuffer(device, bufInfo, null, pBuffer);
+//        long verticesBuf = pBuffer.get(0);
+//        memFree(pBuffer);
+//        bufInfo.free();
+//        if (err != VK_SUCCESS) {
+//            throw new AssertionError("Failed to create vertex buffer: " + translateVulkanResult(err));
+//        }
 
-        vkGetBufferMemoryRequirements(device, verticesBuf, memReqs);
-        memAlloc.allocationSize(memReqs.size());
-        IntBuffer memoryTypeIndex = memAllocInt(1);
-        getMemoryType(deviceMemoryProperties, memReqs.memoryTypeBits(), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, memoryTypeIndex);
-        memAlloc.memoryTypeIndex(memoryTypeIndex.get(0));
-        memFree(memoryTypeIndex);
-        memReqs.free();
+//        vkGetBufferMemoryRequirements(device, verticesBuf, memReqs);
+//        memAlloc.allocationSize(memReqs.size());
+//        IntBuffer memoryTypeIndex = memAllocInt(1);
+//        getMemoryType(deviceMemoryProperties, memReqs.memoryTypeBits(), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, memoryTypeIndex);
+//        memAlloc.memoryTypeIndex(memoryTypeIndex.get(0));
+//        memFree(memoryTypeIndex);
+//        memReqs.free();
 
-        LongBuffer pMemory = memAllocLong(1);
-        err = vkAllocateMemory(device, memAlloc, null, pMemory);
-        long verticesMem = pMemory.get(0);
-        memFree(pMemory);
-        if (err != VK_SUCCESS) {
-            throw new AssertionError("Failed to allocate vertex memory: " + translateVulkanResult(err));
-        }
+//        LongBuffer pMemory = memAllocLong(1);
+//        err = vkAllocateMemory(device, memAlloc, null, pMemory);
+//        long verticesMem = pMemory.get(0);
+//        memFree(pMemory);
+//        if (err != VK_SUCCESS) {
+//            throw new AssertionError("Failed to allocate vertex memory: " + translateVulkanResult(err));
+//        }
 
-        PointerBuffer pData = memAllocPointer(1);
-        err = vkMapMemory(device, verticesMem, 0, memAlloc.allocationSize(), 0, pData);
-        memAlloc.free();
-        long data = pData.get(0);
-        memFree(pData);
-        if (err != VK_SUCCESS) {
-            throw new AssertionError("Failed to map vertex memory: " + translateVulkanResult(err));
-        }
+//        PointerBuffer pData = memAllocPointer(1);
+//        err = vkMapMemory(device, verticesMem, 0, memAlloc.allocationSize(), 0, pData);
+//        memAlloc.free();
+//        long data = pData.get(0);
+//        memFree(pData);
+//        if (err != VK_SUCCESS) {
+//            throw new AssertionError("Failed to map vertex memory: " + translateVulkanResult(err));
+//        }
 
-        memCopy(memAddress(vertexBuffer), data, vertexBuffer.remaining());
-        memFree(vertexBuffer);
-        vkUnmapMemory(device, verticesMem);
-        err = vkBindBufferMemory(device, verticesBuf, verticesMem, 0);
-        if (err != VK_SUCCESS) {
-            throw new AssertionError("Failed to bind memory to vertex buffer: " + translateVulkanResult(err));
-        }
+//        memCopy(memAddress(vertexBuffer), data, vertexBuffer.remaining());
+//        memFree(vertexBuffer);
+//        vkUnmapMemory(device, verticesMem);
+//        err = vkBindBufferMemory(device, verticesBuf, verticesMem, 0);
+//        if (err != VK_SUCCESS) {
+//            throw new AssertionError("Failed to bind memory to vertex buffer: " + translateVulkanResult(err));
+//        }
 
         // Binding description
         VkVertexInputBindingDescription.Buffer bindingDescriptor = VkVertexInputBindingDescription.calloc(1)
@@ -815,7 +815,7 @@ public class ColoredTriangleDemo {
 
         Vertices ret = new Vertices();
         ret.createInfo = vi;
-        ret.verticesBuf = verticesBuf;
+//        ret.verticesBuf = verticesBuf;
         return ret;
     }
     

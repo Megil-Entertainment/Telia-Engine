@@ -37,10 +37,29 @@ public class VulkanPipeline {
 		shaderStageInfoBuffer.put(1, fragShader);
 		
 		//TODO: update
+		var vertexBinding = VkVertexInputBindingDescription.calloc(1)
+				.binding(0)
+				.stride((2+3)*4)
+				.inputRate(VK_VERTEX_INPUT_RATE_VERTEX);
+		
+		var vertexAttribute = VkVertexInputAttributeDescription.calloc(2);
+		vertexAttribute.get(0)
+				.binding(0)
+				.location(0)
+				.format(VK_FORMAT_R32G32_SFLOAT) //2 32 bit float values
+				.offset(0);
+		vertexAttribute.get(1)
+				.binding(0)
+				.location(1)
+				.format(VK_FORMAT_R32G32B32_SFLOAT)
+				.offset(2*4);
+		
 		var vertexInputInfo = VkPipelineVertexInputStateCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO)
-				.pVertexBindingDescriptions(null)
-				.pVertexAttributeDescriptions(null);
+				.pVertexBindingDescriptions(vertexBinding)
+				.pVertexAttributeDescriptions(vertexAttribute);
+		VkPipelineVertexInputStateCreateInfo.nvertexBindingDescriptionCount(vertexInputInfo.address(), vertexBinding.capacity());
+		VkPipelineVertexInputStateCreateInfo.nvertexAttributeDescriptionCount(vertexInputInfo.address(), vertexAttribute.capacity());
 		
 		var inputAssemblyInfo = VkPipelineInputAssemblyStateCreateInfo.calloc()
                 .sType(VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO)
@@ -82,7 +101,8 @@ public class VulkanPipeline {
 		
 		var dynamicStates = memAllocInt(2)
 				.put(VK_DYNAMIC_STATE_VIEWPORT)
-				.put(VK_DYNAMIC_STATE_SCISSOR);
+				.put(VK_DYNAMIC_STATE_SCISSOR)
+				.flip();
 		
 		var dynamicStateInfo = VkPipelineDynamicStateCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO)
@@ -95,6 +115,7 @@ public class VulkanPipeline {
 				.pStages(shaderStageInfoBuffer)
 				.pVertexInputState(vertexInputInfo)
 				.pInputAssemblyState(inputAssemblyInfo)
+				.pViewportState(viewportInfo)
 				.pRasterizationState(rasterizationInfo)
 				.pMultisampleState(multisamplingInfo)
 				.pColorBlendState(colorBlendInfo)
@@ -113,7 +134,7 @@ public class VulkanPipeline {
 				throw new VulkanException(res);
 			}
 			
-			graphicsPipeline = pGraphicsPipeline.get();
+			graphicsPipeline = pGraphicsPipeline.get(0);
 		} finally {
 			memFree(pGraphicsPipeline);
 			graphicsPipelineInfo.free();
@@ -144,7 +165,8 @@ public class VulkanPipeline {
 	
 	private long createPipelineLayout(VkDevice device) throws VulkanException {
 		var pipelineLayoutInfo = VkPipelineLayoutCreateInfo.calloc()
-				.sType(VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO);
+				.sType(VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO)
+                .pSetLayouts(null);
 		
 		LongBuffer pPipelineLayout = memAllocLong(1);
         var res = vkCreatePipelineLayout(device, pipelineLayoutInfo, null, pPipelineLayout);
@@ -156,6 +178,7 @@ public class VulkanPipeline {
 	        var pipelineLayout = pPipelineLayout.get(0);
 	        return pipelineLayout;
 		} finally {
+			memFree(pPipelineLayout);
 			pipelineLayoutInfo.free();
 		}
 	}
