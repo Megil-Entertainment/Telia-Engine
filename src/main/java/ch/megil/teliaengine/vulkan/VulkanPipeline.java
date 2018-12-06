@@ -154,6 +154,8 @@ public class VulkanPipeline {
 			
 			inputAssemblyInfo.free();
 			vertexInputInfo.free();
+			vertexAttribute.free();
+			vertexBinding.free();
 			
 			shaderStageInfoBuffer.free();
 			memFree(fragShader.pName());
