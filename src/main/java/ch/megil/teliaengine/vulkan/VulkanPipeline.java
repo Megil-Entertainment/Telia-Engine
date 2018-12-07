@@ -26,7 +26,7 @@ public class VulkanPipeline {
 	 * @param shader An initialized {@link VulkanShader}
 	 * @param renderPass An initialized {@link VulkanRenderPass}
 	 */
-	public void init(VulkanLogicalDevice logicalDevice, VulkanSwapchain swapchain, VulkanShader shader, VulkanRenderPass renderPass) throws VulkanException {
+	public void init(VulkanLogicalDevice logicalDevice, VulkanSwapchain swapchain, VulkanShader shader, VulkanRenderPass renderPass, VulkanVertexBuffer vertexBuffer) throws VulkanException {
 		pipelineLayout = createPipelineLayout(logicalDevice.get());
 		
 		var vertexShader = callocShaderStage(shader.getVertShader(), VK_SHADER_STAGE_VERTEX_BIT);
@@ -36,30 +36,12 @@ public class VulkanPipeline {
 		shaderStageInfoBuffer.put(0, vertexShader);
 		shaderStageInfoBuffer.put(1, fragShader);
 		
-		//TODO: update
-		var vertexBinding = VkVertexInputBindingDescription.calloc(1)
-				.binding(0)
-				.stride((2+3)*4)
-				.inputRate(VK_VERTEX_INPUT_RATE_VERTEX);
-		
-		var vertexAttribute = VkVertexInputAttributeDescription.calloc(2);
-		vertexAttribute.get(0)
-				.binding(0)
-				.location(0)
-				.format(VK_FORMAT_R32G32_SFLOAT) //2 32 bit float values
-				.offset(0);
-		vertexAttribute.get(1)
-				.binding(0)
-				.location(1)
-				.format(VK_FORMAT_R32G32B32_SFLOAT)
-				.offset(2*4);
-		
 		var vertexInputInfo = VkPipelineVertexInputStateCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO)
-				.pVertexBindingDescriptions(vertexBinding)
-				.pVertexAttributeDescriptions(vertexAttribute);
-		VkPipelineVertexInputStateCreateInfo.nvertexBindingDescriptionCount(vertexInputInfo.address(), vertexBinding.capacity());
-		VkPipelineVertexInputStateCreateInfo.nvertexAttributeDescriptionCount(vertexInputInfo.address(), vertexAttribute.capacity());
+				.pVertexBindingDescriptions(vertexBuffer.getBinding())
+				.pVertexAttributeDescriptions(vertexBuffer.getAttribute());
+		VkPipelineVertexInputStateCreateInfo.nvertexBindingDescriptionCount(vertexInputInfo.address(), vertexBuffer.getBinding().capacity());
+		VkPipelineVertexInputStateCreateInfo.nvertexAttributeDescriptionCount(vertexInputInfo.address(), vertexBuffer.getAttribute().capacity());
 		
 		var inputAssemblyInfo = VkPipelineInputAssemblyStateCreateInfo.calloc()
                 .sType(VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO)
@@ -154,8 +136,6 @@ public class VulkanPipeline {
 			
 			inputAssemblyInfo.free();
 			vertexInputInfo.free();
-			vertexAttribute.free();
-			vertexBinding.free();
 			
 			shaderStageInfoBuffer.free();
 			memFree(fragShader.pName());
