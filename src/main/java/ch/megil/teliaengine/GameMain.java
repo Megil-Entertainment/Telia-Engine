@@ -95,8 +95,8 @@ public class GameMain {
 		commandPoolAndBuffer.init(logicalDevice, queue);
 		shader.init(logicalDevice);
 		renderPass.init(logicalDevice, color);
-		vertexBuffer.init();
 		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer);
+		vertexBuffer.init(physicalDevice, logicalDevice);
 		
 		glfwShowWindow(window);
 	}
@@ -110,8 +110,8 @@ public class GameMain {
 	
 	public void cleanUp() {
 		// Destroy bottom up
+		vertexBuffer.cleanUp(logicalDevice);
 		pipeline.cleanUp(logicalDevice);
-		vertexBuffer.cleanUp();
 		renderPass.cleanUp(logicalDevice);
 		shader.cleanUp(logicalDevice);
 		commandPoolAndBuffer.cleanUp(logicalDevice);
