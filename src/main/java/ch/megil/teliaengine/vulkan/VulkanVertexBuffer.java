@@ -27,6 +27,10 @@ public class VulkanVertexBuffer {
 	private long bufferSize;
 	private long memory;
 	
+	/**
+	 * @param physicalDevice An initialized {@link VulkanPhysicalDevice}
+	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
+	 */
 	public void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice) throws VulkanException {
 		var bufferInfo = VkBufferCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO)
