@@ -1,12 +1,15 @@
 package ch.megil.teliaengine.vulkan;
 
 import static org.lwjgl.system.MemoryUtil.memAllocLong;
+import static org.lwjgl.system.MemoryUtil.memAllocPointer;
+import static org.lwjgl.system.MemoryUtil.memCopy;
 import static org.lwjgl.system.MemoryUtil.memFree;
 import static org.lwjgl.vulkan.VK10.*;
 
 import org.lwjgl.vulkan.*;
 
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
+import ch.megil.teliaengine.vulkan.obj.VulkanPolygon;
 
 /**
  * This class needs setup first with {@link #init} and
@@ -16,16 +19,18 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
  */
 public class VulkanVertexBuffer {
 	private static final int VALUE_SIZE = 4;
-	private static final int VERTEX_SIZE = (2+3)*VALUE_SIZE; //2 cords + 3 colors
+	public static final int VERTEX_SIZE = (2+3)*VALUE_SIZE; //2 cords + 3 colors
+	public static final int MAX_VERTECIES = 3;
 	private static final int COLOR_OFFSET = 2*VALUE_SIZE;
 	
 	private long buffer;
+	private long bufferSize;
 	private long memory;
 	
 	public void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice) throws VulkanException {
 		var bufferInfo = VkBufferCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO)
-				.size(VERTEX_SIZE*3)
+				.size(VERTEX_SIZE*MAX_VERTECIES)
 				.usage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
 				.sharingMode(VK_SHARING_MODE_EXCLUSIVE);
 		
@@ -52,8 +57,9 @@ public class VulkanVertexBuffer {
 			if (memoryType == -1) {
 				throw new VulkanException("No compatible memory found.");
 			}
+			bufferSize = memoryRequirements.size();
 			memoryAllocInfo.sType(VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO)
-					.allocationSize(memoryRequirements.size())
+					.allocationSize(bufferSize)
 					.memoryTypeIndex(memoryType);
 			
 			res = vkAllocateMemory(logicalDevice.get(), memoryAllocInfo, null, pMemory);
@@ -85,6 +91,21 @@ public class VulkanVertexBuffer {
 			}
 		}
 		return -1;
+	}
+	
+	public void writeVertecies(VulkanLogicalDevice logicalDevice, VulkanPolygon polygon) throws VulkanException {
+        var pData = memAllocPointer(1);
+		var res = vkMapMemory(logicalDevice.get(), memory, 0, bufferSize, 0, pData);
+		
+		try {
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
+			memCopy(polygon.getAddress(), pData.get(), polygon.getSize());
+			vkUnmapMemory(logicalDevice.get(), memory);
+		} finally {
+			memFree(pData);
+		}
 	}
 	
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {

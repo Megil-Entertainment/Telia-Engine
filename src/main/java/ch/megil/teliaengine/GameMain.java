@@ -18,6 +18,7 @@ import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.gamelogic.GameState;
 import ch.megil.teliaengine.vulkan.*;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
+import ch.megil.teliaengine.vulkan.obj.VulkanPolygon;
 
 public class GameMain {
 	private static final int VK_VERSION = VK_MAKE_VERSION(1, 0, 2);
@@ -101,10 +102,13 @@ public class GameMain {
 		glfwShowWindow(window);
 	}
 	
-	private void loop() {
+	private void loop() throws VulkanException {
 		while(!glfwWindowShouldClose(window)) {
 			glfwPollEvents();
-			//TODO: render loop
+			
+			var polygon = new VulkanPolygon();
+			vertexBuffer.writeVertecies(logicalDevice, polygon);
+			polygon.free();
 		}
 	}
 	
