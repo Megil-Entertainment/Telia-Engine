@@ -207,6 +207,14 @@ public class VulkanSwapchain {
 		return swapchain;
 	}
 	
+	public int getImageCount() {
+		return imgBufferCount;
+	}
+	
+	public long[] getImageViews() {
+		return imgBufferViews;
+	}
+	
 	public VkExtent2D getExtent() {
 		return swapchainExtent;
 	}
