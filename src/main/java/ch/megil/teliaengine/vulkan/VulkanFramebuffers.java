@@ -47,7 +47,7 @@ public class VulkanFramebuffers {
 				if (res != VK_SUCCESS) {
 					throw new VulkanException(res);
 				}
-				framebuffers[i] = pFramebuffer.get();
+				framebuffers[i] = pFramebuffer.get(0);
 			}
 		} finally {
 			memFree(pFramebuffer);

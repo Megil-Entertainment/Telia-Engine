@@ -32,11 +32,12 @@ public class GameMain {
 	private VulkanLogicalDevice logicalDevice;
 	private VulkanColor color;
 	private VulkanSwapchain swapchain;
-	private VulkanCommandPoolAndBuffer commandPoolAndBuffer;
 	private VulkanShader shader;
 	private VulkanRenderPass renderPass;
 	private VulkanVertexBuffer vertexBuffer;
 	private VulkanPipeline pipeline;
+	private VulkanFramebuffers framebuffers;
+	private VulkanCommandPoolAndBuffer commandPoolAndBuffer;
 	
 	public GameMain() {
 		instance = new VulkanInstance();
@@ -45,11 +46,12 @@ public class GameMain {
 		logicalDevice = new VulkanLogicalDevice();
 		color = new VulkanColor();
 		swapchain = new VulkanSwapchain();
-		commandPoolAndBuffer = new VulkanCommandPoolAndBuffer();
 		shader = new VulkanShader();
 		renderPass = new VulkanRenderPass();
 		vertexBuffer = new VulkanVertexBuffer();
 		pipeline = new VulkanPipeline();
+		framebuffers = new VulkanFramebuffers();
+		commandPoolAndBuffer = new VulkanCommandPoolAndBuffer();
 	}
 	
 	public GameMain(String mapName) throws AssetNotFoundException, AssetFormatException {
@@ -93,11 +95,12 @@ public class GameMain {
 		logicalDevice.init(physicalDevice, queue);
 		color.init(physicalDevice, windowSurface, VK_FORMAT_B8G8R8A8_UNORM);
 		swapchain.init(physicalDevice, windowSurface, queue, logicalDevice, color);
-		commandPoolAndBuffer.init(logicalDevice, queue);
 		shader.init(logicalDevice);
 		renderPass.init(logicalDevice, color);
 		vertexBuffer.init(physicalDevice, logicalDevice);
 		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer);
+		framebuffers.init(logicalDevice, swapchain, renderPass);
+		commandPoolAndBuffer.init(logicalDevice, queue);
 		
 		glfwShowWindow(window);
 	}
@@ -114,11 +117,12 @@ public class GameMain {
 	
 	public void cleanUp() {
 		// Destroy bottom up
+		commandPoolAndBuffer.cleanUp(logicalDevice);
+		framebuffers.cleanUp(logicalDevice);
 		pipeline.cleanUp(logicalDevice);
 		vertexBuffer.cleanUp(logicalDevice);
 		renderPass.cleanUp(logicalDevice);
 		shader.cleanUp(logicalDevice);
-		commandPoolAndBuffer.cleanUp(logicalDevice);
 		swapchain.cleanUp(logicalDevice);
 		color.cleanUp();
 		logicalDevice.cleanUp();
