@@ -107,7 +107,7 @@ public class GameMain {
 	}
 	
 	private void loop() throws VulkanException {
-		commandPoolAndBuffer.beginCommandBuffer();
+		commandPoolAndBuffer.beginBuffer();
 		while(!glfwWindowShouldClose(window)) {
 			glfwPollEvents();
 			
@@ -115,7 +115,7 @@ public class GameMain {
 			vertexBuffer.writeVertecies(logicalDevice, polygon);
 			polygon.free();
 		}
-		commandPoolAndBuffer.endCommandBuffer();
+		commandPoolAndBuffer.endBuffer();
 	}
 	
 	public void cleanUp() {

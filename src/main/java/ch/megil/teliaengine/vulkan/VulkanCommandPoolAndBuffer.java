@@ -75,7 +75,7 @@ public class VulkanCommandPoolAndBuffer {
 		}
 	}
 	
-	public void beginCommandBuffer() throws VulkanException {
+	public void beginBuffer() throws VulkanException {
 		var beginInfo = VkCommandBufferBeginInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO)
 				.flags(VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT);
@@ -90,7 +90,7 @@ public class VulkanCommandPoolAndBuffer {
 		}
 	}
 	
-	public void endCommandBuffer() throws VulkanException {
+	public void endBuffer() throws VulkanException {
 		var res = vkEndCommandBuffer(commandBuffer);
 		if (res != VK_SUCCESS) {
 			throw new VulkanException(res);
@@ -112,11 +112,11 @@ public class VulkanCommandPoolAndBuffer {
 		}
 	}
 	
-	public long getCommandPool() {
+	public long getPool() {
 		return commandPool;
 	}
 	
-	public VkCommandBuffer getCommandBuffer() {
+	public VkCommandBuffer getBuffer() {
 		return commandBuffer;
 	}
 }
