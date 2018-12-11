@@ -7,6 +7,7 @@ import static org.lwjgl.vulkan.VK10.*;
 
 import org.lwjgl.vulkan.VkCommandBuffer;
 import org.lwjgl.vulkan.VkCommandBufferAllocateInfo;
+import org.lwjgl.vulkan.VkCommandBufferBeginInfo;
 import org.lwjgl.vulkan.VkCommandPoolCreateInfo;
 import org.lwjgl.vulkan.VkDevice;
 
@@ -71,6 +72,28 @@ public class VulkanCommandPoolAndBuffer {
 		} finally {
 			memFree(pCmdBuffer);
 			cmdBufferAllocInfo.free();
+		}
+	}
+	
+	public void beginCommandBuffer() throws VulkanException {
+		var beginInfo = VkCommandBufferBeginInfo.calloc()
+				.sType(VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO)
+				.flags(VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT);
+		
+		var res = vkBeginCommandBuffer(commandBuffer, beginInfo);
+		try {
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
+		} finally {
+			beginInfo.free();
+		}
+	}
+	
+	public void endCommandBuffer() throws VulkanException {
+		var res = vkEndCommandBuffer(commandBuffer);
+		if (res != VK_SUCCESS) {
+			throw new VulkanException(res);
 		}
 	}
 	

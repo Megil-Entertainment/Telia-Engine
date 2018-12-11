@@ -10,6 +10,7 @@ import static org.lwjgl.vulkan.VK10.VK_FORMAT_B8G8R8A8_UNORM;
 import static org.lwjgl.vulkan.VK10.VK_MAKE_VERSION;
 import static org.lwjgl.vulkan.VK10.VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
 import static org.lwjgl.vulkan.VK10.VK_SUCCESS;
+import static org.lwjgl.vulkan.VK10.vkBeginCommandBuffer;
 
 import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.file.MapSaveLoad;
@@ -106,6 +107,7 @@ public class GameMain {
 	}
 	
 	private void loop() throws VulkanException {
+		commandPoolAndBuffer.beginCommandBuffer();
 		while(!glfwWindowShouldClose(window)) {
 			glfwPollEvents();
 			
@@ -113,6 +115,7 @@ public class GameMain {
 			vertexBuffer.writeVertecies(logicalDevice, polygon);
 			polygon.free();
 		}
+		commandPoolAndBuffer.endCommandBuffer();
 	}
 	
 	public void cleanUp() {
