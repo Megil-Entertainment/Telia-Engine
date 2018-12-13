@@ -7,6 +7,7 @@ import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.ui.GameElementImageView;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
+import javafx.scene.control.TextArea;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -34,7 +35,16 @@ public class MapEditor extends Pane {
 	private GameElementImageView selected;
 	private VBox dropdownBox;
 	
+	private TextArea mapTextField;
+	
 	public MapEditor() {
+		mapTextField = new TextArea();
+		getChildren().add(mapTextField);
+		mapTextField.setEditable(false);
+		mapTextField.setMaxSize(50,50);
+		mapTextField.setLayoutX(-50);
+		mapTextField.setLayoutY(-50);
+		mapTextField.setOnKeyReleased(this::onKeyPressed);
 		var clip = new Rectangle();
 		clip.widthProperty().bind(this.widthProperty());
 		clip.heightProperty().bind(this.heightProperty());
@@ -68,6 +78,7 @@ public class MapEditor extends Pane {
 	}
 	
 	public void onDragStart(MouseEvent event) {
+		mapTextField.requestFocus();
 		if (event.isPrimaryButtonDown()) {
 			var source = (GameElementImageView) event.getSource();
 			if(selected != null) {
@@ -117,8 +128,7 @@ public class MapEditor extends Pane {
 	}
 	
 	private void removeNode(KeyEvent event) {
-		var node = (GameElementImageView)event.getSource();
-		getChildren().remove(node);
+		getChildren().remove(selected);
 		selected = null;
 	}
 	
@@ -165,6 +175,10 @@ public class MapEditor extends Pane {
 		getChildren().add(dropdownBox);
 	}
 	
+	private void removeDropdown() {
+		getChildren().remove(dropdownBox);
+	}
+	
 	public void onDragNode(MouseEvent event) {
 		if(event.isPrimaryButtonDown()) {
 			var source = (GameElementImageView) event.getSource();
@@ -199,6 +213,7 @@ public class MapEditor extends Pane {
 	
 	public void setMap(Map map) {
 		getChildren().clear();
+		getChildren().add(mapTextField);
 		
 		this.map = map;
 		map.getMapObjects().forEach(o -> getChildren().add(new GameElementImageView(o)));
@@ -210,4 +225,5 @@ public class MapEditor extends Pane {
 		clip.setX(0);
 		clip.setY(0);
 	}
+
 }
