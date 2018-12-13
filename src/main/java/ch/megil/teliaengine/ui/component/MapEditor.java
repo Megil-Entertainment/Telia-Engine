@@ -128,6 +128,7 @@ public class MapEditor extends Pane {
 	}
 	
 	private void removeNode(KeyEvent event) {
+		map.removeObject((GameObject)selected.getGameElement());
 		getChildren().remove(selected);
 		selected = null;
 	}
