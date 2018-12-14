@@ -150,6 +150,7 @@ public class GameMain {
 		
 		try {
 			while(!glfwWindowShouldClose(window)) {
+				System.out.println(swapchain.getImageCount());
 				glfwPollEvents();
 				
 				vkAcquireNextImageKHR(logicalDevice.get(), swapchain.get(), UINT64_MAX, semaphore.get(SEM_IMAGE_AVAILABLE), VK_NULL_HANDLE, pImageIndex);

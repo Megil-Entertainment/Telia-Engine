@@ -42,12 +42,22 @@ public class VulkanRenderPass {
 				.colorAttachmentCount(colorAttachmentReference.capacity())
 				.pColorAttachments(colorAttachmentReference);
 		
+		var subpassDependency = VkSubpassDependency.calloc(1)
+				.srcSubpass(VK_SUBPASS_EXTERNAL)
+				.dstSubpass(BASE_SUBPASS_INDEX)
+				.srcStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT)
+				.srcAccessMask(0)
+				.dstStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT)
+				.dstAccessMask(VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
+		
 		var renderPassInfo = VkRenderPassCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO)
 				.pAttachments(colorAttachment)
-				.pSubpasses(subpass);
+				.pSubpasses(subpass)
+				.pDependencies(subpassDependency);
 		VkRenderPassCreateInfo.nattachmentCount(renderPassInfo.address(), colorAttachment.capacity());
 		VkRenderPassCreateInfo.nsubpassCount(renderPassInfo.address(), subpass.capacity());
+		VkRenderPassCreateInfo.ndependencyCount(renderPassInfo.address(), subpassDependency.capacity());
 		
 		var pRenderPass = memAllocLong(1);
 		var res = vkCreateRenderPass(logicalDevice.get(), renderPassInfo, null, pRenderPass);
