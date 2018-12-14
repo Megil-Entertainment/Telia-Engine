@@ -105,30 +105,28 @@ public class GameMain {
 		framebuffers.init(logicalDevice, swapchain, renderPass);
 		renderCommandPool.init(logicalDevice, queue, swapchain.getImageCount());
 		
-		glfwShowWindow(window);
-	}
-	
-	private void loop() throws VulkanException {
 		var clearColor = VkClearValue.calloc(1);
 		clearColor.color()
 				.float32(0, 255f) //R
 				.float32(1, 255f) //G
 				.float32(2, 255f) //B
 				.float32(3, 1f);  //A
-		
 		try {
-			while(!glfwWindowShouldClose(window)) {
-				glfwPollEvents();
-//				renderPass.begin(commandPoolAndBuffer, swapchain, framebuffers, clearColor);
-				
-				var polygon = new VulkanPolygon();
-				vertexBuffer.writeVertecies(logicalDevice, polygon);
-				polygon.free();
-				
-//				renderPass.end(commandPoolAndBuffer);
-			}
+			renderPass.linkRender(swapchain, pipeline, framebuffers, renderCommandPool, clearColor);
 		} finally {
 			clearColor.free();
+		}
+		
+		glfwShowWindow(window);
+	}
+	
+	private void loop() throws VulkanException {
+		while(!glfwWindowShouldClose(window)) {
+			glfwPollEvents();
+			
+			var polygon = new VulkanPolygon();
+			vertexBuffer.writeVertecies(logicalDevice, polygon);
+			polygon.free();
 		}
 	}
 	

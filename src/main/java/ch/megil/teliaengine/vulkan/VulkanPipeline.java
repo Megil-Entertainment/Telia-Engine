@@ -215,4 +215,8 @@ public class VulkanPipeline {
 			pipelineLayout = VK_NULL_HANDLE;
 		}
 	}
+	
+	public long getGraphicsPipeline() {
+		return graphicsPipeline;
+	}
 }

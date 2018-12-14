@@ -66,23 +66,34 @@ public class VulkanRenderPass {
 		}
 	}
 	
-	public void begin(VulkanCommandBuffer commandBuffer, VulkanSwapchain swapchain, long framebuffer, VkClearValue.Buffer clearColors) {
+	public void linkRender(VulkanSwapchain swapchain, VulkanPipeline pipeline, VulkanFramebuffers framebuffers, VulkanCommandPool commandPool, VkClearValue.Buffer clearColor) throws VulkanException {
 		var beginInfo = VkRenderPassBeginInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO)
 				.renderPass(renderPass)
-				.framebuffer(framebuffer)
 				.renderArea(a -> a
 						.offset(o -> o.x(0).y(0))
 						.extent(swapchain.getExtent()))
-				.pClearValues(clearColors);
+				.pClearValues(clearColor);
 		
-		vkCmdBeginRenderPass(commandBuffer.get(), beginInfo, VK_SUBPASS_CONTENTS_INLINE);
-		
-		beginInfo.free();
-	}
-	
-	public void end(VulkanCommandBuffer commandBuffer) {
-		vkCmdEndRenderPass(commandBuffer.get());
+		try {
+			for (var i = 0; i < swapchain.getImageCount(); i++) {
+				var framebuffer = framebuffers.get()[i];
+				var cmdbuffer = commandPool.getCommandBuffer(i);
+				
+				beginInfo.framebuffer(framebuffer);
+				
+				cmdbuffer.begin();
+				vkCmdBeginRenderPass(cmdbuffer.get(), beginInfo, VK_SUBPASS_CONTENTS_INLINE);
+				
+				vkCmdBindPipeline(cmdbuffer.get(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getGraphicsPipeline());
+				vkCmdDraw(cmdbuffer.get(), 3, 1, 0, 0);
+				
+				vkCmdEndRenderPass(cmdbuffer.get());
+				cmdbuffer.end();
+			}
+		} finally {
+			beginInfo.clear();
+		}
 	}
 	
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {
