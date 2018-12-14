@@ -120,8 +120,4 @@ public class VulkanQueue {
 	protected void setPresentQueue(VkQueue presentQueue) {
 		this.presentQueue = presentQueue;
 	}
-	
-	public boolean useDifferentFamilies() {
-		return graphicsQueueFamInd != presentQueueFamInd;
-	}
 }

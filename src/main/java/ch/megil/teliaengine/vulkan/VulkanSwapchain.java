@@ -81,7 +81,10 @@ public class VulkanSwapchain {
 			//if (swapchainExtent.width() == -1) {
 			//	swapchainExtent.width(200).height(200); //TODO: set dynamic to correct size
 			//}
-		
+			
+			queueFamilyIndices.put(queue.getGraphicsFamily());
+			queueFamilyIndices.put(queue.getPresentFamily());
+			
 			swapchainCreateInfo
 					.sType(VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR)
 					.surface(surface)
@@ -93,22 +96,14 @@ public class VulkanSwapchain {
 							.height(swapchainExtent.height()))
 					.imageArrayLayers(1)
 					.imageUsage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) //TODO: add more usages?
-					.imageSharingMode(VK_SHARING_MODE_EXCLUSIVE)
-					.pQueueFamilyIndices(null)
+					.imageSharingMode(VK_SHARING_MODE_CONCURRENT)
+					.pQueueFamilyIndices(queueFamilyIndices)
 					.preTransform(preTransform)
 					.compositeAlpha(compositeAlpha)
 					.presentMode(VK_PRESENT_MODE_FIFO_KHR) //TODO: add presentation fallback
 					.clipped(true)
 					.oldSwapchain(VK_NULL_HANDLE);
-			
-			if (queue.useDifferentFamilies()) {
-				swapchainCreateInfo.imageSharingMode(VK_SHARING_MODE_CONCURRENT);
-				queueFamilyIndices.put(queue.getGraphicsFamily());
-				queueFamilyIndices.put(queue.getPresentFamily());
-				// set queueFamilyIndexCount explicitly to have the correct number if not done queueFamilyIndexCount is always zero
-				VkSwapchainCreateInfoKHR.nqueueFamilyIndexCount(swapchainCreateInfo.address(), queueFamilyIndices.capacity());
-				swapchainCreateInfo.pQueueFamilyIndices(queueFamilyIndices);
-			}
+			VkSwapchainCreateInfoKHR.nqueueFamilyIndexCount(swapchainCreateInfo.address(), queueFamilyIndices.capacity());
 			
 			res = vkCreateSwapchainKHR(logicalDevice, swapchainCreateInfo, null, pSwapchain);
 			if (res != VK_SUCCESS) {
