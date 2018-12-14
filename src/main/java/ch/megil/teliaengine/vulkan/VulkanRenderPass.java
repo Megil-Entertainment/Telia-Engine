@@ -5,10 +5,7 @@ import static org.lwjgl.system.MemoryUtil.memFree;
 import static org.lwjgl.vulkan.KHRSwapchain.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 import static org.lwjgl.vulkan.VK10.*;
 
-import org.lwjgl.vulkan.VkAttachmentDescription;
-import org.lwjgl.vulkan.VkAttachmentReference;
-import org.lwjgl.vulkan.VkRenderPassCreateInfo;
-import org.lwjgl.vulkan.VkSubpassDescription;
+import org.lwjgl.vulkan.*;
 
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
@@ -67,6 +64,25 @@ public class VulkanRenderPass {
 			colorAttachmentReference.free();
 			colorAttachment.free();
 		}
+	}
+	
+	public void begin(VulkanCommandPoolAndBuffer commandBuffer, VulkanSwapchain swapchain, long framebuffer, VkClearValue.Buffer clearColors) {
+		var beginInfo = VkRenderPassBeginInfo.calloc()
+				.sType(VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO)
+				.renderPass(renderPass)
+				.framebuffer(framebuffer)
+				.renderArea(a -> a
+						.offset(o -> o.x(0).y(0))
+						.extent(swapchain.getExtent()))
+				.pClearValues(clearColors);
+		
+		vkCmdBeginRenderPass(commandBuffer.getBuffer(), beginInfo, VK_SUBPASS_CONTENTS_INLINE);
+		
+		beginInfo.free();
+	}
+	
+	public void end(VulkanCommandPoolAndBuffer commandBuffer) {
+		vkCmdEndRenderPass(commandBuffer.getBuffer());
 	}
 	
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {
