@@ -11,7 +11,6 @@ import java.util.List;
 import org.lwjgl.vulkan.VkCommandBuffer;
 import org.lwjgl.vulkan.VkCommandBufferAllocateInfo;
 import org.lwjgl.vulkan.VkCommandPoolCreateInfo;
-import org.lwjgl.vulkan.VkDevice;
 
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
@@ -22,62 +21,45 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
 public class VulkanCommandPool {
 	private long commandPool;
 	private List<VulkanCommandBuffer> commandBuffers;
-//	private VkCommandBuffer commandBuffer;
+	
+	public VulkanCommandPool() {
+		commandBuffers = new ArrayList<>();
+	}
 	
 	/**
 	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
 	 * @param queue An initialized {@link VulkanQueue}
 	 */
 	public void init(VulkanLogicalDevice logicalDevice, VulkanQueue queue) throws VulkanException {
-		commandPool = createCommandPool(logicalDevice.get(), queue.getGraphicsFamily());
-		commandBuffers = new ArrayList<>();
-//		commandBuffer = createCommandBuffer(logicalDevice.get(), commandPool);
-	}
-	
-	private long createCommandPool(VkDevice device, int queueFamily) throws VulkanException {
 		var commandPoolCreateInfo = VkCommandPoolCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO)
-				.queueFamilyIndex(queueFamily)
+				.queueFamilyIndex(queue.getGraphicsFamily())
 				.flags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 		
 		var pCmdPool = memAllocLong(1);
-		var res = vkCreateCommandPool(device, commandPoolCreateInfo, null, pCmdPool);
+		var res = vkCreateCommandPool(logicalDevice.get(), commandPoolCreateInfo, null, pCmdPool);
 		
 		try {
 			if (res != VK_SUCCESS) {
 				throw new VulkanException(res);
 			}
 			
-			var cmdPool = pCmdPool.get(0);
-			return cmdPool;
+			commandPool = pCmdPool.get(0);
 		} finally {
 			memFree(pCmdPool);
 			commandPoolCreateInfo.free();
 		}
 	}
 	
-//	private VkCommandBuffer createCommandBuffer(VkDevice device, long commandPool) throws VulkanException {
-//		var cmdBufferAllocInfo = VkCommandBufferAllocateInfo.calloc()
-//				.sType(VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO)
-//				.commandPool(commandPool)
-//				.level(VK_COMMAND_BUFFER_LEVEL_PRIMARY)
-//				.commandBufferCount(1);
-//		
-//		var pCmdBuffer = memAllocPointer(1);
-//		var res = vkAllocateCommandBuffers(device, cmdBufferAllocInfo, pCmdBuffer);
-//		
-//		try {
-//			if (res != VK_SUCCESS) {
-//				throw new VulkanException(res);
-//			}
-//			
-//			var cmdBuffer = new VkCommandBuffer(pCmdBuffer.get(0), device);
-//			return cmdBuffer;
-//		} finally {
-//			memFree(pCmdBuffer);
-//			cmdBufferAllocInfo.free();
-//		}
-//	}
+	/**
+	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
+	 * @param queue An initialized {@link VulkanQueue}
+	 * @param numOfBuffers number of buffers ready at initializing level
+	 */
+	public void init(VulkanLogicalDevice logicalDevice, VulkanQueue queue, int numOfBuffers) throws VulkanException {
+		init(logicalDevice, queue);
+		initBuffers(logicalDevice, numOfBuffers);
+	}
 	
 	public void initBuffers(VulkanLogicalDevice logicalDevice, int numOfBuffers) throws VulkanException {
 		var cmdBufferAllocInfo = VkCommandBufferAllocateInfo.calloc()
@@ -111,33 +93,7 @@ public class VulkanCommandPool {
 		}
 	}
 	
-//	public void beginBuffer() throws VulkanException {
-//		var beginInfo = VkCommandBufferBeginInfo.calloc()
-//				.sType(VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO)
-//				.flags(VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT);
-//		
-//		var res = vkBeginCommandBuffer(commandBuffer, beginInfo);
-//		try {
-//			if (res != VK_SUCCESS) {
-//				throw new VulkanException(res);
-//			}
-//		} finally {
-//			beginInfo.free();
-//		}
-//	}
-//	
-//	public void endBuffer() throws VulkanException {
-//		var res = vkEndCommandBuffer(commandBuffer);
-//		if (res != VK_SUCCESS) {
-//			throw new VulkanException(res);
-//		}
-//	}
-	
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {
-//		if (commandBuffer != null) {
-//			vkFreeCommandBuffers(device.get(), commandPool, commandBuffer);
-//			commandBuffer = null;
-//		}
 		commandBuffers.forEach(b -> b.cleanUp(logicalDevice, commandPool));
 		commandBuffers.clear();
 		
@@ -154,8 +110,4 @@ public class VulkanCommandPool {
 	public VulkanCommandBuffer getCommandBuffer(int index) {
 		return commandBuffers.get(index);
 	}
-	
-//	public VkCommandBuffer getBuffer() {
-//		return commandBuffer;
-//	}
 }

@@ -103,8 +103,7 @@ public class GameMain {
 		vertexBuffer.init(physicalDevice, logicalDevice);
 		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer);
 		framebuffers.init(logicalDevice, swapchain, renderPass);
-		renderCommandPool.init(logicalDevice, queue);
-		renderCommandPool.initBuffers(logicalDevice, swapchain.getImageCount());
+		renderCommandPool.init(logicalDevice, queue, swapchain.getImageCount());
 		
 		glfwShowWindow(window);
 	}
@@ -120,7 +119,7 @@ public class GameMain {
 		try {
 			while(!glfwWindowShouldClose(window)) {
 				glfwPollEvents();
-//				renderPass.begin(commandPoolAndBuffer, swapchain, framebuffers, clearColor);//TODO: change clear color
+//				renderPass.begin(commandPoolAndBuffer, swapchain, framebuffers, clearColor);
 				
 				var polygon = new VulkanPolygon();
 				vertexBuffer.writeVertecies(logicalDevice, polygon);
