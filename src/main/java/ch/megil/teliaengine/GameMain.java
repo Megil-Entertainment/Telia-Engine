@@ -4,15 +4,17 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
 import static org.lwjgl.glfw.GLFWVulkan.glfwVulkanSupported;
 import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.system.MemoryUtil.memAllocInt;
 import static org.lwjgl.system.MemoryUtil.memAllocLong;
+import static org.lwjgl.system.MemoryUtil.memAllocPointer;
 import static org.lwjgl.system.MemoryUtil.memFree;
-import static org.lwjgl.vulkan.VK10.VK_FORMAT_B8G8R8A8_UNORM;
-import static org.lwjgl.vulkan.VK10.VK_MAKE_VERSION;
-import static org.lwjgl.vulkan.VK10.VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
-import static org.lwjgl.vulkan.VK10.VK_SUCCESS;
-import static org.lwjgl.vulkan.VK10.vkBeginCommandBuffer;
+import static org.lwjgl.vulkan.KHRSwapchain.vkAcquireNextImageKHR;
+import static org.lwjgl.vulkan.VK10.*;
+
+import java.nio.IntBuffer;
 
 import org.lwjgl.vulkan.VkClearValue;
+import org.lwjgl.vulkan.VkSubmitInfo;
 
 import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.file.MapSaveLoad;
@@ -25,6 +27,8 @@ import ch.megil.teliaengine.vulkan.obj.VulkanPolygon;
 
 public class GameMain {
 	private static final int VK_VERSION = VK_MAKE_VERSION(1, 0, 2);
+	
+	private static final long UINT64_MAX = -1;
 	
 	private static final int SEM_NUM_OF_SEM = 2;
 	private static final int SEM_IMAGE_AVAILABLE = 0;
@@ -129,12 +133,44 @@ public class GameMain {
 	}
 	
 	private void loop() throws VulkanException {
-		while(!glfwWindowShouldClose(window)) {
-			glfwPollEvents();
-			
-			var polygon = new VulkanPolygon();
-			vertexBuffer.writeVertecies(logicalDevice, polygon);
-			polygon.free();
+		var pImageIndex = memAllocInt(1);
+		
+		var waitStage = memAllocInt(1)
+				.put(0, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+		var pRenderCommandBuffer = memAllocPointer(1);
+		var submitInfo = VkSubmitInfo.calloc()
+				.sType(VK_STRUCTURE_TYPE_SUBMIT_INFO)
+				.waitSemaphoreCount(1)
+				.pWaitSemaphores(semaphore.getPointer(SEM_IMAGE_AVAILABLE))
+				.pWaitDstStageMask(waitStage)
+				.pCommandBuffers(pRenderCommandBuffer)
+				.pSignalSemaphores(semaphore.getPointer(SEM_RENDER_FINISHED));
+		VkSubmitInfo.ncommandBufferCount(submitInfo.address(), pRenderCommandBuffer.capacity());
+		VkSubmitInfo.nsignalSemaphoreCount(submitInfo.address(), semaphore.getPointer(SEM_RENDER_FINISHED).capacity());
+		
+		try {
+			while(!glfwWindowShouldClose(window)) {
+				glfwPollEvents();
+				
+				vkAcquireNextImageKHR(logicalDevice.get(), swapchain.get(), UINT64_MAX, semaphore.get(SEM_IMAGE_AVAILABLE), VK_NULL_HANDLE, pImageIndex);
+				var imageIndex = pImageIndex.get(0);
+				
+				pRenderCommandBuffer.put(0, renderCommandPool.getCommandBuffer(imageIndex).get());
+				
+				var polygon = new VulkanPolygon();
+				vertexBuffer.writeVertecies(logicalDevice, polygon);
+				polygon.free();
+				
+				var res = vkQueueSubmit(queue.getGraphicsQueue(), submitInfo, VK_NULL_HANDLE);
+				if (res != VK_SUCCESS) {
+					throw new VulkanException(res);
+				}
+			}
+		} finally {
+			submitInfo.free();
+			memFree(pRenderCommandBuffer);
+			memFree(waitStage);
+			memFree(pImageIndex);
 		}
 	}
 	

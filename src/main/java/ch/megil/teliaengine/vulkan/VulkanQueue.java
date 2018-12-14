@@ -83,8 +83,10 @@ public class VulkanQueue {
 	public void cleanUp() {
 		graphicsQueueFamInd = Integer.MAX_VALUE;
 		graphicsQueueCount = 0;
+		graphicsQueue = null;
 		presentQueueFamInd = Integer.MAX_VALUE;
 		presentQueueCount = 0;
+		presentQueue = null;
 	}
 	
 	public int getGraphicsFamily() {
