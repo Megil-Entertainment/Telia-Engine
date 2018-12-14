@@ -66,7 +66,7 @@ public class VulkanRenderPass {
 		}
 	}
 	
-	public void begin(VulkanCommandPoolAndBuffer commandBuffer, VulkanSwapchain swapchain, long framebuffer, VkClearValue.Buffer clearColors) {
+	public void begin(VulkanCommandBuffer commandBuffer, VulkanSwapchain swapchain, long framebuffer, VkClearValue.Buffer clearColors) {
 		var beginInfo = VkRenderPassBeginInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO)
 				.renderPass(renderPass)
@@ -76,13 +76,13 @@ public class VulkanRenderPass {
 						.extent(swapchain.getExtent()))
 				.pClearValues(clearColors);
 		
-		vkCmdBeginRenderPass(commandBuffer.getBuffer(), beginInfo, VK_SUBPASS_CONTENTS_INLINE);
+		vkCmdBeginRenderPass(commandBuffer.get(), beginInfo, VK_SUBPASS_CONTENTS_INLINE);
 		
 		beginInfo.free();
 	}
 	
-	public void end(VulkanCommandPoolAndBuffer commandBuffer) {
-		vkCmdEndRenderPass(commandBuffer.getBuffer());
+	public void end(VulkanCommandBuffer commandBuffer) {
+		vkCmdEndRenderPass(commandBuffer.get());
 	}
 	
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {

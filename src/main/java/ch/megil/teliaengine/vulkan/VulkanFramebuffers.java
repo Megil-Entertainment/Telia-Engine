@@ -65,4 +65,8 @@ public class VulkanFramebuffers {
 		framebuffers = null;
 		framebufferCount = 0;
 	}
+	
+	public long[] get() {
+		return framebuffers;
+	}
 }

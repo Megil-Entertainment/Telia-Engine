@@ -12,6 +12,8 @@ import static org.lwjgl.vulkan.VK10.VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
 import static org.lwjgl.vulkan.VK10.VK_SUCCESS;
 import static org.lwjgl.vulkan.VK10.vkBeginCommandBuffer;
 
+import org.lwjgl.vulkan.VkClearValue;
+
 import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.file.MapSaveLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
@@ -38,7 +40,7 @@ public class GameMain {
 	private VulkanVertexBuffer vertexBuffer;
 	private VulkanPipeline pipeline;
 	private VulkanFramebuffers framebuffers;
-	private VulkanCommandPoolAndBuffer commandPoolAndBuffer;
+	private VulkanCommandPool renderCommandPool;
 	
 	public GameMain() {
 		instance = new VulkanInstance();
@@ -52,7 +54,7 @@ public class GameMain {
 		vertexBuffer = new VulkanVertexBuffer();
 		pipeline = new VulkanPipeline();
 		framebuffers = new VulkanFramebuffers();
-		commandPoolAndBuffer = new VulkanCommandPoolAndBuffer();
+		renderCommandPool = new VulkanCommandPool();
 	}
 	
 	public GameMain(String mapName) throws AssetNotFoundException, AssetFormatException {
@@ -101,26 +103,39 @@ public class GameMain {
 		vertexBuffer.init(physicalDevice, logicalDevice);
 		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer);
 		framebuffers.init(logicalDevice, swapchain, renderPass);
-		commandPoolAndBuffer.init(logicalDevice, queue);
+		renderCommandPool.init(logicalDevice, queue);
+		renderCommandPool.initBuffers(logicalDevice, swapchain.getImageCount());
 		
 		glfwShowWindow(window);
 	}
 	
 	private void loop() throws VulkanException {
-		commandPoolAndBuffer.beginBuffer();
-		while(!glfwWindowShouldClose(window)) {
-			glfwPollEvents();
-			
-			var polygon = new VulkanPolygon();
-			vertexBuffer.writeVertecies(logicalDevice, polygon);
-			polygon.free();
+		var clearColor = VkClearValue.calloc(1);
+		clearColor.color()
+				.float32(0, 255f) //R
+				.float32(1, 255f) //G
+				.float32(2, 255f) //B
+				.float32(3, 1f);  //A
+		
+		try {
+			while(!glfwWindowShouldClose(window)) {
+				glfwPollEvents();
+//				renderPass.begin(commandPoolAndBuffer, swapchain, framebuffers, clearColor);//TODO: change clear color
+				
+				var polygon = new VulkanPolygon();
+				vertexBuffer.writeVertecies(logicalDevice, polygon);
+				polygon.free();
+				
+//				renderPass.end(commandPoolAndBuffer);
+			}
+		} finally {
+			clearColor.free();
 		}
-		commandPoolAndBuffer.endBuffer();
 	}
 	
 	public void cleanUp() {
 		// Destroy bottom up
-		commandPoolAndBuffer.cleanUp(logicalDevice);
+		renderCommandPool.cleanUp(logicalDevice);
 		framebuffers.cleanUp(logicalDevice);
 		pipeline.cleanUp(logicalDevice);
 		vertexBuffer.cleanUp(logicalDevice);
