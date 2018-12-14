@@ -8,6 +8,7 @@ import static org.lwjgl.vulkan.VK10.VK_TRUE;
 import static org.lwjgl.vulkan.VK10.vkGetPhysicalDeviceQueueFamilyProperties;
 
 import org.lwjgl.glfw.GLFWVulkan;
+import org.lwjgl.vulkan.VkQueue;
 import org.lwjgl.vulkan.VkQueueFamilyProperties;
 
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
@@ -19,8 +20,10 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
 public class VulkanQueue {
 	private int graphicsQueueFamInd;
 	private int graphicsQueueCount;
+	private VkQueue graphicsQueue;
 	private int presentQueueFamInd;
 	private int presentQueueCount;
+	private VkQueue presentQueue;
 	
 	public VulkanQueue() {
 		graphicsQueueFamInd = Integer.MAX_VALUE;
@@ -92,12 +95,28 @@ public class VulkanQueue {
 		return graphicsQueueCount;
 	}
 	
+	public VkQueue getGraphicsQueue() {
+		return graphicsQueue;
+	}
+	
+	protected void setGraphicsQueue(VkQueue graphicsQueue) {
+		this.graphicsQueue = graphicsQueue;
+	}
+	
 	public int getPresentFamily() {
 		return presentQueueFamInd;
 	}
 	
 	public int getPresentQueueCount() {
 		return presentQueueCount;
+	}
+	
+	public VkQueue getPresentQueue() {
+		return presentQueue;
+	}
+	
+	protected void setPresentQueue(VkQueue presentQueue) {
+		this.presentQueue = presentQueue;
 	}
 	
 	public boolean useDifferentFamilies() {
