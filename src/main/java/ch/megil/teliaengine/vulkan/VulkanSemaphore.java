@@ -7,32 +7,32 @@ import static org.lwjgl.vulkan.VK10.VK_SUCCESS;
 import static org.lwjgl.vulkan.VK10.vkCreateSemaphore;
 import static org.lwjgl.vulkan.VK10.vkDestroySemaphore;
 
+import java.nio.LongBuffer;
+
 import org.lwjgl.vulkan.VkSemaphoreCreateInfo;
 
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
 public class VulkanSemaphore {
-	private long[] semaphore;
+	private LongBuffer[] semaphore;
 	
 	public void init(VulkanLogicalDevice logicalDevice, int numOfSem) throws VulkanException {
-		semaphore = new long[numOfSem];
+		semaphore = new LongBuffer[numOfSem];
 		
 		//Vulkan needs the struct, even thought it is technically empty
 		var semaphoreInfo = VkSemaphoreCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
 		
-		var pSemaphore = memAllocLong(1);
-		
 		try {
 			for (var i = 0; i < numOfSem; i++) {
+				var pSemaphore = memAllocLong(1);
 				var res = vkCreateSemaphore(logicalDevice.get(), semaphoreInfo, null, pSemaphore);
 				if (res != VK_SUCCESS) {
 					throw new VulkanException(res);
 				}
-				semaphore[i] = pSemaphore.get(0);
+				semaphore[i] = pSemaphore;
 			}
 		} finally {
-			memFree(pSemaphore);
 			semaphoreInfo.free();
 		}
 	}
@@ -40,12 +40,18 @@ public class VulkanSemaphore {
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {
 		if (semaphore != null) {
 			for (var s : semaphore) {
-				vkDestroySemaphore(logicalDevice.get(), s, null);
+				vkDestroySemaphore(logicalDevice.get(), s.get(0), null);
+				memFree(s);
 			}
+			semaphore = null;
 		}
 	}
 	
 	public long get(int index) {
+		return semaphore[index].get(0);
+	}
+	
+	public LongBuffer getPointer(int index) {
 		return semaphore[index];
 	}
 }
