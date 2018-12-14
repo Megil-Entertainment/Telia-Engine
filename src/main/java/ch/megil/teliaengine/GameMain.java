@@ -26,6 +26,10 @@ import ch.megil.teliaengine.vulkan.obj.VulkanPolygon;
 public class GameMain {
 	private static final int VK_VERSION = VK_MAKE_VERSION(1, 0, 2);
 	
+	private static final int SEM_NUM_OF_SEM = 2;
+	private static final int SEM_IMAGE_AVAILABLE = 0;
+	private static final int SEM_RENDER_FINISHED = 1;
+	
 	private long window;
 	private long windowSurface;
 	
@@ -41,6 +45,7 @@ public class GameMain {
 	private VulkanPipeline pipeline;
 	private VulkanFramebuffers framebuffers;
 	private VulkanCommandPool renderCommandPool;
+	private VulkanSemaphore semaphore;
 	
 	public GameMain() {
 		instance = new VulkanInstance();
@@ -55,6 +60,7 @@ public class GameMain {
 		pipeline = new VulkanPipeline();
 		framebuffers = new VulkanFramebuffers();
 		renderCommandPool = new VulkanCommandPool();
+		semaphore = new VulkanSemaphore();
 	}
 	
 	public GameMain(String mapName) throws AssetNotFoundException, AssetFormatException {
@@ -117,6 +123,8 @@ public class GameMain {
 			clearColor.free();
 		}
 		
+		semaphore.init(logicalDevice, SEM_NUM_OF_SEM);
+		
 		glfwShowWindow(window);
 	}
 	
@@ -132,6 +140,7 @@ public class GameMain {
 	
 	public void cleanUp() {
 		// Destroy bottom up
+		semaphore.cleanUp(logicalDevice);
 		renderCommandPool.cleanUp(logicalDevice);
 		framebuffers.cleanUp(logicalDevice);
 		pipeline.cleanUp(logicalDevice);
