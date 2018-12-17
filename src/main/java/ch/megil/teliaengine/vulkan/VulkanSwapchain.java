@@ -3,7 +3,9 @@ package ch.megil.teliaengine.vulkan;
 import static org.lwjgl.system.MemoryUtil.memAllocInt;
 import static org.lwjgl.system.MemoryUtil.memAllocLong;
 import static org.lwjgl.system.MemoryUtil.memFree;
-import static org.lwjgl.vulkan.KHRSurface.*;
+import static org.lwjgl.vulkan.KHRSurface.VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+import static org.lwjgl.vulkan.KHRSurface.VK_PRESENT_MODE_FIFO_KHR;
+import static org.lwjgl.vulkan.KHRSurface.vkGetPhysicalDeviceSurfaceCapabilitiesKHR;
 import static org.lwjgl.vulkan.KHRSwapchain.VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 import static org.lwjgl.vulkan.KHRSwapchain.vkCreateSwapchainKHR;
 import static org.lwjgl.vulkan.KHRSwapchain.vkDestroySwapchainKHR;
@@ -59,51 +61,45 @@ public class VulkanSwapchain {
 				throw new VulkanException(res);
 			}
 			
-			var preTransform = surfaceCapabilities.currentTransform();
-			if ((surfaceCapabilities.supportedTransforms() & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) != 0) {
-				preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
-			}
-			
-			int compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-			if ((surfaceCapabilities.supportedCompositeAlpha() & compositeAlpha) == 0) {
-				for (var alpha : new int[] {
-						VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
-						VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
-						VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR}) {
-					if ((surfaceCapabilities.supportedCompositeAlpha() & alpha) != 0) {
-						compositeAlpha = alpha;
-						break;
-					}
-				}
-			}
-			
 			swapchainExtent = surfaceCapabilities.currentExtent();
-			//if (swapchainExtent.width() == -1) {
-			//	swapchainExtent.width(200).height(200); //TODO: set dynamic to correct size
-			//}
+			if (swapchainExtent.width() == -1) {
+				var width = 200;
+				var height = 200;
+				
+				swapchainExtent.width(Math.max(surfaceCapabilities.minImageExtent().width(), Math.min(surfaceCapabilities.maxImageExtent().width(), width)));
+				swapchainExtent.height(Math.max(surfaceCapabilities.minImageExtent().height(), Math.min(surfaceCapabilities.maxImageExtent().height(), height)));
+			}
 			
-			queueFamilyIndices.put(queue.getGraphicsFamily());
-			queueFamilyIndices.put(queue.getPresentFamily());
+			var imageCount = surfaceCapabilities.minImageCount()+1; // minImageCount + 1 results in tripple buffering
+			if (surfaceCapabilities.maxImageCount() > 0 && imageCount > surfaceCapabilities.maxImageCount()) {
+				imageCount = surfaceCapabilities.maxImageCount();
+			}
 			
 			swapchainCreateInfo
 					.sType(VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR)
 					.surface(surface)
-					.minImageCount(surfaceCapabilities.minImageCount()+1) // minImageCount + 1 results in tripple buffering
+					.minImageCount(imageCount)
 					.imageFormat(color.getFormat())
 					.imageColorSpace(color.getSpace())
-					.imageExtent(e ->
-							e.width(swapchainExtent.width())
-							.height(swapchainExtent.height()))
+					.imageExtent(swapchainExtent)
 					.imageArrayLayers(1)
-					.imageUsage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) //TODO: add more usages?
-					.imageSharingMode(VK_SHARING_MODE_CONCURRENT)
-					.pQueueFamilyIndices(queueFamilyIndices)
-					.preTransform(preTransform)
-					.compositeAlpha(compositeAlpha)
+					.imageUsage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)
+					.preTransform(surfaceCapabilities.currentTransform())
+					.compositeAlpha(VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
 					.presentMode(VK_PRESENT_MODE_FIFO_KHR) //TODO: add presentation fallback
 					.clipped(true)
 					.oldSwapchain(VK_NULL_HANDLE);
-			VkSwapchainCreateInfoKHR.nqueueFamilyIndexCount(swapchainCreateInfo.address(), queueFamilyIndices.capacity());
+			
+			queueFamilyIndices.put(queue.getGraphicsFamily());
+			queueFamilyIndices.put(queue.getPresentFamily());
+			if (queue.getGraphicsFamily() != queue.getPresentFamily()) {
+				swapchainCreateInfo
+						.imageSharingMode(VK_SHARING_MODE_CONCURRENT)
+						.pQueueFamilyIndices(queueFamilyIndices);
+				VkSwapchainCreateInfoKHR.nqueueFamilyIndexCount(swapchainCreateInfo.address(), queueFamilyIndices.capacity());
+			} else {
+				swapchainCreateInfo.imageSharingMode(VK_SHARING_MODE_EXCLUSIVE);
+			}
 			
 			res = vkCreateSwapchainKHR(logicalDevice, swapchainCreateInfo, null, pSwapchain);
 			if (res != VK_SUCCESS) {

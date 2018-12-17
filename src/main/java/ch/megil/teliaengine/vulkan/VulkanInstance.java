@@ -48,6 +48,7 @@ public class VulkanInstance {
 				.sType(VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO)
 				.pApplicationInfo(appInfo)
 				.ppEnabledExtensionNames(enabledExtensionNames);
+		VkInstanceCreateInfo.nenabledExtensionCount(instInfo.address(), enabledExtensionNames.capacity());
 		
 		var pInst = memAllocPointer(1);
 		var res = vkCreateInstance(instInfo, null, pInst);

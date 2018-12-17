@@ -148,7 +148,7 @@ public class ClearScreenDemo {
     /**
      * This function sets up the debug callback which the validation layers will use to yell at us when we make mistakes.
      */
-    private static long setupDebugging(VkInstance instance, int flags, VkDebugReportCallbackEXT callback) {
+    public static long setupDebugging(VkInstance instance, int flags, VkDebugReportCallbackEXT callback) {
         // Again, a struct to create something, in this case the debug report callback
         VkDebugReportCallbackCreateInfoEXT dbgCreateInfo = VkDebugReportCallbackCreateInfoEXT.calloc()
                 .sType(VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT) // <- the struct type

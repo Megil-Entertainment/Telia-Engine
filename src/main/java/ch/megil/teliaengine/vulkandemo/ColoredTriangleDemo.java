@@ -1360,26 +1360,39 @@ public class ColoredTriangleDemo {
                 .pSwapchains(pSwapchains)
                 .pImageIndices(pImageIndex)
                 .pResults(null);
+        
+        err = vkCreateSemaphore(device, semaphoreCreateInfo, null, pImageAcquiredSemaphore);
+        if (err != VK_SUCCESS) {
+            throw new AssertionError("Failed to create image acquired semaphore: " + translateVulkanResult(err));
+        }
+
+        // Create a semaphore to wait for the render to complete, before presenting
+        err = vkCreateSemaphore(device, semaphoreCreateInfo, null, pRenderCompleteSemaphore);
+        if (err != VK_SUCCESS) {
+            throw new AssertionError("Failed to create render complete semaphore: " + translateVulkanResult(err));
+        }
 
         // The render loop
         while (!glfwWindowShouldClose(window)) {
             // Handle window messages. Resize events happen exactly here.
             // So it is safe to use the new swapchain images and framebuffers afterwards.
             glfwPollEvents();
-//TODO            if (swapchainRecreator.mustRecreate)
+            if (swapchainRecreator.mustRecreate) {
                 swapchainRecreator.recreate();
+            	pSwapchains.put(0, swapchain.swapchainHandle);
+            }
 
             // Create a semaphore to wait for the swapchain to acquire the next image
-            err = vkCreateSemaphore(device, semaphoreCreateInfo, null, pImageAcquiredSemaphore);
-            if (err != VK_SUCCESS) {
-                throw new AssertionError("Failed to create image acquired semaphore: " + translateVulkanResult(err));
-            }
-
-            // Create a semaphore to wait for the render to complete, before presenting
-            err = vkCreateSemaphore(device, semaphoreCreateInfo, null, pRenderCompleteSemaphore);
-            if (err != VK_SUCCESS) {
-                throw new AssertionError("Failed to create render complete semaphore: " + translateVulkanResult(err));
-            }
+//            err = vkCreateSemaphore(device, semaphoreCreateInfo, null, pImageAcquiredSemaphore);
+//            if (err != VK_SUCCESS) {
+//                throw new AssertionError("Failed to create image acquired semaphore: " + translateVulkanResult(err));
+//            }
+//
+//            // Create a semaphore to wait for the render to complete, before presenting
+//            err = vkCreateSemaphore(device, semaphoreCreateInfo, null, pRenderCompleteSemaphore);
+//            if (err != VK_SUCCESS) {
+//                throw new AssertionError("Failed to create render complete semaphore: " + translateVulkanResult(err));
+//            }
 
             // Get next image from the swap chain (back/front buffer).
             // This will setup the imageAquiredSemaphore to be signalled when the operation is complete
@@ -1399,19 +1412,19 @@ public class ColoredTriangleDemo {
             }
 
             // Present the current buffer to the swap chain
-            // This will display the image
-            pSwapchains.put(0, swapchain.swapchainHandle);
+//            // This will display the image
+//            pSwapchains.put(0, swapchain.swapchainHandle);
             err = vkQueuePresentKHR(queue, presentInfo);
             if (err != VK_SUCCESS) {
                 throw new AssertionError("Failed to present the swapchain image: " + translateVulkanResult(err));
             }
             // Create and submit post present barrier
-            vkQueueWaitIdle(queue);
+//            vkQueueWaitIdle(queue);
 
             // Destroy this semaphore (we will create a new one in the next frame)
-            vkDestroySemaphore(device, pImageAcquiredSemaphore.get(0), null);
-            vkDestroySemaphore(device, pRenderCompleteSemaphore.get(0), null);
-            submitPostPresentBarrier(swapchain.images[currentBuffer], postPresentCommandBuffer, queue);
+//            vkDestroySemaphore(device, pImageAcquiredSemaphore.get(0), null);
+//            vkDestroySemaphore(device, pRenderCompleteSemaphore.get(0), null);
+//            submitPostPresentBarrier(swapchain.images[currentBuffer], postPresentCommandBuffer, queue);
         }
         presentInfo.free();
         memFree(pWaitDstStageMask);

@@ -155,4 +155,8 @@ public class VulkanVertexBuffer {
 		
 		return vertexAttribute;
 	}
+	
+	public long get() {
+		return buffer;
+	}
 }

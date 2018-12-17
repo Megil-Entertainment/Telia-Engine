@@ -8,12 +8,13 @@ import static org.lwjgl.system.MemoryUtil.memAllocInt;
 import static org.lwjgl.system.MemoryUtil.memAllocLong;
 import static org.lwjgl.system.MemoryUtil.memAllocPointer;
 import static org.lwjgl.system.MemoryUtil.memFree;
+import static org.lwjgl.vulkan.KHRSwapchain.VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 import static org.lwjgl.vulkan.KHRSwapchain.vkAcquireNextImageKHR;
+import static org.lwjgl.vulkan.KHRSwapchain.vkQueuePresentKHR;
 import static org.lwjgl.vulkan.VK10.*;
 
-import java.nio.IntBuffer;
-
 import org.lwjgl.vulkan.VkClearValue;
+import org.lwjgl.vulkan.VkPresentInfoKHR;
 import org.lwjgl.vulkan.VkSubmitInfo;
 
 import ch.megil.teliaengine.configuration.SystemConfiguration;
@@ -106,7 +107,7 @@ public class GameMain {
 		
 		queue.init(physicalDevice, windowSurface);
 		logicalDevice.init(physicalDevice, queue);
-		color.init(physicalDevice, windowSurface, VK_FORMAT_B8G8R8A8_UNORM);
+		color.init(physicalDevice, windowSurface, VK_FORMAT_R32G32B32A32_SFLOAT);
 		swapchain.init(physicalDevice, windowSurface, queue, logicalDevice, color);
 		shader.init(logicalDevice);
 		renderPass.init(logicalDevice, color);
@@ -117,12 +118,12 @@ public class GameMain {
 		
 		var clearColor = VkClearValue.calloc(1);
 		clearColor.color()
-				.float32(0, 255f) //R
-				.float32(1, 255f) //G
-				.float32(2, 255f) //B
+				.float32(0, 100/255f) //R
+				.float32(1, 100/255f) //G
+				.float32(2, 255/255f) //B
 				.float32(3, 1f);  //A
 		try {
-			renderPass.linkRender(swapchain, pipeline, framebuffers, renderCommandPool, clearColor);
+			renderPass.linkRender(swapchain, vertexBuffer, pipeline, framebuffers, renderCommandPool, clearColor);
 		} finally {
 			clearColor.free();
 		}
@@ -134,40 +135,59 @@ public class GameMain {
 	
 	private void loop() throws VulkanException {
 		var pImageIndex = memAllocInt(1);
-		
-		var waitStage = memAllocInt(1)
-				.put(0, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 		var pRenderCommandBuffer = memAllocPointer(1);
+		var pSwapchain = memAllocLong(1);
+		pSwapchain.put(0, swapchain.get());
+		
+		var waitStage = memAllocInt(1);
+		waitStage.put(0, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 		var submitInfo = VkSubmitInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_SUBMIT_INFO)
-				.waitSemaphoreCount(1)
 				.pWaitSemaphores(semaphore.getPointer(SEM_IMAGE_AVAILABLE))
 				.pWaitDstStageMask(waitStage)
 				.pCommandBuffers(pRenderCommandBuffer)
 				.pSignalSemaphores(semaphore.getPointer(SEM_RENDER_FINISHED));
+		VkSubmitInfo.nwaitSemaphoreCount(submitInfo.address(), 1);
 		VkSubmitInfo.ncommandBufferCount(submitInfo.address(), pRenderCommandBuffer.capacity());
-		VkSubmitInfo.nsignalSemaphoreCount(submitInfo.address(), semaphore.getPointer(SEM_RENDER_FINISHED).capacity());
+		VkSubmitInfo.nsignalSemaphoreCount(submitInfo.address(), 1);
+
+		var presentInfo = VkPresentInfoKHR.calloc()
+				.sType(VK_STRUCTURE_TYPE_PRESENT_INFO_KHR)
+				.pWaitSemaphores(semaphore.getPointer(SEM_RENDER_FINISHED))
+				.pSwapchains(pSwapchain)
+				.pImageIndices(pImageIndex);
+		VkPresentInfoKHR.nwaitSemaphoreCount(presentInfo.address(), semaphore.getPointer(SEM_RENDER_FINISHED).capacity());
+		VkPresentInfoKHR.nswapchainCount(presentInfo.address(), pSwapchain.capacity());
 		
 		try {
 			while(!glfwWindowShouldClose(window)) {
-				System.out.println(swapchain.getImageCount());
+				System.out.println("test");
 				glfwPollEvents();
+
+//				var polygon = new VulkanPolygon();
+//				vertexBuffer.writeVertecies(logicalDevice, polygon);
+//				polygon.free();
 				
 				vkAcquireNextImageKHR(logicalDevice.get(), swapchain.get(), UINT64_MAX, semaphore.get(SEM_IMAGE_AVAILABLE), VK_NULL_HANDLE, pImageIndex);
 				var imageIndex = pImageIndex.get(0);
 				
 				pRenderCommandBuffer.put(0, renderCommandPool.getCommandBuffer(imageIndex).get());
 				
-				var polygon = new VulkanPolygon();
-				vertexBuffer.writeVertecies(logicalDevice, polygon);
-				polygon.free();
-				
 				var res = vkQueueSubmit(queue.getGraphicsQueue(), submitInfo, VK_NULL_HANDLE);
 				if (res != VK_SUCCESS) {
 					throw new VulkanException(res);
 				}
+//				vkQueueWaitIdle(queue.getGraphicsQueue());
+				
+				res = vkQueuePresentKHR(queue.getPresentQueue(), presentInfo);
+				if (res != VK_SUCCESS) {
+					throw new VulkanException(res);
+				}
+//				vkQueueWaitIdle(queue.getPresentQueue());
 			}
+			vkDeviceWaitIdle(logicalDevice.get());
 		} finally {
+			presentInfo.free();
 			submitInfo.free();
 			memFree(pRenderCommandBuffer);
 			memFree(waitStage);
