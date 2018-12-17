@@ -199,8 +199,14 @@ public class MapEditor extends Pane {
 		KeyCode code = event.getCode();
 		if(code.equals(KeyCode.D)) {
 			System.out.println("Remove node");
-			removeNode(event);
-			event.consume();
+			if(selected.getGameElement() instanceof Player) {
+			 System.out.println("Player can not be deleted");
+			 event.consume();
+			}
+			else {
+			 removeNode(event);
+			 event.consume();
+			}
 		}
 	}
 	
