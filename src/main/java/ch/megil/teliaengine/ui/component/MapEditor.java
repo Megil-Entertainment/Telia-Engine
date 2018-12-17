@@ -33,7 +33,6 @@ public class MapEditor extends Pane {
 	private static final double INNER_SHADOW_CHOKE = 1.0;
 	
 	private GameElementImageView selected;
-	private VBox dropdownBox;
 	
 	private TextArea mapTextField;
 	
@@ -49,13 +48,13 @@ public class MapEditor extends Pane {
 		clip.widthProperty().bind(this.widthProperty());
 		clip.heightProperty().bind(this.heightProperty());
 		setClip(clip);
-		setOnMousePressed(this::onMapDragStart);
-		setOnMouseDragged(this::onDragMap);
+		setOnMousePressed(this::clickOnMap);
+		setOnMouseDragged(this::onMoveMap);
 		getChildren().addListener((ListChangeListener<Node>) c -> {
 			while(c.next()) {
 				c.getAddedSubList().forEach(n -> {
-					n.setOnMousePressed(this::onDragStart);
-					n.setOnMouseDragged(this::onDragNode);
+					n.setOnMousePressed(this::clickOnNode);
+					n.setOnMouseDragged(this::onMoveNode);
 					});
 			}});
 		
@@ -67,7 +66,6 @@ public class MapEditor extends Pane {
 		
 		nodeDeselected = new InnerShadow();
 		nodeDeselected.setColor(Color.TRANSPARENT);
-		dropdownBox = new DropdownList();
 	}
 	
 	public void addGameObject(GameObject obj) {
@@ -77,7 +75,7 @@ public class MapEditor extends Pane {
 		}
 	}
 	
-	public void onDragStart(MouseEvent event) {
+	public void clickOnNode(MouseEvent event) {
 		mapTextField.requestFocus();
 		if (event.isPrimaryButtonDown()) {
 			var source = (GameElementImageView) event.getSource();
@@ -91,18 +89,12 @@ public class MapEditor extends Pane {
 			dy = source.getLayoutY() - event.getSceneY();
 			event.consume();
 		}
-		
-		if(event.isSecondaryButtonDown() && selected != null) {
-			showDropdown(event);
-			event.consume();
-		}
 	}
 	
-	public void onMapDragStart(MouseEvent event) {
+	public void clickOnMap(MouseEvent event) {
 		if(event.isPrimaryButtonDown() && selected != null) {
 			selected.setEffect(nodeDeselected);
 			selected = null;
-			getChildren().remove(dropdownBox);
 		}
 		if (event.isSecondaryButtonDown()) {
 			dx = getTranslateX() - event.getSceneX();
@@ -170,17 +162,7 @@ public class MapEditor extends Pane {
 		}
 	}
 	
-	private void showDropdown(MouseEvent event) {
-		dropdownBox.setLayoutX(event.getSceneX());
-		dropdownBox.setLayoutY(event.getSceneY());
-		getChildren().add(dropdownBox);
-	}
-	
-	private void removeDropdown() {
-		getChildren().remove(dropdownBox);
-	}
-	
-	public void onDragNode(MouseEvent event) {
+	public void onMoveNode(MouseEvent event) {
 		if(event.isPrimaryButtonDown()) {
 			var source = (GameElementImageView) event.getSource();
 			moveNode(event, source);
@@ -188,7 +170,7 @@ public class MapEditor extends Pane {
 		}
 	}
 	
-	public void onDragMap(MouseEvent event) {
+	public void onMoveMap(MouseEvent event) {
 		if(event.isSecondaryButtonDown()) {
 			moveMap(event);
 			event.consume();
