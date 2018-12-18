@@ -33,8 +33,7 @@ public class VulkanCommandPool {
 	public void init(VulkanLogicalDevice logicalDevice, VulkanQueue queue) throws VulkanException {
 		var commandPoolCreateInfo = VkCommandPoolCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO)
-				.queueFamilyIndex(queue.getGraphicsFamily())
-				.flags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+				.queueFamilyIndex(queue.getGraphicsFamily());
 		
 		var pCmdPool = memAllocLong(1);
 		var res = vkCreateCommandPool(logicalDevice.get(), commandPoolCreateInfo, null, pCmdPool);

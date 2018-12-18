@@ -37,8 +37,8 @@ public class VulkanSwapchain {
 	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
 	 * @param color An initialized {@link VulkanColor}
 	 */
-	public void init(VulkanPhysicalDevice physicalDevice, long surface, VulkanQueue queue, VulkanLogicalDevice logicalDevice, VulkanColor color) throws VulkanException {
-		initSwapchain(physicalDevice.get(), surface, queue, logicalDevice.get(), color);
+	public void init(VulkanPhysicalDevice physicalDevice, long surface, VulkanQueue queue, VulkanLogicalDevice logicalDevice, VulkanColor color, int prefWidth, int prefHeight) throws VulkanException {
+		initSwapchain(physicalDevice.get(), surface, queue, logicalDevice.get(), color, prefWidth, prefHeight);
 		imgBuffers = getSwapchainBuffers(logicalDevice.get(), swapchain);
 		
 		imgBufferCount = imgBuffers.length;
@@ -48,7 +48,7 @@ public class VulkanSwapchain {
 		}
 	}
 	
-	private void initSwapchain(VkPhysicalDevice physicalDevice, long surface, VulkanQueue queue, VkDevice logicalDevice, VulkanColor color) throws VulkanException {
+	private void initSwapchain(VkPhysicalDevice physicalDevice, long surface, VulkanQueue queue, VkDevice logicalDevice, VulkanColor color, int prefWidth, int prefHeight) throws VulkanException {
 		var surfaceCapabilities = VkSurfaceCapabilitiesKHR.calloc();
 		var swapchainCreateInfo = VkSwapchainCreateInfoKHR.calloc();
 		
@@ -63,11 +63,8 @@ public class VulkanSwapchain {
 			
 			swapchainExtent = surfaceCapabilities.currentExtent();
 			if (swapchainExtent.width() == -1) {
-				var width = 200;
-				var height = 200;
-				
-				swapchainExtent.width(Math.max(surfaceCapabilities.minImageExtent().width(), Math.min(surfaceCapabilities.maxImageExtent().width(), width)));
-				swapchainExtent.height(Math.max(surfaceCapabilities.minImageExtent().height(), Math.min(surfaceCapabilities.maxImageExtent().height(), height)));
+				swapchainExtent.width(Math.max(surfaceCapabilities.minImageExtent().width(), Math.min(surfaceCapabilities.maxImageExtent().width(), prefWidth)));
+				swapchainExtent.height(Math.max(surfaceCapabilities.minImageExtent().height(), Math.min(surfaceCapabilities.maxImageExtent().height(), prefHeight)));
 			}
 			
 			var imageCount = surfaceCapabilities.minImageCount()+1; // minImageCount + 1 results in tripple buffering
@@ -147,7 +144,7 @@ public class VulkanSwapchain {
 	private long createImageView(VkDevice logicalDevice, int colorFormat, long bufferHandle) throws VulkanException {
 		var imageViewCreateInfo = VkImageViewCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO)
-				.flags(0)
+//				.flags(0)
 				.image(bufferHandle)
 				.viewType(VK_IMAGE_VIEW_TYPE_2D)
 				.format(colorFormat)

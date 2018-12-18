@@ -39,7 +39,6 @@ public class VulkanVertexBuffer {
 				.sharingMode(VK_SHARING_MODE_EXCLUSIVE);
 		
         var memoryRequirements = VkMemoryRequirements.calloc();
-        var memoryProperties = VkPhysicalDeviceMemoryProperties.calloc();
 		var memoryAllocInfo = VkMemoryAllocateInfo.calloc();
 		
 		var pBuffer = memAllocLong(1);
@@ -54,13 +53,10 @@ public class VulkanVertexBuffer {
 			buffer = pBuffer.get(0);
 			
 			vkGetBufferMemoryRequirements(logicalDevice.get(), buffer, memoryRequirements);
-			vkGetPhysicalDeviceMemoryProperties(physicalDevice.get(), memoryProperties);
 			
 			var properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-			var memoryType = findMemoryType(memoryProperties, memoryRequirements.memoryTypeBits(), properties);
-			if (memoryType == -1) {
-				throw new VulkanException("No compatible memory found.");
-			}
+			var memoryType = findMemoryType(physicalDevice.get(), memoryRequirements.memoryTypeBits(), properties);
+			
 			bufferSize = memoryRequirements.size();
 			memoryAllocInfo.sType(VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO)
 					.allocationSize(bufferSize)
@@ -81,20 +77,26 @@ public class VulkanVertexBuffer {
 			memFree(pBuffer);
 			memoryAllocInfo.free();
 			memoryRequirements.free();
-			memoryProperties.free();
 			bufferInfo.free();
 		}
 	}
 	
-	private int findMemoryType(VkPhysicalDeviceMemoryProperties memoryProperties, int typeFilter, int properties) {
-		for (var i = 0; i < memoryProperties.memoryTypes().capacity(); i++) {
-			var bits = typeFilter >> i;
-			if ((bits & 1) == 1 &&
-					(memoryProperties.memoryTypes().get(i).propertyFlags() & properties) == properties) {
-				return i;
+	private int findMemoryType(VkPhysicalDevice physicalDevice, int typeFilter, int properties) throws VulkanException {
+		var memoryProperties = VkPhysicalDeviceMemoryProperties.calloc();
+		vkGetPhysicalDeviceMemoryProperties(physicalDevice, memoryProperties);
+		
+		try {
+			for (var i = 0; i < memoryProperties.memoryTypeCount(); i++) {
+				if ((typeFilter & (1 << i)) != 0 &&
+						(memoryProperties.memoryTypes(i).propertyFlags() & properties) == properties) {
+					return i;
+				}
 			}
+	
+			throw new VulkanException("No compatible memory found.");
+		} finally {
+			memoryProperties.free();
 		}
-		return -1;
 	}
 	
 	public void writeVertecies(VulkanLogicalDevice logicalDevice, VulkanPolygon polygon) throws VulkanException {
@@ -151,7 +153,7 @@ public class VulkanVertexBuffer {
 				.binding(0)
 				.location(1)
 				.format(VK_FORMAT_R32G32B32_SFLOAT)
-				.offset(COLOR_OFFSET);
+				.offset(COLOR_OFFSET); //TODO: check
 		
 		return vertexAttribute;
 	}

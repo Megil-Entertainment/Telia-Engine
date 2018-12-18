@@ -54,6 +54,7 @@ public class VulkanShader {
 				.sType(VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO)
 				.flags(0)
 				.pCode(code);
+		VkShaderModuleCreateInfo.ncodeSize(shaderModuleCreateInfo.address(), code.capacity());
 		var pShaderModule = memAllocLong(1);
 		
 		var res = vkCreateShaderModule(logicalDevice, shaderModuleCreateInfo, null, pShaderModule);

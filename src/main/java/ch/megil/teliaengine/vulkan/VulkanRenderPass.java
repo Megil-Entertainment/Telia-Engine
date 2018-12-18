@@ -84,6 +84,7 @@ public class VulkanRenderPass {
 						.offset(o -> o.x(0).y(0))
 						.extent(swapchain.getExtent()))
 				.pClearValues(clearColor);
+		VkRenderPassBeginInfo.nclearValueCount(beginInfo.address(), clearColor.capacity());
 		
 		var pBuffer = memAllocLong(1);
 		pBuffer.put(0, vertexBuffer.get());

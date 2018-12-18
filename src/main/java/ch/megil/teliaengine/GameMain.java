@@ -35,6 +35,9 @@ public class GameMain {
 	private static final int SEM_IMAGE_AVAILABLE = 0;
 	private static final int SEM_RENDER_FINISHED = 1;
 	
+	private static final int BASE_WIDTH = 1280;
+	private static final int BASE_HEIGHT = 720;
+	
 	private long window;
 	private long windowSurface;
 	
@@ -44,8 +47,8 @@ public class GameMain {
 	private VulkanLogicalDevice logicalDevice;
 	private VulkanColor color;
 	private VulkanSwapchain swapchain;
-	private VulkanShader shader;
 	private VulkanRenderPass renderPass;
+	private VulkanShader shader;
 	private VulkanVertexBuffer vertexBuffer;
 	private VulkanPipeline pipeline;
 	private VulkanFramebuffers framebuffers;
@@ -59,12 +62,12 @@ public class GameMain {
 		logicalDevice = new VulkanLogicalDevice();
 		color = new VulkanColor();
 		swapchain = new VulkanSwapchain();
-		shader = new VulkanShader();
 		renderPass = new VulkanRenderPass();
-		vertexBuffer = new VulkanVertexBuffer();
+		shader = new VulkanShader();
 		pipeline = new VulkanPipeline();
 		framebuffers = new VulkanFramebuffers();
 		renderCommandPool = new VulkanCommandPool();
+		vertexBuffer = new VulkanVertexBuffer();
 		semaphore = new VulkanSemaphore();
 	}
 	
@@ -108,13 +111,13 @@ public class GameMain {
 		queue.init(physicalDevice, windowSurface);
 		logicalDevice.init(physicalDevice, queue);
 		color.init(physicalDevice, windowSurface, VK_FORMAT_R32G32B32A32_SFLOAT);
-		swapchain.init(physicalDevice, windowSurface, queue, logicalDevice, color);
-		shader.init(logicalDevice);
+		swapchain.init(physicalDevice, windowSurface, queue, logicalDevice, color, BASE_WIDTH, BASE_HEIGHT);
 		renderPass.init(logicalDevice, color);
-		vertexBuffer.init(physicalDevice, logicalDevice);
+		shader.init(logicalDevice);
 		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer);
 		framebuffers.init(logicalDevice, swapchain, renderPass);
 		renderCommandPool.init(logicalDevice, queue, swapchain.getImageCount());
+		vertexBuffer.init(physicalDevice, logicalDevice);
 		
 		var clearColor = VkClearValue.calloc(1);
 		clearColor.color()
@@ -155,8 +158,9 @@ public class GameMain {
 				.sType(VK_STRUCTURE_TYPE_PRESENT_INFO_KHR)
 				.pWaitSemaphores(semaphore.getPointer(SEM_RENDER_FINISHED))
 				.pSwapchains(pSwapchain)
-				.pImageIndices(pImageIndex);
-		VkPresentInfoKHR.nwaitSemaphoreCount(presentInfo.address(), semaphore.getPointer(SEM_RENDER_FINISHED).capacity());
+				.pImageIndices(pImageIndex)
+				.pResults(null);
+		VkPresentInfoKHR.nwaitSemaphoreCount(presentInfo.address(), 1);
 		VkPresentInfoKHR.nswapchainCount(presentInfo.address(), pSwapchain.capacity());
 		
 		try {
@@ -198,12 +202,12 @@ public class GameMain {
 	public void cleanUp() {
 		// Destroy bottom up
 		semaphore.cleanUp(logicalDevice);
+		vertexBuffer.cleanUp(logicalDevice);
 		renderCommandPool.cleanUp(logicalDevice);
 		framebuffers.cleanUp(logicalDevice);
 		pipeline.cleanUp(logicalDevice);
-		vertexBuffer.cleanUp(logicalDevice);
-		renderPass.cleanUp(logicalDevice);
 		shader.cleanUp(logicalDevice);
+		renderPass.cleanUp(logicalDevice);
 		swapchain.cleanUp(logicalDevice);
 		color.cleanUp();
 		logicalDevice.cleanUp();
@@ -225,7 +229,7 @@ public class GameMain {
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 		//TODO fullscreen?
 //		var window = glfwCreateWindow(1920, 1080, SystemConfiguration.GAME_NAME.getConfiguration(), glfwGetPrimaryMonitor(), NULL);
-		var window = glfwCreateWindow(1280, 720, SystemConfiguration.GAME_NAME.getConfiguration(), NULL, NULL);
+		var window = glfwCreateWindow(BASE_WIDTH, BASE_HEIGHT, SystemConfiguration.GAME_NAME.getConfiguration(), NULL, NULL);
 
 		return window;
 	}

@@ -1,9 +1,6 @@
 package ch.megil.teliaengine.vulkan;
 
-import static org.lwjgl.system.MemoryUtil.memAllocInt;
-import static org.lwjgl.system.MemoryUtil.memAllocLong;
-import static org.lwjgl.system.MemoryUtil.memFree;
-import static org.lwjgl.system.MemoryUtil.memUTF8;
+import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.vulkan.VK10.*;
 
 import java.nio.LongBuffer;
@@ -25,11 +22,9 @@ public class VulkanPipeline {
 	 * @param swapchain An initialized {@link VulkanSwapchain}
 	 * @param shader An initialized {@link VulkanShader}
 	 * @param renderPass An initialized {@link VulkanRenderPass}
-	 * @param vertexBuffer An initialized {@link VulkanVertexBuffer}
+	 * @param vertexBuffer An {@link VulkanVertexBuffer} (not necessarly initialized)
 	 */
 	public void init(VulkanLogicalDevice logicalDevice, VulkanSwapchain swapchain, VulkanShader shader, VulkanRenderPass renderPass, VulkanVertexBuffer vertexBuffer) throws VulkanException {
-		pipelineLayout = createPipelineLayout(logicalDevice.get());
-		
 		var vertexShader = callocShaderStage(shader.getVertShader(), VK_SHADER_STAGE_VERTEX_BIT);
 		var fragShader = callocShaderStage(shader.getFragShader(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		
@@ -37,9 +32,7 @@ public class VulkanPipeline {
 		shaderStageInfoBuffer.put(0, vertexShader);
 		shaderStageInfoBuffer.put(1, fragShader);
 		
-		//TODO: update
 		var vertexBinding = vertexBuffer.callocBinding();
-		
 		var vertexAttribute = vertexBuffer.callocAttribute();
 		
 		var vertexInputInfo = VkPipelineVertexInputStateCreateInfo.calloc()
@@ -48,18 +41,21 @@ public class VulkanPipeline {
 				.pVertexAttributeDescriptions(vertexAttribute);
 		VkPipelineVertexInputStateCreateInfo.nvertexBindingDescriptionCount(vertexInputInfo.address(), vertexBinding.capacity());
 		VkPipelineVertexInputStateCreateInfo.nvertexAttributeDescriptionCount(vertexInputInfo.address(), vertexAttribute.capacity());
-		
+
 		var inputAssemblyInfo = VkPipelineInputAssemblyStateCreateInfo.calloc()
-                .sType(VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO)
-                .topology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST) //TODO: update topology
-                .primitiveRestartEnable(false);
+				.sType(VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO)
+				.topology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
+				.primitiveRestartEnable(false);
+		
+		var viewport = callocViewport(swapchain.getExtent());
+		var scissor = callocScissor(swapchain.getExtent());
 		
 		var viewportInfo = VkPipelineViewportStateCreateInfo.calloc()
-                .sType(VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO)
-                .viewportCount(1)
-                .pViewports(callocViewport(swapchain.getExtent()))
-                .scissorCount(1)
-                .pScissors(callocScissor(swapchain.getExtent()));
+				.sType(VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO)
+				.viewportCount(1)
+				.pViewports(viewport)
+				.scissorCount(1)
+				.pScissors(scissor);
 		
 		var rasterizationInfo = VkPipelineRasterizationStateCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO)
@@ -67,14 +63,14 @@ public class VulkanPipeline {
 				.rasterizerDiscardEnable(false)
 				.polygonMode(VK_POLYGON_MODE_FILL)
 				.lineWidth(1.0f)
-				.cullMode(VK_CULL_MODE_NONE) //TODO: maybe add culling
-				.frontFace(VK_FRONT_FACE_COUNTER_CLOCKWISE)
+				.cullMode(VK_CULL_MODE_BACK_BIT)
+				.frontFace(VK_FRONT_FACE_CLOCKWISE)
 				.depthBiasEnable(false);
 		
 		var multisamplingInfo = VkPipelineMultisampleStateCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO)
 				.sampleShadingEnable(false)
-				.rasterizationSamples(VK_SAMPLE_COUNT_1_BIT); //TODO: enable multisampling
+				.rasterizationSamples(VK_SAMPLE_COUNT_1_BIT);
 		
 		var colorBlendAttachment = VkPipelineColorBlendAttachmentState.calloc(1)
 				.colorWriteMask(VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
@@ -82,21 +78,17 @@ public class VulkanPipeline {
 		
 		var colorBlendInfo = VkPipelineColorBlendStateCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO)
-				.logicOp(VK_FALSE)
-				.pAttachments(colorBlendAttachment);
+				.logicOpEnable(false)
+				.logicOp(VK_LOGIC_OP_COPY)
+				.pAttachments(colorBlendAttachment)
+				.blendConstants(0, 0f)
+				.blendConstants(1, 0f)
+				.blendConstants(2, 0f)
+				.blendConstants(3, 0f);
 		// set attachmentCount explicitly to have the correct number if not done attachmentCount is always zero
 		VkPipelineColorBlendStateCreateInfo.nattachmentCount(colorBlendInfo.address(), colorBlendAttachment.capacity());
 		
-		var dynamicStates = memAllocInt(2)
-				.put(VK_DYNAMIC_STATE_VIEWPORT)
-				.put(VK_DYNAMIC_STATE_SCISSOR)
-				.flip();
-		
-		var dynamicStateInfo = VkPipelineDynamicStateCreateInfo.calloc()
-				.sType(VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO)
-				.pDynamicStates(dynamicStates);
-		// set dynamicStateCount explicitly to have the correct number if not done dynamicStateCount is always zero
-		VkPipelineDynamicStateCreateInfo.ndynamicStateCount(dynamicStateInfo.address(), dynamicStates.capacity());
+		pipelineLayout = createPipelineLayout(logicalDevice.get());
 		
 		var graphicsPipelineInfo = VkGraphicsPipelineCreateInfo.calloc(1)
 				.sType(VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO)
@@ -107,10 +99,10 @@ public class VulkanPipeline {
 				.pRasterizationState(rasterizationInfo)
 				.pMultisampleState(multisamplingInfo)
 				.pColorBlendState(colorBlendInfo)
-				.pDynamicState(dynamicStateInfo)
 				.layout(pipelineLayout)
 				.renderPass(renderPass.get())
-				.subpass(VulkanRenderPass.BASE_SUBPASS_INDEX);
+				.subpass(VulkanRenderPass.BASE_SUBPASS_INDEX)
+				.basePipelineHandle(VK_NULL_HANDLE);
 		// set stageCount explicitly to have the correct number if not done stageCount is always zero
 		VkGraphicsPipelineCreateInfo.nstageCount(graphicsPipelineInfo.address(), shaderStageInfoBuffer.capacity());
 		
@@ -127,18 +119,15 @@ public class VulkanPipeline {
 			memFree(pGraphicsPipeline);
 			graphicsPipelineInfo.free();
 			
-			dynamicStateInfo.free();
-			memFree(dynamicStates);
-			
 			colorBlendInfo.free();
 			colorBlendAttachment.free();
 			
 			multisamplingInfo.free();
 			rasterizationInfo.free();
 			
-			viewportInfo.pScissors().free();
-			viewportInfo.pViewports().free();
 			viewportInfo.free();
+			scissor.free();
+			viewport.free();
 			
 			inputAssemblyInfo.free();
 			vertexInputInfo.free();
@@ -155,8 +144,9 @@ public class VulkanPipeline {
 	
 	private long createPipelineLayout(VkDevice device) throws VulkanException {
 		var pipelineLayoutInfo = VkPipelineLayoutCreateInfo.calloc()
-				.sType(VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO)
-                .pSetLayouts(null);
+				.sType(VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO);
+		VkPipelineLayoutCreateInfo.nsetLayoutCount(pipelineLayoutInfo.address(), 0);
+		VkPipelineLayoutCreateInfo.npushConstantRangeCount(pipelineLayoutInfo.address(), 0);
 		
 		LongBuffer pPipelineLayout = memAllocLong(1);
         var res = vkCreatePipelineLayout(device, pipelineLayoutInfo, null, pPipelineLayout);
