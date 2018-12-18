@@ -168,11 +168,11 @@ public class GameMain {
 				System.out.println("test");
 				glfwPollEvents();
 
-//				var polygon = new VulkanPolygon();
-//				vertexBuffer.writeVertecies(logicalDevice, polygon);
-//				polygon.free();
+				var polygon = new VulkanPolygon();
+				vertexBuffer.writeVertecies(logicalDevice, polygon);
+				polygon.free();
 				
-				vkAcquireNextImageKHR(logicalDevice.get(), swapchain.get(), UINT64_MAX, semaphore.get(SEM_IMAGE_AVAILABLE), VK_NULL_HANDLE, pImageIndex);
+				vkAcquireNextImageKHR(logicalDevice.get(), swapchain.get(), 1000, semaphore.get(SEM_IMAGE_AVAILABLE), VK_NULL_HANDLE, pImageIndex);
 				var imageIndex = pImageIndex.get(0);
 				
 				pRenderCommandBuffer.put(0, renderCommandPool.getCommandBuffer(imageIndex).get());
@@ -187,7 +187,7 @@ public class GameMain {
 				if (res != VK_SUCCESS) {
 					throw new VulkanException(res);
 				}
-//				vkQueueWaitIdle(queue.getPresentQueue());
+				vkQueueWaitIdle(queue.getPresentQueue());
 			}
 			vkDeviceWaitIdle(logicalDevice.get());
 		} finally {
