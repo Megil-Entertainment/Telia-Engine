@@ -116,7 +116,7 @@ public class VulkanRenderPass {
 				
 				vkCmdBindPipeline(cmdbuffer.get(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getGraphicsPipeline());
 				vkCmdBindVertexBuffers(cmdbuffer.get(), 0, pBuffer, offsets);
-				vkCmdDraw(cmdbuffer.get(), 3, 1, 0, 0);
+//				vkCmdDraw(cmdbuffer.get(), 4, 1, 0, 0);
 				
 				vkCmdEndRenderPass(cmdbuffer.get());
 				cmdbuffer.end();

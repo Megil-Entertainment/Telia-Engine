@@ -20,7 +20,7 @@ import ch.megil.teliaengine.vulkan.obj.VulkanPolygon;
 public class VulkanVertexBuffer {
 	private static final int VALUE_SIZE = 4;
 	public static final int VERTEX_SIZE = (2+3)*VALUE_SIZE; //2 cords + 3 colors
-	public static final int MAX_VERTECIES = 3;
+	public static final int MAX_VERTECIES = 4;
 	private static final int COLOR_OFFSET = 2*VALUE_SIZE;
 	
 	private long buffer;

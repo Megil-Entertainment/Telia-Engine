@@ -14,9 +14,10 @@ public class VulkanPolygon {
 	public VulkanPolygon() {
 		vertecies = memAlloc(VulkanVertexBuffer.VERTEX_SIZE * VulkanVertexBuffer.MAX_VERTECIES);
 		var fb = vertecies.asFloatBuffer();
-		fb.put( 0.0f).put(-0.5f).put(1.0f).put(1.0f).put(1.0f);
 		fb.put( 0.5f).put( 0.5f).put(0.0f).put(0.0f).put(1.0f);
-		fb.put(-0.5f).put( 0.5f).put(0.0f).put(0.0f).put(1.0f);
+		fb.put(-0.5f).put( 0.5f).put(0.0f).put(1.0f).put(0.0f);
+		fb.put( 0.5f).put(-0.5f).put(1.0f).put(1.0f).put(1.0f);
+		fb.put(-0.5f).put(-0.5f).put(1.0f).put(0.0f).put(0.0f);
 	}
 	
 	public void free() {
