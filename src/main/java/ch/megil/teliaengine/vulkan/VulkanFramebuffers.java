@@ -29,32 +29,6 @@ public class VulkanFramebuffers {
 		framebufferCount = swapchain.getImageCount();
 		framebuffers = new long[framebufferCount];
 		
-//		var attachments = memAllocLong(1);
-//		var framebufferInfo = VkFramebufferCreateInfo.calloc()
-//				.sType(VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO)
-//				.renderPass(renderPass.get())
-//				.pAttachments(attachments)
-//				.height(swapchain.getExtent().height())
-//				.width(swapchain.getExtent().width())
-//				.layers(1);
-//		VkFramebufferCreateInfo.nattachmentCount(framebufferInfo.address(), attachments.capacity());
-//		var pFramebuffer = memAllocLong(1);
-//		
-//		try {
-//			for (var i = 0; i < framebufferCount; i++) {
-//				attachments.put(0, swapchain.getImageViews()[i]);
-//				var res = vkCreateFramebuffer(logicalDevice.get(), framebufferInfo, null, pFramebuffer);
-//				if (res != VK_SUCCESS) {
-//					throw new VulkanException(res);
-//				}
-//				framebuffers[i] = pFramebuffer.get(0);
-//			}
-//		} finally {
-//			memFree(pFramebuffer);
-//			framebufferInfo.free();
-//			memFree(attachments);
-//		}
-		
 		for (var i = 0; i < framebufferCount; i++) {
 			var attachments = memAllocLong(1);
 			attachments.put(0, swapchain.getImageViews()[i]);

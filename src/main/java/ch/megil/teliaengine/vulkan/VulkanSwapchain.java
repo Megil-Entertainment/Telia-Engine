@@ -25,7 +25,7 @@ public class VulkanSwapchain {
 	private long swapchain;
 	private VkExtent2D swapchainExtent;
 	private int imgBufferCount;
-	private long[] imgBuffers;
+	public long[] imgBuffers;
 	private long[] imgBufferViews;
 	
 	/**

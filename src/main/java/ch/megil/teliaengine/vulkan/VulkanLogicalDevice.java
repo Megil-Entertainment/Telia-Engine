@@ -79,6 +79,8 @@ public class VulkanLogicalDevice {
 		var pQueue = memAllocPointer(1);
 		vkGetDeviceQueue(logicalDevice, queue.getGraphicsFamily(), 0, pQueue);
 		queue.setGraphicsQueue(new VkQueue(pQueue.get(0), logicalDevice));
+		memFree(pQueue);
+		pQueue = memAllocPointer(1);
 		vkGetDeviceQueue(logicalDevice, queue.getPresentFamily(), 0, pQueue);
 		queue.setPresentQueue(new VkQueue(pQueue.get(0), logicalDevice));
 		memFree(pQueue);

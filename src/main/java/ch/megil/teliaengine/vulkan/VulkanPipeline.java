@@ -1,6 +1,9 @@
 package ch.megil.teliaengine.vulkan;
 
-import static org.lwjgl.system.MemoryUtil.*;
+import static org.lwjgl.system.MemoryUtil.memAllocInt;
+import static org.lwjgl.system.MemoryUtil.memAllocLong;
+import static org.lwjgl.system.MemoryUtil.memFree;
+import static org.lwjgl.system.MemoryUtil.memUTF8;
 import static org.lwjgl.vulkan.VK10.*;
 
 import java.nio.LongBuffer;
@@ -25,6 +28,8 @@ public class VulkanPipeline {
 	 * @param vertexBuffer An {@link VulkanVertexBuffer} (not necessarly initialized)
 	 */
 	public void init(VulkanLogicalDevice logicalDevice, VulkanSwapchain swapchain, VulkanShader shader, VulkanRenderPass renderPass, VulkanVertexBuffer vertexBuffer) throws VulkanException {
+		pipelineLayout = createPipelineLayout(logicalDevice.get());
+		
 		var vertexShader = callocShaderStage(shader.getVertShader(), VK_SHADER_STAGE_VERTEX_BIT);
 		var fragShader = callocShaderStage(shader.getFragShader(), VK_SHADER_STAGE_FRAGMENT_BIT);
 		
@@ -63,7 +68,7 @@ public class VulkanPipeline {
 				.rasterizerDiscardEnable(false)
 				.polygonMode(VK_POLYGON_MODE_FILL)
 				.lineWidth(1.0f)
-				.cullMode(VK_CULL_MODE_BACK_BIT)
+				.cullMode(VK_CULL_MODE_NONE)
 				.frontFace(VK_FRONT_FACE_CLOCKWISE)
 				.depthBiasEnable(false);
 		
@@ -78,17 +83,18 @@ public class VulkanPipeline {
 		
 		var colorBlendInfo = VkPipelineColorBlendStateCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO)
-				.logicOpEnable(false)
-				.logicOp(VK_LOGIC_OP_COPY)
-				.pAttachments(colorBlendAttachment)
-				.blendConstants(0, 0f)
-				.blendConstants(1, 0f)
-				.blendConstants(2, 0f)
-				.blendConstants(3, 0f);
+				.pAttachments(colorBlendAttachment);
 		// set attachmentCount explicitly to have the correct number if not done attachmentCount is always zero
 		VkPipelineColorBlendStateCreateInfo.nattachmentCount(colorBlendInfo.address(), colorBlendAttachment.capacity());
 		
-		pipelineLayout = createPipelineLayout(logicalDevice.get());
+		var dynamicStates = memAllocInt(2)
+				.put(VK_DYNAMIC_STATE_VIEWPORT)
+				.put(VK_DYNAMIC_STATE_SCISSOR)
+				.flip();
+        var dynamicStateInfo = VkPipelineDynamicStateCreateInfo.calloc()
+                .sType(VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO)
+                .pDynamicStates(dynamicStates);
+        VkPipelineDynamicStateCreateInfo.ndynamicStateCount(dynamicStateInfo.address(), dynamicStates.capacity());
 		
 		var graphicsPipelineInfo = VkGraphicsPipelineCreateInfo.calloc(1)
 				.sType(VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO)
@@ -99,10 +105,10 @@ public class VulkanPipeline {
 				.pRasterizationState(rasterizationInfo)
 				.pMultisampleState(multisamplingInfo)
 				.pColorBlendState(colorBlendInfo)
+				.pDynamicState(dynamicStateInfo)
 				.layout(pipelineLayout)
 				.renderPass(renderPass.get())
-				.subpass(VulkanRenderPass.BASE_SUBPASS_INDEX)
-				.basePipelineHandle(VK_NULL_HANDLE);
+				.subpass(VulkanRenderPass.BASE_SUBPASS_INDEX);
 		// set stageCount explicitly to have the correct number if not done stageCount is always zero
 		VkGraphicsPipelineCreateInfo.nstageCount(graphicsPipelineInfo.address(), shaderStageInfoBuffer.capacity());
 		
@@ -118,6 +124,9 @@ public class VulkanPipeline {
 		} finally {
 			memFree(pGraphicsPipeline);
 			graphicsPipelineInfo.free();
+			
+			dynamicStateInfo.free();
+			memFree(dynamicStates);
 			
 			colorBlendInfo.free();
 			colorBlendAttachment.free();

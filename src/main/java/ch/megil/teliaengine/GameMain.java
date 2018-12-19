@@ -13,8 +13,13 @@ import static org.lwjgl.vulkan.KHRSwapchain.vkAcquireNextImageKHR;
 import static org.lwjgl.vulkan.KHRSwapchain.vkQueuePresentKHR;
 import static org.lwjgl.vulkan.VK10.*;
 
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.vulkan.VkClearValue;
 import org.lwjgl.vulkan.VkPresentInfoKHR;
+import org.lwjgl.vulkan.VkSemaphoreCreateInfo;
 import org.lwjgl.vulkan.VkSubmitInfo;
 
 import ch.megil.teliaengine.configuration.SystemConfiguration;
@@ -126,7 +131,7 @@ public class GameMain {
 				.float32(2, 255/255f) //B
 				.float32(3, 1f);  //A
 		try {
-			renderPass.linkRender(swapchain, vertexBuffer, pipeline, framebuffers, renderCommandPool, clearColor);
+			renderPass.linkRender(swapchain, vertexBuffer, pipeline, framebuffers, renderCommandPool, clearColor, BASE_WIDTH, BASE_HEIGHT);
 		} finally {
 			clearColor.free();
 		}
@@ -165,14 +170,13 @@ public class GameMain {
 		
 		try {
 			while(!glfwWindowShouldClose(window)) {
-				System.out.println("test");
 				glfwPollEvents();
 
 				var polygon = new VulkanPolygon();
 				vertexBuffer.writeVertecies(logicalDevice, polygon);
 				polygon.free();
 				
-				vkAcquireNextImageKHR(logicalDevice.get(), swapchain.get(), 1000, semaphore.get(SEM_IMAGE_AVAILABLE), VK_NULL_HANDLE, pImageIndex);
+				vkAcquireNextImageKHR(logicalDevice.get(), swapchain.get(), UINT64_MAX, semaphore.get(SEM_IMAGE_AVAILABLE), VK_NULL_HANDLE, pImageIndex);
 				var imageIndex = pImageIndex.get(0);
 				
 				pRenderCommandBuffer.put(0, renderCommandPool.getCommandBuffer(imageIndex).get());

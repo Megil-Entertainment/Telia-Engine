@@ -76,16 +76,26 @@ public class VulkanRenderPass {
 		}
 	}
 	
-	public void linkRender(VulkanSwapchain swapchain, VulkanVertexBuffer vertexBuffer, VulkanPipeline pipeline, VulkanFramebuffers framebuffers, VulkanCommandPool commandPool, VkClearValue.Buffer clearColor) throws VulkanException {
+	public void linkRender(VulkanSwapchain swapchain, VulkanVertexBuffer vertexBuffer, VulkanPipeline pipeline, VulkanFramebuffers framebuffers, VulkanCommandPool commandPool, VkClearValue.Buffer clearColor, int width, int height) throws VulkanException {
 		var beginInfo = VkRenderPassBeginInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO)
 				.renderPass(renderPass)
 				.renderArea(a -> a
 						.offset(o -> o.x(0).y(0))
-						.extent(swapchain.getExtent()))
+						.extent(e -> e.width(width).height(height)))
 				.pClearValues(clearColor);
 		VkRenderPassBeginInfo.nclearValueCount(beginInfo.address(), clearColor.capacity());
-		
+
+		VkViewport.Buffer viewport = VkViewport.calloc(1)
+				.width(width)
+				.height(height)
+				.minDepth(0.0f)
+				.maxDepth(1.0f);
+
+		VkRect2D.Buffer scissor = VkRect2D.calloc(1)
+				.extent(swapchain.getExtent())
+				.offset(o -> o.x(0).y(0));
+
 		var pBuffer = memAllocLong(1);
 		pBuffer.put(0, vertexBuffer.get());
 		var offsets = memAllocLong(1);
@@ -101,6 +111,9 @@ public class VulkanRenderPass {
 				cmdbuffer.begin();
 				vkCmdBeginRenderPass(cmdbuffer.get(), beginInfo, VK_SUBPASS_CONTENTS_INLINE);
 				
+				vkCmdSetViewport(cmdbuffer.get(), 0, viewport);
+		        vkCmdSetScissor(cmdbuffer.get(), 0, scissor);
+				
 				vkCmdBindPipeline(cmdbuffer.get(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getGraphicsPipeline());
 				vkCmdBindVertexBuffers(cmdbuffer.get(), 0, pBuffer, offsets);
 				vkCmdDraw(cmdbuffer.get(), 3, 1, 0, 0);
@@ -109,7 +122,9 @@ public class VulkanRenderPass {
 				cmdbuffer.end();
 			}
 		} finally {
-			beginInfo.clear();
+			scissor.free();
+			viewport.free();
+			beginInfo.free();
 		}
 	}
 	

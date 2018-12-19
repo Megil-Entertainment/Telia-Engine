@@ -109,6 +109,11 @@ public class VulkanVertexBuffer {
 			}
 			memCopy(polygon.getAddress(), pData.get(), polygon.getSize());
 			vkUnmapMemory(logicalDevice.get(), memory);
+			
+			res = vkBindBufferMemory(logicalDevice.get(), buffer, memory, 0);
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
 		} finally {
 			memFree(pData);
 		}

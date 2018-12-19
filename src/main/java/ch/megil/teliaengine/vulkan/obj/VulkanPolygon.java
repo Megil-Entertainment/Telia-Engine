@@ -1,21 +1,22 @@
 package ch.megil.teliaengine.vulkan.obj;
 
 import static org.lwjgl.system.MemoryUtil.memAddress;
-import static org.lwjgl.system.MemoryUtil.memAllocFloat;
+import static org.lwjgl.system.MemoryUtil.memAlloc;
 import static org.lwjgl.system.MemoryUtil.memFree;
 
-import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
 
 import ch.megil.teliaengine.vulkan.VulkanVertexBuffer;
 
 public class VulkanPolygon {
-	private FloatBuffer vertecies;
+	private ByteBuffer vertecies;
 	
 	public VulkanPolygon() {
-		vertecies = memAllocFloat(VulkanVertexBuffer.VERTEX_SIZE * VulkanVertexBuffer.MAX_VERTECIES);
-		vertecies.put( 0.0f).put(-0.5f).put(1.0f).put(1.0f).put(1.0f);
-		vertecies.put( 0.5f).put( 0.5f).put(0.0f).put(0.0f).put(1.0f);
-		vertecies.put(-0.5f).put( 0.5f).put(0.0f).put(0.0f).put(1.0f);
+		vertecies = memAlloc(VulkanVertexBuffer.VERTEX_SIZE * VulkanVertexBuffer.MAX_VERTECIES);
+		var fb = vertecies.asFloatBuffer();
+		fb.put( 0.0f).put(-0.5f).put(1.0f).put(1.0f).put(1.0f);
+		fb.put( 0.5f).put( 0.5f).put(0.0f).put(0.0f).put(1.0f);
+		fb.put(-0.5f).put( 0.5f).put(0.0f).put(0.0f).put(1.0f);
 	}
 	
 	public void free() {
