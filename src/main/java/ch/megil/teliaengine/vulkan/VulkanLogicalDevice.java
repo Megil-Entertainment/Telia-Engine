@@ -16,6 +16,10 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
  * needs to be cleaned up before destruction with {@link #cleanUp}.
  */
 public class VulkanLogicalDevice {
+	private static final float BASE_PRIORITY = 1f;
+	private static final int GRAPHITCS_QUEUE_INDEX = 0;
+	private static final int PRESENT_QUEUE_INDEX = 0;
+	
 	private VkDevice logicalDevice;
 	
 	/**
@@ -29,7 +33,7 @@ public class VulkanLogicalDevice {
 	
 	private VkDevice createDevice(VkPhysicalDevice physicalDevice, VulkanQueue queue) throws VulkanException {
 		var queuePriorities = memAllocFloat(1);
-		queuePriorities.put(0, 1f);
+		queuePriorities.put(0, BASE_PRIORITY);
 		var queueCreateInfos = VkDeviceQueueCreateInfo.calloc(2);
 		queueCreateInfos.get(0)
 				.sType(VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO)
@@ -44,16 +48,15 @@ public class VulkanLogicalDevice {
 		
 		var vkKhrSwapchainExtension = memUTF8(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 		var enabledExtensionNames = memAllocPointer(1)
-				.put(vkKhrSwapchainExtension).flip();
+				.put(vkKhrSwapchainExtension)
+				.flip();
 
 		var deviceCreateInfo = VkDeviceCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO)
 				.pQueueCreateInfos(queueCreateInfos)
 				.ppEnabledExtensionNames(enabledExtensionNames);
-		// set queueCreateInfoCount explicitly to have the correct number if not done queueCreateInfoCount is always zero
 		VkDeviceCreateInfo.nqueueCreateInfoCount(deviceCreateInfo.address(), queueCreateInfos.capacity());
 		VkDeviceCreateInfo.nenabledExtensionCount(deviceCreateInfo.address(), enabledExtensionNames.capacity());
-		VkDeviceCreateInfo.nenabledLayerCount(deviceCreateInfo.address(), 0);
 
 		var pDevice = memAllocPointer(1);
 		var res = vkCreateDevice(physicalDevice, deviceCreateInfo, null, pDevice);
@@ -77,11 +80,11 @@ public class VulkanLogicalDevice {
 	
 	private void updateQueue(VulkanQueue queue) {
 		var pQueue = memAllocPointer(1);
-		vkGetDeviceQueue(logicalDevice, queue.getGraphicsFamily(), 0, pQueue);
+		vkGetDeviceQueue(logicalDevice, queue.getGraphicsFamily(), GRAPHITCS_QUEUE_INDEX, pQueue);
 		queue.setGraphicsQueue(new VkQueue(pQueue.get(0), logicalDevice));
 		memFree(pQueue);
 		pQueue = memAllocPointer(1);
-		vkGetDeviceQueue(logicalDevice, queue.getPresentFamily(), 0, pQueue);
+		vkGetDeviceQueue(logicalDevice, queue.getPresentFamily(), PRESENT_QUEUE_INDEX, pQueue);
 		queue.setPresentQueue(new VkQueue(pQueue.get(0), logicalDevice));
 		memFree(pQueue);
 	}

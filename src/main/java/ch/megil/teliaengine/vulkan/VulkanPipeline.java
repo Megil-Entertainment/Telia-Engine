@@ -67,7 +67,6 @@ public class VulkanPipeline {
 				.depthClampEnable(false)
 				.rasterizerDiscardEnable(false)
 				.polygonMode(VK_POLYGON_MODE_FILL)
-				.lineWidth(1.0f)
 				.cullMode(VK_CULL_MODE_NONE)
 				.frontFace(VK_FRONT_FACE_CLOCKWISE)
 				.depthBiasEnable(false);
@@ -84,7 +83,6 @@ public class VulkanPipeline {
 		var colorBlendInfo = VkPipelineColorBlendStateCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO)
 				.pAttachments(colorBlendAttachment);
-		// set attachmentCount explicitly to have the correct number if not done attachmentCount is always zero
 		VkPipelineColorBlendStateCreateInfo.nattachmentCount(colorBlendInfo.address(), colorBlendAttachment.capacity());
 		
 		var dynamicStates = memAllocInt(2)
@@ -109,7 +107,6 @@ public class VulkanPipeline {
 				.layout(pipelineLayout)
 				.renderPass(renderPass.get())
 				.subpass(VulkanRenderPass.BASE_SUBPASS_INDEX);
-		// set stageCount explicitly to have the correct number if not done stageCount is always zero
 		VkGraphicsPipelineCreateInfo.nstageCount(graphicsPipelineInfo.address(), shaderStageInfoBuffer.capacity());
 		
 		var pGraphicsPipeline = memAllocLong(1);

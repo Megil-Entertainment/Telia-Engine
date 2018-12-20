@@ -27,6 +27,8 @@ public class VulkanShader {
 	private static final String VERT_SHADER = "shader/vert.spv";
 	private static final String FRAG_SHADER = "shader/frag.spv";
 	
+	private static final long FILE_OFFSET = 0;
+	
 	private long vertShader;
 	private long fragShader;
 	
@@ -41,7 +43,7 @@ public class VulkanShader {
 	private ByteBuffer loadShaderCode(String shader) throws VulkanException {
 		var file = new File(shader);
 		try (var fis = new FileInputStream(file); var fc = fis.getChannel()) {
-			var buffer = fc.map(MapMode.READ_ONLY, 0, fc.size());
+			var buffer = fc.map(MapMode.READ_ONLY, FILE_OFFSET, fc.size());
 			return buffer;
 		} catch (IOException e) {
 			throw new VulkanException("Shader " + shader + " could not be loaded.", e);
@@ -52,7 +54,6 @@ public class VulkanShader {
 		var code = loadShaderCode(shader);
 		var shaderModuleCreateInfo = VkShaderModuleCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO)
-				.flags(0)
 				.pCode(code);
 		VkShaderModuleCreateInfo.ncodeSize(shaderModuleCreateInfo.address(), code.capacity());
 		var pShaderModule = memAllocLong(1);

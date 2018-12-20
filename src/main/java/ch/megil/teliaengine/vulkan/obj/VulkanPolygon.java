@@ -20,7 +20,7 @@ public class VulkanPolygon {
 		fb.put( 0.5f).put( 0.5f).put(0.0f).put(0.0f).put(1.0f);
 		fb.put(-0.5f).put( 0.5f).put(0.0f).put(1.0f).put(0.0f);
 		fb.put( 0.5f).put(-0.5f).put(1.0f).put(1.0f).put(1.0f);
-		fb.put(-0.5f).put(-0.5f).put(1.0f).put(0.0f).put(0.0f);
+		fb.put( 0.5f).put(-0.5f).put(1.0f).put(0.0f).put(0.0f);
 		fb.put(-1.0f).put(-0.5f).put(1.0f).put(1.0f).put(1.0f);
 		fb.put(-0.5f).put(-1.0f).put(0.0f).put(0.0f).put(0.0f);
 		

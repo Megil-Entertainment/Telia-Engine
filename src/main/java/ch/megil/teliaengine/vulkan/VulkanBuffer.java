@@ -20,6 +20,12 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
  * up before destruction with {@link #cleanUp}.
  */
 public abstract class VulkanBuffer {
+	private static final long MEMORY_OFFSET = 0;
+	private static final int BASE_MASK = 1;
+	private static final int FLAG_NOT_SET = 0;
+	private static final long MAP_OFFSET = 0;
+	private static final int NO_FLAGS = 0;
+	
 	protected long buffer;
 	protected long bufferSize;
 	protected long memory;
@@ -66,7 +72,7 @@ public abstract class VulkanBuffer {
 			}
 			memory = pMemory.get(0);
 			
-			res = vkBindBufferMemory(logicalDevice.get(), buffer, memory, 0);
+			res = vkBindBufferMemory(logicalDevice.get(), buffer, memory, MEMORY_OFFSET);
 			if (res != VK_SUCCESS) {
 				throw new VulkanException(res);
 			}
@@ -85,7 +91,7 @@ public abstract class VulkanBuffer {
 		
 		try {
 			for (var i = 0; i < memoryProperties.memoryTypeCount(); i++) {
-				if ((typeFilter & (1 << i)) != 0 &&
+				if ((typeFilter & (BASE_MASK << i)) != FLAG_NOT_SET &&
 						(memoryProperties.memoryTypes(i).propertyFlags() & properties) == properties) {
 					return i;
 				}
@@ -99,7 +105,7 @@ public abstract class VulkanBuffer {
 	
 	protected void write(VulkanLogicalDevice logicalDevice, long address, long size) throws VulkanException {
         var pData = memAllocPointer(1);
-		var res = vkMapMemory(logicalDevice.get(), memory, 0, bufferSize, 0, pData);
+		var res = vkMapMemory(logicalDevice.get(), memory, MAP_OFFSET, bufferSize, NO_FLAGS, pData);
 		
 		try {
 			if (res != VK_SUCCESS) {
@@ -108,7 +114,7 @@ public abstract class VulkanBuffer {
 			memCopy(address, pData.get(), size);
 			vkUnmapMemory(logicalDevice.get(), memory);
 			
-			res = vkBindBufferMemory(logicalDevice.get(), buffer, memory, 0);
+			res = vkBindBufferMemory(logicalDevice.get(), buffer, memory, MEMORY_OFFSET);
 			if (res != VK_SUCCESS) {
 				throw new VulkanException(res);
 			}

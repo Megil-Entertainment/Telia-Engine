@@ -22,6 +22,8 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
  * needs to be cleaned up before destruction with {@link #cleanUp}.
  */
 public class VulkanSwapchain {
+	private static final int UINT32_MAX = -1;
+	
 	private long swapchain;
 	private VkExtent2D swapchainExtent;
 	private int imgBufferCount;
@@ -62,7 +64,7 @@ public class VulkanSwapchain {
 			}
 			
 			swapchainExtent = surfaceCapabilities.currentExtent();
-			if (swapchainExtent.width() == -1) {
+			if (swapchainExtent.width() == UINT32_MAX) {
 				swapchainExtent.width(Math.max(surfaceCapabilities.minImageExtent().width(), Math.min(surfaceCapabilities.maxImageExtent().width(), prefWidth)));
 				swapchainExtent.height(Math.max(surfaceCapabilities.minImageExtent().height(), Math.min(surfaceCapabilities.maxImageExtent().height(), prefHeight)));
 			}
@@ -83,7 +85,7 @@ public class VulkanSwapchain {
 					.imageUsage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)
 					.preTransform(surfaceCapabilities.currentTransform())
 					.compositeAlpha(VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
-					.presentMode(VK_PRESENT_MODE_FIFO_KHR) //TODO: add presentation fallback
+					.presentMode(VK_PRESENT_MODE_FIFO_KHR)
 					.clipped(true)
 					.oldSwapchain(VK_NULL_HANDLE);
 			
@@ -144,7 +146,6 @@ public class VulkanSwapchain {
 	private long createImageView(VkDevice logicalDevice, int colorFormat, long bufferHandle) throws VulkanException {
 		var imageViewCreateInfo = VkImageViewCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO)
-//				.flags(0)
 				.image(bufferHandle)
 				.viewType(VK_IMAGE_VIEW_TYPE_2D)
 				.format(colorFormat)

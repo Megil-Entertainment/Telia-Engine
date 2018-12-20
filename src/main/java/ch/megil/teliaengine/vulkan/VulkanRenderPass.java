@@ -15,6 +15,12 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
  */
 public class VulkanRenderPass {
 	public static final int BASE_SUBPASS_INDEX = 0;
+	private static final int VERTEX_OFFSET = 0;
+	private static final long INDEX_OFFSET = 0;
+	private static final int BASE_BINDING = 0;
+	private static final int INSTANCE_COUNT = 1;
+	private static final int BASE_INDEX = 0;
+	private static final int BASE_INSTANCE = 0;
 	
 	private long renderPass;
 	
@@ -25,7 +31,7 @@ public class VulkanRenderPass {
 	public void init(VulkanLogicalDevice logicalDevice, VulkanColor color) throws VulkanException {
 		var colorAttachment = VkAttachmentDescription.calloc(1)
 				.format(color.getFormat())
-				.samples(VK_SAMPLE_COUNT_1_BIT) //TODO: add multisampling
+				.samples(VK_SAMPLE_COUNT_1_BIT)
 				.loadOp(VK_ATTACHMENT_LOAD_OP_CLEAR)
 				.storeOp(VK_ATTACHMENT_STORE_OP_STORE)
 				.stencilLoadOp(VK_ATTACHMENT_LOAD_OP_DONT_CARE)
@@ -96,10 +102,10 @@ public class VulkanRenderPass {
 				.extent(swapchain.getExtent())
 				.offset(o -> o.x(0).y(0));
 
-		var pBuffer = memAllocLong(1);
-		pBuffer.put(0, vertexBuffer.get());
-		var offsets = memAllocLong(1);
-		offsets.put(0, 0L);
+		var pVertexBuffer = memAllocLong(1);
+		pVertexBuffer.put(0, vertexBuffer.get());
+		var vertexOffsets = memAllocLong(1);
+		vertexOffsets.put(0, VERTEX_OFFSET);
 		
 		try {
 			for (var i = 0; i < swapchain.getImageCount(); i++) {
@@ -115,9 +121,9 @@ public class VulkanRenderPass {
 		        vkCmdSetScissor(cmdbuffer.get(), 0, scissor);
 				
 				vkCmdBindPipeline(cmdbuffer.get(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getGraphicsPipeline());
-				vkCmdBindVertexBuffers(cmdbuffer.get(), 0, pBuffer, offsets);
-				vkCmdBindIndexBuffer(cmdbuffer.get(), indexBuffer.get(), 0, VK_INDEX_TYPE_UINT16);
-				vkCmdDrawIndexed(cmdbuffer.get(), 7, 1, 0, 0, 0);
+				vkCmdBindVertexBuffers(cmdbuffer.get(), BASE_BINDING, pVertexBuffer, vertexOffsets);
+				vkCmdBindIndexBuffer(cmdbuffer.get(), indexBuffer.get(), INDEX_OFFSET, VK_INDEX_TYPE_UINT16);
+				vkCmdDrawIndexed(cmdbuffer.get(), VulkanIndexBuffer.MAX_INDEX, INSTANCE_COUNT, BASE_INDEX, VERTEX_OFFSET, BASE_INSTANCE);
 				
 				vkCmdEndRenderPass(cmdbuffer.get());
 				cmdbuffer.end();
