@@ -50,7 +50,7 @@ public class VulkanPipeline {
 		var inputAssemblyInfo = VkPipelineInputAssemblyStateCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO)
 				.topology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP)
-				.primitiveRestartEnable(false);
+				.primitiveRestartEnable(true); //TODO: enable & apply indexed
 		
 		var viewport = callocViewport(swapchain.getExtent());
 		var scissor = callocScissor(swapchain.getExtent());

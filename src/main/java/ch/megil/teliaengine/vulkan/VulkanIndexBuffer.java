@@ -11,17 +11,9 @@ import org.lwjgl.vulkan.*;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 import ch.megil.teliaengine.vulkan.obj.VulkanPolygon;
 
-/**
- * This class needs setup first with {@link #init} and
- * needs to be cleaned up before destruction with {@link #cleanUp}.
- * 
- * Exception to this rule are {@link #callocBinding()} and {@link #callocAttribute()}.
- */
-public class VulkanVertexBuffer {
-	private static final int VALUE_SIZE = 4;
-	public static final int VERTEX_SIZE = (2+3)*VALUE_SIZE; //2 cords + 3 colors
-	public static final int MAX_VERTECIES = 6;
-	private static final int COLOR_OFFSET = 2*VALUE_SIZE;
+public class VulkanIndexBuffer {
+	public static final int INDEX_SIZE = 2;
+	public static final int MAX_INDEX = 7;
 	
 	private long buffer;
 	private long bufferSize;
@@ -34,8 +26,8 @@ public class VulkanVertexBuffer {
 	public void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice) throws VulkanException {
 		var bufferInfo = VkBufferCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO)
-				.size(VERTEX_SIZE*MAX_VERTECIES)
-				.usage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
+				.size(INDEX_SIZE*MAX_INDEX)
+				.usage(VK_BUFFER_USAGE_INDEX_BUFFER_BIT)
 				.sharingMode(VK_SHARING_MODE_EXCLUSIVE);
 		
         var memoryRequirements = VkMemoryRequirements.calloc();
@@ -107,7 +99,7 @@ public class VulkanVertexBuffer {
 			if (res != VK_SUCCESS) {
 				throw new VulkanException(res);
 			}
-			memCopy(polygon.getAddress(), pData.get(), polygon.getSize());
+			memCopy(polygon.indexBuff(), pData.get(), polygon.indexSize());
 			vkUnmapMemory(logicalDevice.get(), memory);
 			
 			res = vkBindBufferMemory(logicalDevice.get(), buffer, memory, 0);
@@ -129,38 +121,6 @@ public class VulkanVertexBuffer {
 			vkFreeMemory(logicalDevice.get(), memory, null);
 			memory = VK_NULL_HANDLE;
 		}
-	}
-	
-	/**
-	 * Allocates memory for {@link VkVertexInputBindingDescription}.
-	 * Needs to be freed outside to prevent memory leakes.
-	 */
-	public VkVertexInputBindingDescription.Buffer callocBinding() {
-		var vertexBinding = VkVertexInputBindingDescription.calloc(1)
-				.binding(0)
-				.stride(VERTEX_SIZE)
-				.inputRate(VK_VERTEX_INPUT_RATE_VERTEX);
-		return vertexBinding;
-	}
-	
-	/**
-	 * Allocates memory for {@link VkVertexInputAttributeDescription}.
-	 * Needs to be freed outside to prevent memory leakes.
-	 */
-	public VkVertexInputAttributeDescription.Buffer callocAttribute() {
-		var vertexAttribute = VkVertexInputAttributeDescription.calloc(2);
-		vertexAttribute.get(0)
-			.binding(0)
-			.location(0)
-			.format(VK_FORMAT_R32G32_SFLOAT) //2 32 bit float values
-			.offset(0);
-		vertexAttribute.get(1)
-				.binding(0)
-				.location(1)
-				.format(VK_FORMAT_R32G32B32_SFLOAT)
-				.offset(COLOR_OFFSET); //TODO: check
-		
-		return vertexAttribute;
 	}
 	
 	public long get() {

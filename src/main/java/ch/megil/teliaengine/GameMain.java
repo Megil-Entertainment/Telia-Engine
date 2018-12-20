@@ -49,10 +49,11 @@ public class GameMain {
 	private VulkanSwapchain swapchain;
 	private VulkanRenderPass renderPass;
 	private VulkanShader shader;
-	private VulkanVertexBuffer vertexBuffer;
 	private VulkanPipeline pipeline;
 	private VulkanFramebuffers framebuffers;
 	private VulkanCommandPool renderCommandPool;
+	private VulkanVertexBuffer vertexBuffer;
+	private VulkanIndexBuffer indexBuffer;
 	private VulkanSemaphore semaphore;
 	
 	public GameMain() {
@@ -68,6 +69,7 @@ public class GameMain {
 		framebuffers = new VulkanFramebuffers();
 		renderCommandPool = new VulkanCommandPool();
 		vertexBuffer = new VulkanVertexBuffer();
+		indexBuffer = new VulkanIndexBuffer();
 		semaphore = new VulkanSemaphore();
 	}
 	
@@ -118,6 +120,7 @@ public class GameMain {
 		framebuffers.init(logicalDevice, swapchain, renderPass);
 		renderCommandPool.init(logicalDevice, queue, swapchain.getImageCount());
 		vertexBuffer.init(physicalDevice, logicalDevice);
+		indexBuffer.init(physicalDevice, logicalDevice);
 		
 		var clearColor = VkClearValue.calloc(1);
 		clearColor.color()
@@ -125,8 +128,9 @@ public class GameMain {
 				.float32(1, 100/255f) //G
 				.float32(2, 255/255f) //B
 				.float32(3, 1f);  //A
+		
 		try {
-			renderPass.linkRender(swapchain, vertexBuffer, pipeline, framebuffers, renderCommandPool, clearColor, BASE_WIDTH, BASE_HEIGHT);
+			renderPass.linkRender(swapchain, pipeline, framebuffers, renderCommandPool, vertexBuffer, indexBuffer, clearColor, BASE_WIDTH, BASE_HEIGHT);
 		} finally {
 			clearColor.free();
 		}
@@ -166,11 +170,12 @@ public class GameMain {
 		try {
 			while(!glfwWindowShouldClose(window)) {
 				glfwPollEvents();
-
+				
 				var polygon = new VulkanPolygon();
 				vertexBuffer.writeVertecies(logicalDevice, polygon);
+				indexBuffer.writeVertecies(logicalDevice, polygon);
 				polygon.free();
-				
+
 				vkAcquireNextImageKHR(logicalDevice.get(), swapchain.get(), UINT64_MAX, semaphore.get(SEM_IMAGE_AVAILABLE), VK_NULL_HANDLE, pImageIndex);
 				var imageIndex = pImageIndex.get(0);
 				
