@@ -22,8 +22,12 @@ public class VulkanIndexBuffer extends VulkanBuffer {
 		this.maxIndicies = maxIndicies;
 	}
 	
-	public void writeVertecies(VulkanLogicalDevice logicalDevice, VulkanPolygon polygon) throws VulkanException {
+	public void writeIndicies(VulkanLogicalDevice logicalDevice, VulkanPolygon polygon) throws VulkanException {
 		super.write(logicalDevice, polygon.indexBuff(), polygon.indexSize());
+	}
+	
+	public void writeIndicies(VulkanLogicalDevice logicalDevice, VulkanPolygon polygon, int indexOffset) throws VulkanException {
+		super.write(logicalDevice, polygon.indexBuff(), polygon.indexSize(), INDEX_SIZE*indexOffset);
 	}
 	
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {

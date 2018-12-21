@@ -104,23 +104,27 @@ public abstract class VulkanBuffer {
 	}
 	
 	protected void write(VulkanLogicalDevice logicalDevice, long address, long size) throws VulkanException {
-        var pData = memAllocPointer(1);
-		var res = vkMapMemory(logicalDevice.get(), memory, MAP_OFFSET, bufferSize, NO_FLAGS, pData);
-		
-		try {
-			if (res != VK_SUCCESS) {
-				throw new VulkanException(res);
-			}
-			memCopy(address, pData.get(), size);
-			vkUnmapMemory(logicalDevice.get(), memory);
+		write(logicalDevice, address, size, MAP_OFFSET);
+	}
+	
+	protected void write(VulkanLogicalDevice logicalDevice, long address, long size, long offset) throws VulkanException {
+		 var pData = memAllocPointer(1);
+			var res = vkMapMemory(logicalDevice.get(), memory, offset, bufferSize, NO_FLAGS, pData);
 			
-			res = vkBindBufferMemory(logicalDevice.get(), buffer, memory, MEMORY_OFFSET);
-			if (res != VK_SUCCESS) {
-				throw new VulkanException(res);
+			try {
+				if (res != VK_SUCCESS) {
+					throw new VulkanException(res);
+				}
+				memCopy(address, pData.get(), size);
+				vkUnmapMemory(logicalDevice.get(), memory);
+				
+				res = vkBindBufferMemory(logicalDevice.get(), buffer, memory, MEMORY_OFFSET);
+				if (res != VK_SUCCESS) {
+					throw new VulkanException(res);
+				}
+			} finally {
+				memFree(pData);
 			}
-		} finally {
-			memFree(pData);
-		}
 	}
 	
 	protected void cleanUp(VulkanLogicalDevice logicalDevice) {

@@ -26,6 +26,7 @@ import ch.megil.teliaengine.gamelogic.GameState;
 import ch.megil.teliaengine.vulkan.*;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 import ch.megil.teliaengine.vulkan.obj.VulkanPolygon;
+import ch.megil.teliaengine.vulkan.obj.VulkanPolygon2;
 
 public class GameMain {
 	private static final int VK_VERSION = VK_MAKE_VERSION(1, 0, 2);
@@ -182,6 +183,9 @@ public class GameMain {
 				var polygon = new VulkanPolygon();
 				vertexBuffer.writeVertecies(logicalDevice, polygon);
 				indexBuffer.writeVertecies(logicalDevice, polygon);
+				polygon.free();
+				polygon = new VulkanPolygon2();
+				vertexBuffer.writeVertecies(logicalDevice, polygon, 6);
 				polygon.free();
 
 				vkAcquireNextImageKHR(logicalDevice.get(), swapchain.get(), UINT64_MAX, semaphore.get(SEM_IMAGE_AVAILABLE), VK_NULL_HANDLE, pImageIndex);

@@ -37,6 +37,10 @@ public class VulkanVertexBuffer extends VulkanBuffer {
 		super.write(logicalDevice, polygon.getAddress(), polygon.getSize());
 	}
 	
+	public void writeVertecies(VulkanLogicalDevice logicalDevice, VulkanPolygon polygon, int vertexOffset) throws VulkanException {
+		super.write(logicalDevice, polygon.getAddress(), polygon.getSize(), VERTEX_SIZE*vertexOffset);
+	}
+	
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {
 		super.cleanUp(logicalDevice);
 	}
