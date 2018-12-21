@@ -13,6 +13,7 @@ import static org.lwjgl.vulkan.KHRSwapchain.vkAcquireNextImageKHR;
 import static org.lwjgl.vulkan.KHRSwapchain.vkQueuePresentKHR;
 import static org.lwjgl.vulkan.VK10.*;
 
+import org.lwjgl.glfw.GLFWKeyCallbackI;
 import org.lwjgl.vulkan.VkClearValue;
 import org.lwjgl.vulkan.VkPresentInfoKHR;
 import org.lwjgl.vulkan.VkSubmitInfo;
@@ -107,16 +108,14 @@ public class GameMain {
 			vertexBuffer.writeVertecies(logicalDevice, player, map.getNumberOfVertecies());
 			indexBuffer.writeIndicies(logicalDevice, player, map.getNumberOfIndecies());
 			player.free();
-			
 			GameLoop.get().start();
+			initKeyhandling();
 			loop();
 		} finally {
 			cleanUp();
 			map.free();
+			GameLoop.get().stop();
 		}
-		
-		//GameLoop.get().start();
-		//primaryStage.setOnHidden(e -> GameLoop.get().stop());
 	}
 	
 	private void init() throws VulkanException {
@@ -163,6 +162,16 @@ public class GameMain {
 		semaphore.init(logicalDevice, SEM_NUM_OF_SEM);
 		
 		glfwShowWindow(window);
+	}
+	
+	private void initKeyhandling() {
+		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+			if (action == GLFW_PRESS) {
+				GameLoop.get().getKeyHandler().press(key);
+			} else if (action == GLFW_RELEASE) {
+				GameLoop.get().getKeyHandler().release(key);
+			}
+		});
 	}
 	
 	private void loop() throws VulkanException {
