@@ -9,7 +9,7 @@ import ch.megil.teliaengine.vulkan.obj.VulkanPolygon;
  */
 public class VulkanIndexBuffer extends VulkanBuffer {
 	public static final int INDEX_SIZE = 2;
-	public static final int MAX_INDEX = 7;
+	public static final int MAX_INDEX = 15;
 	
 	/**
 	 * @param physicalDevice An initialized {@link VulkanPhysicalDevice}
