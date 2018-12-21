@@ -38,6 +38,11 @@ public class GameMain {
 	private static final int BASE_WIDTH = 1280;
 	private static final int BASE_HEIGHT = 720;
 	
+	private static final float CLEAR_R = 250.0f/250.0f;
+	private static final float CLEAR_G = 250.0f/250.0f;
+	private static final float CLEAR_B = 250.0f/250.0f;
+	private static final float CLEAR_A = 1.0f;
+	
 	private long window;
 	private long windowSurface;
 	
@@ -124,10 +129,10 @@ public class GameMain {
 		
 		var clearColor = VkClearValue.calloc(1);
 		clearColor.color()
-				.float32(0, 100/255f) //R
-				.float32(1, 100/255f) //G
-				.float32(2, 255/255f) //B
-				.float32(3, 1f);  //A
+				.float32(0, CLEAR_R)
+				.float32(1, CLEAR_G)
+				.float32(2, CLEAR_B)
+				.float32(3, CLEAR_A);
 		
 		try {
 			renderPass.linkRender(swapchain, pipeline, framebuffers, renderCommandPool, vertexBuffer, indexBuffer, clearColor, BASE_WIDTH, BASE_HEIGHT);
@@ -185,7 +190,6 @@ public class GameMain {
 				if (res != VK_SUCCESS) {
 					throw new VulkanException(res);
 				}
-//				vkQueueWaitIdle(queue.getGraphicsQueue());
 				
 				res = vkQueuePresentKHR(queue.getPresentQueue(), presentInfo);
 				if (res != VK_SUCCESS) {
