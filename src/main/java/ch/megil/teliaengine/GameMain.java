@@ -25,6 +25,7 @@ import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.gamelogic.GameState;
 import ch.megil.teliaengine.vulkan.*;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
+import ch.megil.teliaengine.vulkan.obj.VulkanObject;
 import ch.megil.teliaengine.vulkan.obj.VulkanPolygon;
 import ch.megil.teliaengine.vulkan.obj.VulkanPolygon2;
 
@@ -180,7 +181,7 @@ public class GameMain {
 			while(!glfwWindowShouldClose(window)) {
 				glfwPollEvents();
 				
-				var polygon = new VulkanPolygon();
+				VulkanObject polygon = new VulkanPolygon();
 				vertexBuffer.writeVertecies(logicalDevice, polygon);
 				indexBuffer.writeIndicies(logicalDevice, polygon);
 				polygon.free();

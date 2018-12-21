@@ -1,7 +1,7 @@
 package ch.megil.teliaengine.vulkan;
 
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
-import ch.megil.teliaengine.vulkan.obj.VulkanPolygon;
+import ch.megil.teliaengine.vulkan.obj.VulkanObject;
 
 /**
  * This class needs setup first with {@link #init} and
@@ -22,12 +22,12 @@ public class VulkanIndexBuffer extends VulkanBuffer {
 		this.maxIndicies = maxIndicies;
 	}
 	
-	public void writeIndicies(VulkanLogicalDevice logicalDevice, VulkanPolygon polygon) throws VulkanException {
-		super.write(logicalDevice, polygon.indexBuff(), polygon.indexSize());
+	public void writeIndicies(VulkanLogicalDevice logicalDevice, VulkanObject vulkanObject) throws VulkanException {
+		super.write(logicalDevice, vulkanObject.getIndiciesAddress(), vulkanObject.getIndiciesSize());
 	}
 	
-	public void writeIndicies(VulkanLogicalDevice logicalDevice, VulkanPolygon polygon, int indexOffset) throws VulkanException {
-		super.write(logicalDevice, polygon.indexBuff(), polygon.indexSize(), INDEX_SIZE*indexOffset);
+	public void writeIndicies(VulkanLogicalDevice logicalDevice, VulkanObject vulkanObject, int indexOffset) throws VulkanException {
+		super.write(logicalDevice, vulkanObject.getIndiciesAddress(), vulkanObject.getIndiciesSize(), INDEX_SIZE*indexOffset);
 	}
 	
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {

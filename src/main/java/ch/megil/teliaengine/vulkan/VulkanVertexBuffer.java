@@ -8,7 +8,7 @@ import org.lwjgl.vulkan.VkVertexInputAttributeDescription;
 import org.lwjgl.vulkan.VkVertexInputBindingDescription;
 
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
-import ch.megil.teliaengine.vulkan.obj.VulkanPolygon;
+import ch.megil.teliaengine.vulkan.obj.VulkanObject;
 
 /**
  * This class needs setup first with {@link #init} and
@@ -33,12 +33,12 @@ public class VulkanVertexBuffer extends VulkanBuffer {
 		this.maxVertecies = maxVertecies;
 	}
 	
-	public void writeVertecies(VulkanLogicalDevice logicalDevice, VulkanPolygon polygon) throws VulkanException {
-		super.write(logicalDevice, polygon.getAddress(), polygon.getSize());
+	public void writeVertecies(VulkanLogicalDevice logicalDevice, VulkanObject vulkanObject) throws VulkanException {
+		super.write(logicalDevice, vulkanObject.getVerteciesAddress(), vulkanObject.getVerteciesSize());
 	}
 	
-	public void writeVertecies(VulkanLogicalDevice logicalDevice, VulkanPolygon polygon, int vertexOffset) throws VulkanException {
-		super.write(logicalDevice, polygon.getAddress(), polygon.getSize(), VERTEX_SIZE*vertexOffset);
+	public void writeVertecies(VulkanLogicalDevice logicalDevice, VulkanObject vulkanObject, int vertexOffset) throws VulkanException {
+		super.write(logicalDevice, vulkanObject.getVerteciesAddress(), vulkanObject.getVerteciesSize(), VERTEX_SIZE*vertexOffset);
 	}
 	
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {
