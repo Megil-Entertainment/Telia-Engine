@@ -182,7 +182,7 @@ public class GameMain {
 				
 				var polygon = new VulkanPolygon();
 				vertexBuffer.writeVertecies(logicalDevice, polygon);
-				indexBuffer.writeVertecies(logicalDevice, polygon);
+				indexBuffer.writeIndicies(logicalDevice, polygon);
 				polygon.free();
 				polygon = new VulkanPolygon2();
 				vertexBuffer.writeVertecies(logicalDevice, polygon, 6);
