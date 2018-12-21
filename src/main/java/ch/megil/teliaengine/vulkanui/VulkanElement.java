@@ -1,18 +1,20 @@
-package ch.megil.teliaengine;
+package ch.megil.teliaengine.vulkanui;
 
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
-import ch.megil.teliaengine.game.Map;
+import ch.megil.teliaengine.game.GameElement;
 import ch.megil.teliaengine.game.Vector;
-import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.vulkan.VulkanIndexBuffer;
 import ch.megil.teliaengine.vulkan.VulkanVertexBuffer;
 import ch.megil.teliaengine.vulkan.obj.VulkanObject;
 
-public class VulkanPlayer extends VulkanObject {
+public abstract class VulkanElement extends VulkanObject {
 	private static final int SCALE_MODIFIER = 2;
 	private static final Vector VULKAN_OFFSET = new Vector(-1, -1);
+	
+	public static final int VERTECIES_PER_OBJECT = 4;
+	public static final int INDICIES_PER_OBJECT = 5;
 	
 	private static final short INDEX_RESET = (short) 0xFFFF;
 	private static final int INDEX_TL = 0;
@@ -21,27 +23,20 @@ public class VulkanPlayer extends VulkanObject {
 	private static final int INDEX_BL = 3;
 	
 	private Vector scaleVector;
-	public static final int NUMBER_OF_VERTECIES = 4;
-	public static final int NUMBER_OF_INDECIES = 5;
+	private int numberOfVertecies;
+	private int numberOfIndecies;
 	
-	public VulkanPlayer(Player player, Map map) {
-		this(player, map, 0);
+	public VulkanElement(int numberOfObjects, double spreadWidth, double spreadHeight) {
+		super(VulkanVertexBuffer.VERTEX_SIZE * numberOfObjects * VERTECIES_PER_OBJECT,
+				VulkanIndexBuffer.INDEX_SIZE * numberOfObjects * INDICIES_PER_OBJECT);
+		scaleVector = new Vector(SCALE_MODIFIER/spreadWidth, SCALE_MODIFIER/spreadHeight);
+		numberOfVertecies = numberOfObjects * VERTECIES_PER_OBJECT;
+		numberOfIndecies = numberOfObjects * INDICIES_PER_OBJECT;
 	}
 	
-	public VulkanPlayer(Player player, Map map, int indexOffset) {
-		super(VulkanVertexBuffer.VERTEX_SIZE*NUMBER_OF_VERTECIES, VulkanIndexBuffer.INDEX_SIZE*NUMBER_OF_INDECIES);
-		
-		scaleVector = new Vector(SCALE_MODIFIER/map.getWidth(), SCALE_MODIFIER/map.getHeight());
-		
-		var vertexBuffer = vertecies.asFloatBuffer();
-		var indexBuffer = indicies.asShortBuffer();
-
-		convertPlayer(vertexBuffer, indexBuffer, player, indexOffset);
-	}
-	
-	private void convertPlayer(FloatBuffer vertexBuffer, ShortBuffer indexBuffer, Player player, int indexOffset) {
-		var topLeft = player.getPosition().multiplyByComponent(scaleVector).add(VULKAN_OFFSET);
-		var bottomRigh = player.getPosition().add(player.getHitbox().getVectorSize()).multiplyByComponent(scaleVector).add(VULKAN_OFFSET);
+	protected void convertElement(FloatBuffer vertexBuffer, ShortBuffer indexBuffer, GameElement element, int indexOffset) {
+		var topLeft = element.getPosition().multiplyByComponent(scaleVector).add(VULKAN_OFFSET);
+		var bottomRigh = element.getPosition().add(element.getHitbox().getVectorSize()).multiplyByComponent(scaleVector).add(VULKAN_OFFSET);
 		
 		vertexBuffer.put((float) topLeft.getX())   .put((float) topLeft.getY())   .put(0.0f).put(0.0f).put(0.0f);
 		vertexBuffer.put((float) bottomRigh.getX()).put((float) topLeft.getY())   .put(0.0f).put(0.0f).put(0.0f);
@@ -53,5 +48,13 @@ public class VulkanPlayer extends VulkanObject {
 			.put((short) (indexOffset+INDEX_TR))
 			.put((short) (indexOffset+INDEX_BR))
 			.put(INDEX_RESET);
+	}
+
+	public int getNumberOfVertecies() {
+		return numberOfVertecies;
+	}
+	
+	public int getNumberOfIndecies() {
+		return numberOfIndecies;
 	}
 }

@@ -27,6 +27,8 @@ import ch.megil.teliaengine.gamelogic.GameLoop;
 import ch.megil.teliaengine.gamelogic.GameState;
 import ch.megil.teliaengine.vulkan.*;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
+import ch.megil.teliaengine.vulkanui.VulkanMap;
+import ch.megil.teliaengine.vulkanui.VulkanPlayer;
 
 public class GameMain {
 	private static final int VK_VERSION = VK_MAKE_VERSION(1, 0, 2);
@@ -64,6 +66,7 @@ public class GameMain {
 	private VulkanSemaphore semaphore;
 	
 	private VulkanMap map;
+	private VulkanPlayer player;
 	
 	public GameMain() {
 		GameState.get().setMap(new Map(BASE_WIDTH, BASE_HEIGHT));
@@ -95,12 +98,12 @@ public class GameMain {
 		}
 		
 		map = new VulkanMap(GameState.get().getMap());
+		player = new VulkanPlayer(Player.get(), GameState.get().getMap(), map.getNumberOfVertecies());
 		
 		try {
 			init();
 			vertexBuffer.writeVertecies(logicalDevice, map);
 			indexBuffer.writeIndicies(logicalDevice, map);
-			var player = new VulkanPlayer(Player.get(), GameState.get().getMap(), map.getNumberOfVertecies());
 			vertexBuffer.writeVertecies(logicalDevice, player, map.getNumberOfVertecies());
 			indexBuffer.writeIndicies(logicalDevice, player, map.getNumberOfIndecies());
 			player.free();
@@ -141,8 +144,8 @@ public class GameMain {
 		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer);
 		framebuffers.init(logicalDevice, swapchain, renderPass);
 		renderCommandPool.init(logicalDevice, queue, swapchain.getImageCount());
-		vertexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfVertecies() + VulkanPlayer.NUMBER_OF_VERTECIES); //TODO: dynamic
-		indexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfIndecies() + VulkanPlayer.NUMBER_OF_INDECIES); //TODO: dynamic
+		vertexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfVertecies() + player.getNumberOfVertecies());
+		indexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfIndecies() + player.getNumberOfIndecies());
 		
 		var clearColor = VkClearValue.calloc(1);
 		clearColor.color()
@@ -193,7 +196,7 @@ public class GameMain {
 			while(!glfwWindowShouldClose(window)) {
 				glfwPollEvents();
 				
-				var player = new VulkanPlayer(Player.get(), GameState.get().getMap());
+				player = new VulkanPlayer(Player.get(), GameState.get().getMap());
 				vertexBuffer.writeVertecies(logicalDevice, player, map.getNumberOfVertecies());
 				player.free();
 				
