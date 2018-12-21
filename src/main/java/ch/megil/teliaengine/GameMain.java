@@ -21,6 +21,7 @@ import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.file.MapSaveLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
+import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.gamelogic.GameState;
 import ch.megil.teliaengine.vulkan.*;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
@@ -38,9 +39,9 @@ public class GameMain {
 	private static final int BASE_WIDTH = 1280;
 	private static final int BASE_HEIGHT = 720;
 	
-	private static final float CLEAR_R = 250.0f/250.0f;
-	private static final float CLEAR_G = 250.0f/250.0f;
-	private static final float CLEAR_B = 250.0f/250.0f;
+	private static final float CLEAR_R = 255.0f/255.0f;
+	private static final float CLEAR_G = 255.0f/255.0f;
+	private static final float CLEAR_B = 255.0f/255.0f;
 	private static final float CLEAR_A = 1.0f;
 	
 	private long window;
@@ -62,6 +63,8 @@ public class GameMain {
 	private VulkanSemaphore semaphore;
 	
 	public GameMain() {
+		GameState.get().setMap(new Map(BASE_WIDTH, BASE_HEIGHT));
+		
 		instance = new VulkanInstance();
 		physicalDevice = new VulkanPhysicalDevice();
 		queue = new VulkanQueue();
@@ -124,8 +127,8 @@ public class GameMain {
 		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer);
 		framebuffers.init(logicalDevice, swapchain, renderPass);
 		renderCommandPool.init(logicalDevice, queue, swapchain.getImageCount());
-		vertexBuffer.init(physicalDevice, logicalDevice);
-		indexBuffer.init(physicalDevice, logicalDevice);
+		vertexBuffer.init(physicalDevice, logicalDevice, 7); //TODO: dynamic
+		indexBuffer.init(physicalDevice, logicalDevice, 15); //TODO: dynamic
 		
 		var clearColor = VkClearValue.calloc(1);
 		clearColor.color()

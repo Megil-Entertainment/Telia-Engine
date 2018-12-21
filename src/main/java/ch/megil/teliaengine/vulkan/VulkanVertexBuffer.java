@@ -19,15 +19,18 @@ import ch.megil.teliaengine.vulkan.obj.VulkanPolygon;
 public class VulkanVertexBuffer extends VulkanBuffer {
 	private static final int VALUE_SIZE = 4;
 	public static final int VERTEX_SIZE = (2+3)*VALUE_SIZE; //2 cords + 3 colors
-	public static final int MAX_VERTECIES = 7;
+//	public static final int MAX_VERTECIES = 7;
 	private static final int COLOR_OFFSET = 2*VALUE_SIZE;
+	
+	private int maxVertecies;
 	
 	/**
 	 * @param physicalDevice An initialized {@link VulkanPhysicalDevice}
 	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
 	 */
-	public void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice) throws VulkanException {
-		super.init(physicalDevice, logicalDevice, VERTEX_SIZE*MAX_VERTECIES);
+	public void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, int maxVertecies) throws VulkanException {
+		super.init(physicalDevice, logicalDevice, VERTEX_SIZE*maxVertecies);
+		this.maxVertecies = maxVertecies;
 	}
 	
 	public void writeVertecies(VulkanLogicalDevice logicalDevice, VulkanPolygon polygon) throws VulkanException {
@@ -68,5 +71,9 @@ public class VulkanVertexBuffer extends VulkanBuffer {
 				.offset(COLOR_OFFSET);
 		
 		return vertexAttribute;
+	}
+	
+	public int getMaxVertecies() {
+		return maxVertecies;
 	}
 }

@@ -123,7 +123,7 @@ public class VulkanRenderPass {
 				vkCmdBindPipeline(cmdbuffer.get(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getGraphicsPipeline());
 				vkCmdBindVertexBuffers(cmdbuffer.get(), BASE_BINDING, pVertexBuffer, vertexOffsets);
 				vkCmdBindIndexBuffer(cmdbuffer.get(), indexBuffer.get(), INDEX_OFFSET, VK_INDEX_TYPE_UINT16);
-				vkCmdDrawIndexed(cmdbuffer.get(), VulkanIndexBuffer.MAX_INDEX, INSTANCE_COUNT, BASE_INDEX, VERTEX_OFFSET, BASE_INSTANCE);
+				vkCmdDrawIndexed(cmdbuffer.get(), indexBuffer.getMaxIndicies(), INSTANCE_COUNT, BASE_INDEX, VERTEX_OFFSET, BASE_INSTANCE);
 				
 				vkCmdEndRenderPass(cmdbuffer.get());
 				cmdbuffer.end();

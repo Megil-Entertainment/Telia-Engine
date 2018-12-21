@@ -9,14 +9,17 @@ import ch.megil.teliaengine.vulkan.obj.VulkanPolygon;
  */
 public class VulkanIndexBuffer extends VulkanBuffer {
 	public static final int INDEX_SIZE = 2;
-	public static final int MAX_INDEX = 15;
+//	public static final int MAX_INDEX = 15;
+	
+	private int maxIndicies;
 	
 	/**
 	 * @param physicalDevice An initialized {@link VulkanPhysicalDevice}
 	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
 	 */
-	public void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice) throws VulkanException {
-		super.init(physicalDevice, logicalDevice, INDEX_SIZE*MAX_INDEX);
+	public void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, int maxIndicies) throws VulkanException {
+		super.init(physicalDevice, logicalDevice, INDEX_SIZE*maxIndicies);
+		this.maxIndicies = maxIndicies;
 	}
 	
 	public void writeVertecies(VulkanLogicalDevice logicalDevice, VulkanPolygon polygon) throws VulkanException {
@@ -25,5 +28,9 @@ public class VulkanIndexBuffer extends VulkanBuffer {
 	
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {
 		super.cleanUp(logicalDevice);
+	}
+	
+	public int getMaxIndicies() {
+		return maxIndicies;
 	}
 }
