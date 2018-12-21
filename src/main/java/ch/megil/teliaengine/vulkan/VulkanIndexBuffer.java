@@ -9,7 +9,6 @@ import ch.megil.teliaengine.vulkan.obj.VulkanObject;
  */
 public class VulkanIndexBuffer extends VulkanBuffer {
 	public static final int INDEX_SIZE = 2;
-//	public static final int MAX_INDEX = 15;
 	
 	private int maxIndicies;
 	

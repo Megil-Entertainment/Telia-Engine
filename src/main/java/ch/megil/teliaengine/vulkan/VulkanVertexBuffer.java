@@ -19,7 +19,6 @@ import ch.megil.teliaengine.vulkan.obj.VulkanObject;
 public class VulkanVertexBuffer extends VulkanBuffer {
 	private static final int VALUE_SIZE = 4;
 	public static final int VERTEX_SIZE = (2+3)*VALUE_SIZE; //2 cords + 3 colors
-//	public static final int MAX_VERTECIES = 7;
 	private static final int COLOR_OFFSET = 2*VALUE_SIZE;
 	
 	private int maxVertecies;

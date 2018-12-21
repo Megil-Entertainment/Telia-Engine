@@ -25,9 +25,6 @@ import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.gamelogic.GameState;
 import ch.megil.teliaengine.vulkan.*;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
-import ch.megil.teliaengine.vulkan.obj.VulkanObject;
-import ch.megil.teliaengine.vulkan.obj.VulkanPolygon;
-import ch.megil.teliaengine.vulkan.obj.VulkanPolygon2;
 
 public class GameMain {
 	private static final int VK_VERSION = VK_MAKE_VERSION(1, 0, 2);
@@ -64,6 +61,8 @@ public class GameMain {
 	private VulkanIndexBuffer indexBuffer;
 	private VulkanSemaphore semaphore;
 	
+	private VulkanMap map;
+	
 	public GameMain() {
 		GameState.get().setMap(new Map(BASE_WIDTH, BASE_HEIGHT));
 		
@@ -93,11 +92,14 @@ public class GameMain {
 			throw new IllegalStateException("Vulkan is already completly or partialy initialized. Use cleanUp first.");
 		}
 		
+		map = new VulkanMap(GameState.get().getMap());
+		
 		try {
 			init();
 			loop();
 		} finally {
 			cleanUp();
+			map.free();
 		}
 		
 		//GameLoop.get().start();
@@ -129,8 +131,11 @@ public class GameMain {
 		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer);
 		framebuffers.init(logicalDevice, swapchain, renderPass);
 		renderCommandPool.init(logicalDevice, queue, swapchain.getImageCount());
-		vertexBuffer.init(physicalDevice, logicalDevice, 7); //TODO: dynamic
-		indexBuffer.init(physicalDevice, logicalDevice, 15); //TODO: dynamic
+		vertexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfVertecies()); //TODO: dynamic
+		indexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfIndecies()); //TODO: dynamic
+		
+		vertexBuffer.writeVertecies(logicalDevice, map);
+		indexBuffer.writeIndicies(logicalDevice, map);
 		
 		var clearColor = VkClearValue.calloc(1);
 		clearColor.color()
@@ -181,14 +186,6 @@ public class GameMain {
 			while(!glfwWindowShouldClose(window)) {
 				glfwPollEvents();
 				
-				VulkanObject polygon = new VulkanPolygon();
-				vertexBuffer.writeVertecies(logicalDevice, polygon);
-				indexBuffer.writeIndicies(logicalDevice, polygon);
-				polygon.free();
-				polygon = new VulkanPolygon2();
-				vertexBuffer.writeVertecies(logicalDevice, polygon, 6);
-				polygon.free();
-
 				vkAcquireNextImageKHR(logicalDevice.get(), swapchain.get(), UINT64_MAX, semaphore.get(SEM_IMAGE_AVAILABLE), VK_NULL_HANDLE, pImageIndex);
 				var imageIndex = pImageIndex.get(0);
 				
