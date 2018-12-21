@@ -1,14 +1,14 @@
 package ch.megil.teliaengine.game;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Spy;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
 
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 public class GameElementTest {
 	private GameElement gameElement;
@@ -23,7 +23,8 @@ public class GameElementTest {
 	public void setUp() {
 		image = mock(Image.class);
 		hitbox = new Hitbox(Vector.ZERO, 5, 5);
-		gameElement = new GameElement(image,hitbox);
+		
+		gameElement = new GameElement(image,hitbox,Color.BLACK);
 		vector = new Vector(2, 2);
 	}
 	

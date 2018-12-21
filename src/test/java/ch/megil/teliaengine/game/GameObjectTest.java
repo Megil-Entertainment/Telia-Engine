@@ -8,21 +8,24 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 public class GameObjectTest {
 	@Mock
 	private Image depiction;
 	private Hitbox hitbox;
+	private Color color;
 
 	@Before
 	public void setUp() throws Exception {
 		depiction = mock(Image.class);
 		hitbox = new Hitbox(Vector.ZERO, 50, 50);
+		color = Color.BLACK;
 	}
 
 	@Test
 	public void testGameObjectStringNode() {
-		var obj = new GameObject("testObject", depiction, hitbox);
+		var obj = new GameObject("testObject", depiction, hitbox, color);
 
 		assertEquals(depiction, obj.getDepiction());
 		assertEquals(0, obj.getPosition().getX(), 0);
@@ -31,7 +34,7 @@ public class GameObjectTest {
 
 	@Test
 	public void testGameObjectStringNodeDoubleDouble() {
-		var obj = new GameObject("testObject", depiction, hitbox, 30, 40);
+		var obj = new GameObject("testObject", depiction, hitbox, color, 30, 40);
 
 		assertEquals(depiction, obj.getDepiction());
 		assertEquals(30, obj.getPosition().getX(), 0);

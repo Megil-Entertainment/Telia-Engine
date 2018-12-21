@@ -14,6 +14,7 @@ import ch.megil.teliaengine.game.player.PlayerConstructor;
 import ch.megil.teliaengine.logging.LogHandler;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
+import javafx.scene.paint.Color;
 
 public class PlayerLoad {
 	public Player load(PlayerConstructor constructor) {
@@ -26,12 +27,15 @@ public class PlayerLoad {
 		var hitbox = new Hitbox(Vector.ZERO, Double.parseDouble(GameConfiguration.PLAYER_WIDTH.getConfiguration()),
 				Double.parseDouble(GameConfiguration.PLAYER_HEIGHT.getConfiguration()));
 		
+		var color = Color.BLACK;
+		
 		try (var scanner = new Scanner(file)) {
 			scanner.useDelimiter(GameConfiguration.SEPARATOR_ENTRY.getConfiguration());
 			
 			var spec = scanner.next().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			depiction = new TextureLoader().load(spec[2], Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			hitbox =  new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
+			color = Color.web(spec[3]);
 		} catch (IOException e) {
 			LogHandler.info("Player spec not found.");
 			LogHandler.log(e, Level.INFO);
@@ -42,6 +46,6 @@ public class PlayerLoad {
 			LogHandler.log(e, Level.SEVERE);
 		}
 		
-		return constructor.invoke(depiction, hitbox);
+		return constructor.invoke(depiction, hitbox, color);
 	}
 }

@@ -3,17 +3,20 @@ package ch.megil.teliaengine.game;
 import java.util.function.Consumer;
 
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 public class GameElement {
 	private Vector position;
 	private Hitbox hitbox;
 	private Image depiction;
+	private Color color;
 	private Consumer<Vector> onPositionUpdate;
 	
-	public GameElement(Image image, Hitbox hitbox) {
+	public GameElement(Image image, Hitbox hitbox, Color color) {
 		this.position = Vector.ZERO;
 		this.depiction = image;
 		this.hitbox = hitbox;
+		this.color = color;
 		this.onPositionUpdate = v -> {};
 	}
 	
@@ -45,5 +48,9 @@ public class GameElement {
 	public Hitbox getHitbox() {
 		hitbox.setOrigin(getPosition());
 		return hitbox;
+	}
+	
+	public Color getColor() {
+		return color;
 	}
 }
