@@ -1,5 +1,8 @@
 package ch.megil.teliaengine.vulkan;
 
+import static org.lwjgl.system.MemoryUtil.memAddress;
+import static org.lwjgl.system.MemoryUtil.memAlloc;
+import static org.lwjgl.system.MemoryUtil.memFree;
 import static org.lwjgl.vulkan.VK10.VK_FORMAT_R32G32B32_SFLOAT;
 import static org.lwjgl.vulkan.VK10.VK_FORMAT_R32G32_SFLOAT;
 import static org.lwjgl.vulkan.VK10.VK_VERTEX_INPUT_RATE_VERTEX;
@@ -18,8 +21,11 @@ import ch.megil.teliaengine.vulkan.obj.VulkanObject;
  */
 public class VulkanVertexBuffer extends VulkanBuffer {
 	private static final int VALUE_SIZE = 4;
-	public static final int VERTEX_SIZE = (2+3)*VALUE_SIZE; //2 cords + 3 colors
+	private static final int VERTEX_VALUES = 2+3; //2 cords + 3 colors
+	public static final int VERTEX_SIZE = VERTEX_VALUES*VALUE_SIZE;
 	private static final int COLOR_OFFSET = 2*VALUE_SIZE;
+	
+	private static final float CLEAR_VALUE = 0.0f;
 	
 	private int maxVertecies;
 	
@@ -30,6 +36,20 @@ public class VulkanVertexBuffer extends VulkanBuffer {
 	public void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, int maxVertecies) throws VulkanException {
 		super.init(physicalDevice, logicalDevice, VERTEX_SIZE*maxVertecies);
 		this.maxVertecies = maxVertecies;
+		clearBuffer(logicalDevice);
+	}
+	
+	private void clearBuffer(VulkanLogicalDevice logicalDevice) throws VulkanException {
+		var buffer = memAlloc(VERTEX_SIZE*maxVertecies);
+		var fb = buffer.asFloatBuffer();
+		
+		for(var i = 0; i < VERTEX_VALUES*maxVertecies; i++) {
+			fb.put(CLEAR_VALUE);
+		}
+		
+		write(logicalDevice, memAddress(buffer), buffer.capacity());
+		
+		memFree(buffer);
 	}
 	
 	public void writeVertecies(VulkanLogicalDevice logicalDevice, VulkanObject vulkanObject) throws VulkanException {

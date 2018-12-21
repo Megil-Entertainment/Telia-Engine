@@ -22,6 +22,8 @@ import ch.megil.teliaengine.file.MapSaveLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.Map;
+import ch.megil.teliaengine.game.player.Player;
+import ch.megil.teliaengine.gamelogic.GameLoop;
 import ch.megil.teliaengine.gamelogic.GameState;
 import ch.megil.teliaengine.vulkan.*;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
@@ -96,6 +98,14 @@ public class GameMain {
 		
 		try {
 			init();
+			vertexBuffer.writeVertecies(logicalDevice, map);
+			indexBuffer.writeIndicies(logicalDevice, map);
+			var player = new VulkanPlayer(Player.get(), GameState.get().getMap(), map.getNumberOfVertecies());
+			vertexBuffer.writeVertecies(logicalDevice, player, map.getNumberOfVertecies());
+			indexBuffer.writeIndicies(logicalDevice, player, map.getNumberOfIndecies());
+			player.free();
+			
+			GameLoop.get().start();
 			loop();
 		} finally {
 			cleanUp();
@@ -131,11 +141,8 @@ public class GameMain {
 		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer);
 		framebuffers.init(logicalDevice, swapchain, renderPass);
 		renderCommandPool.init(logicalDevice, queue, swapchain.getImageCount());
-		vertexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfVertecies()); //TODO: dynamic
-		indexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfIndecies()); //TODO: dynamic
-		
-		vertexBuffer.writeVertecies(logicalDevice, map);
-		indexBuffer.writeIndicies(logicalDevice, map);
+		vertexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfVertecies() + VulkanPlayer.NUMBER_OF_VERTECIES); //TODO: dynamic
+		indexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfIndecies() + VulkanPlayer.NUMBER_OF_INDECIES); //TODO: dynamic
 		
 		var clearColor = VkClearValue.calloc(1);
 		clearColor.color()
@@ -185,6 +192,10 @@ public class GameMain {
 		try {
 			while(!glfwWindowShouldClose(window)) {
 				glfwPollEvents();
+				
+				var player = new VulkanPlayer(Player.get(), GameState.get().getMap());
+				vertexBuffer.writeVertecies(logicalDevice, player, map.getNumberOfVertecies());
+				player.free();
 				
 				vkAcquireNextImageKHR(logicalDevice.get(), swapchain.get(), UINT64_MAX, semaphore.get(SEM_IMAGE_AVAILABLE), VK_NULL_HANDLE, pImageIndex);
 				var imageIndex = pImageIndex.get(0);
