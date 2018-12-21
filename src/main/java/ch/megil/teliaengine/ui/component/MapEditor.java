@@ -18,6 +18,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class MapEditor extends Pane {
+	private static final double INNER_SHADOW_RADIUS = 4.0;
+	private static final double INNER_SHADOW_CHOKE = 1.0;
+	private static final double KEY_INPUT_HIDDEN_SIZE = 50;
+	private static final double KEY_INPUT_HIDDEN_OFFSET = -50;
+	private static final Color INNER_SHADOW_COLOR = Color.CORNFLOWERBLUE;
+	
 	private Map map;
 	private Player player;
 	
@@ -29,31 +35,29 @@ public class MapEditor extends Pane {
 	
 	private InnerShadow nodeSelected;
 	private InnerShadow nodeDeselected;
-	private static final double INNER_SHADOW_RADIUS = 4.0;
-	private static final double INNER_SHADOW_CHOKE = 1.0;
 	
 	private GameElementImageView selected;
 	
-	private TextArea mapTextField;
+	private TextArea hiddenKeyInput;
 	
 	public MapEditor() {
-		mapTextField = new TextArea();
-		getChildren().add(mapTextField);
-		mapTextField.setEditable(false);
-		mapTextField.setMaxSize(50,50);
-		mapTextField.setLayoutX(-50);
-		mapTextField.setLayoutY(-50);
-		mapTextField.setOnKeyReleased(this::onKeyPressed);
+		hiddenKeyInput = new TextArea();
+		getChildren().add(hiddenKeyInput);
+		hiddenKeyInput.setEditable(false);
+		hiddenKeyInput.setMaxSize(KEY_INPUT_HIDDEN_SIZE,KEY_INPUT_HIDDEN_SIZE);
+		hiddenKeyInput.setLayoutX(KEY_INPUT_HIDDEN_OFFSET);
+		hiddenKeyInput.setLayoutY(KEY_INPUT_HIDDEN_OFFSET);
+		hiddenKeyInput.setOnKeyReleased(this::onKeyPressed);
 		var clip = new Rectangle();
 		clip.widthProperty().bind(this.widthProperty());
 		clip.heightProperty().bind(this.heightProperty());
 		setClip(clip);
-		setOnMousePressed(this::clickOnMap);
+		setOnMousePressed(this::onClickMap);
 		setOnMouseDragged(this::onMoveMap);
 		getChildren().addListener((ListChangeListener<Node>) c -> {
 			while(c.next()) {
 				c.getAddedSubList().forEach(n -> {
-					n.setOnMousePressed(this::clickOnNode);
+					n.setOnMousePressed(this::onClickNode);
 					n.setOnMouseDragged(this::onMoveNode);
 					});
 			}});
@@ -61,7 +65,7 @@ public class MapEditor extends Pane {
 		gridWidth = Integer.parseInt(SystemConfiguration.MAP_GRID_WIDTH.getConfiguration());
 		gridHeight = Integer.parseInt(SystemConfiguration.MAP_GRID_HEIGHT.getConfiguration());
 		
-		nodeSelected = new InnerShadow(INNER_SHADOW_RADIUS, Color.CORNFLOWERBLUE);
+		nodeSelected = new InnerShadow(INNER_SHADOW_RADIUS, INNER_SHADOW_COLOR);
 		nodeSelected.setChoke(INNER_SHADOW_CHOKE);
 		
 		nodeDeselected = new InnerShadow();
@@ -75,13 +79,12 @@ public class MapEditor extends Pane {
 		}
 	}
 	
-	public void clickOnNode(MouseEvent event) {
-		mapTextField.requestFocus();
+	public void onClickNode(MouseEvent event) {
+		hiddenKeyInput.requestFocus();
 		if (event.isPrimaryButtonDown()) {
 			var source = (GameElementImageView) event.getSource();
 			if(selected != null) {
 				selected.setEffect(nodeDeselected);
-				selected = null;
 			}
 			selected = source;
 			selected.setEffect(nodeSelected);
@@ -91,7 +94,7 @@ public class MapEditor extends Pane {
 		}
 	}
 	
-	public void clickOnMap(MouseEvent event) {
+	public void onClickMap(MouseEvent event) {
 		if(event.isPrimaryButtonDown() && selected != null) {
 			selected.setEffect(nodeDeselected);
 			selected = null;
@@ -100,23 +103,6 @@ public class MapEditor extends Pane {
 			dx = getTranslateX() - event.getSceneX();
 			dy = getTranslateY() - event.getSceneY();
 		}
-	}
-	
-	private void moveNode(MouseEvent event, GameElementImageView source) {
-		source.setImageViewLayoutX(
-				roundToNearest((event.getSceneX() + dx), gridWidth));
-		source.setImageViewLayoutY(
-				roundToNearest((event.getSceneY() + dy), gridHeight));
-		checkBoundries(source);
-	}
-	
-	private void moveMap(MouseEvent event) {
-		var clip = (Rectangle) getClip();
-		setTranslateX(event.getSceneX() + dx);
-		setTranslateY(event.getSceneY() + dy);
-		checkMapBoundries(clip);
-		clip.setX(0 - getTranslateX());
-		clip.setY(0 - getTranslateY());
 	}
 	
 	private void removeNode(KeyEvent event) {
@@ -165,14 +151,23 @@ public class MapEditor extends Pane {
 	public void onMoveNode(MouseEvent event) {
 		if(event.isPrimaryButtonDown()) {
 			var source = (GameElementImageView) event.getSource();
-			moveNode(event, source);
+			source.setImageViewLayoutX(
+					roundToNearest((event.getSceneX() + dx), gridWidth));
+			source.setImageViewLayoutY(
+					roundToNearest((event.getSceneY() + dy), gridHeight));
+			checkBoundries(source);
 			event.consume();
 		}
 	}
 	
 	public void onMoveMap(MouseEvent event) {
 		if(event.isSecondaryButtonDown()) {
-			moveMap(event);
+			var clip = (Rectangle) getClip();
+			setTranslateX(event.getSceneX() + dx);
+			setTranslateY(event.getSceneY() + dy);
+			checkMapBoundries(clip);
+			clip.setX(0 - getTranslateX());
+			clip.setY(0 - getTranslateY());
 			event.consume();
 		}
 	}
@@ -180,9 +175,7 @@ public class MapEditor extends Pane {
 	public void onKeyPressed(KeyEvent event) {
 		KeyCode code = event.getCode();
 		if(code.equals(KeyCode.D)) {
-			System.out.println("Remove node");
 			if(selected.getGameElement() instanceof Player) {
-			 System.out.println("Player can not be deleted");
 			 event.consume();
 			}
 			else {
@@ -202,7 +195,7 @@ public class MapEditor extends Pane {
 	
 	public void setMap(Map map) {
 		getChildren().clear();
-		getChildren().add(mapTextField);
+		getChildren().add(hiddenKeyInput);
 		
 		this.map = map;
 		map.getMapObjects().forEach(o -> getChildren().add(new GameElementImageView(o)));
