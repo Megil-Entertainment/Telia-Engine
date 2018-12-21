@@ -29,4 +29,5 @@ public class GameElementImageView extends ImageView{
 	public GameElement getGameElement() {
 		return gameElement;
 	}
+	
 }
