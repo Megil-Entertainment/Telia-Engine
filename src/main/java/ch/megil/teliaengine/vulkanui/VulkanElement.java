@@ -36,7 +36,10 @@ public abstract class VulkanElement extends VulkanObject {
 	
 	protected void convertElement(FloatBuffer vertexBuffer, ShortBuffer indexBuffer, GameElement element, int indexOffset) {
 		var topLeft = element.getPosition().multiplyByComponent(scaleVector).add(VULKAN_OFFSET);
-		var bottomRigh = element.getPosition().add(element.getHitbox().getVectorSize()).multiplyByComponent(scaleVector).add(VULKAN_OFFSET);
+		var bottomRigh = element.getPosition()
+				.add(new Vector(element.getDepiction().getWidth(), element.getDepiction().getHeight()))
+				.multiplyByComponent(scaleVector)
+				.add(VULKAN_OFFSET);
 		
 		vertexBuffer.put((float) topLeft.getX())   .put((float) topLeft.getY())   .put(0.0f).put(0.0f).put(0.0f);
 		vertexBuffer.put((float) bottomRigh.getX()).put((float) topLeft.getY())   .put(0.0f).put(0.0f).put(0.0f);
