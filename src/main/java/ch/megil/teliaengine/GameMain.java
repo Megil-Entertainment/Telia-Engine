@@ -13,7 +13,6 @@ import static org.lwjgl.vulkan.KHRSwapchain.vkAcquireNextImageKHR;
 import static org.lwjgl.vulkan.KHRSwapchain.vkQueuePresentKHR;
 import static org.lwjgl.vulkan.VK10.*;
 
-import org.lwjgl.glfw.GLFWKeyCallbackI;
 import org.lwjgl.vulkan.VkClearValue;
 import org.lwjgl.vulkan.VkPresentInfoKHR;
 import org.lwjgl.vulkan.VkSubmitInfo;
