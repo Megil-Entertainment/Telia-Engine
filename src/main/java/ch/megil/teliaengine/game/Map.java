@@ -40,6 +40,10 @@ public class Map {
 		mapObjects.add(object);
 	}
 	
+	public void removeObject(GameObject object) {
+		mapObjects.remove(object);
+	}
+	
 	public List<GameObject> getMapObjects() {
 		return mapObjects;
 	}
