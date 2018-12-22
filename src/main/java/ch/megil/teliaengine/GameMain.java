@@ -128,8 +128,6 @@ public class GameMain {
 		instance.init(VK_VERSION);
 		physicalDevice.init(instance, VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU);
 		
-		System.out.println("Using GPU: " + physicalDevice.getProperties().deviceNameString());
-		
 		window = createGlfwWindow();
 		windowSurface = createGlfwWindowSurface();
 		
