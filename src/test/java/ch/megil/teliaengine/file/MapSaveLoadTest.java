@@ -85,7 +85,7 @@ public class MapSaveLoadTest {
 		
 		var redObj = testObjectDir.newFile("red.tobj");
 		try (var writer = new BufferedWriter(new FileWriter(redObj))) {
-			writer.write("50.0:60.0:red");
+			writer.write("50.0:60.0:red:#FF0000");
 		}
 		
 		var failObj = testObjectDir.newFile("fail.tobj");

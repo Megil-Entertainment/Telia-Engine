@@ -1,15 +1,151 @@
+import org.gradle.internal.os.OperatingSystem
+
 plugins {
     id 'java'
+    id 'distribution'
+}
+
+version = 'v1.0.0'
+project.ext.mainClassName = 'ch.megil.teliaengine.Main'
+
+project.ext.lwjglVersion = "3.2.0"
+project.ext.lwjglNativesWin = "natives-windows"
+project.ext.lwjglNativesLinux = "natives-linux"
+project.ext.lwjglNativesMacOS = "natives-macos"
+
+configurations {
+	allSystem
+	windows.extendsFrom allSystem
+	linux.extendsFrom allSystem
+	macos.extendsFrom allSystem
+	
+	switch ( OperatingSystem.current() ) {
+		case OperatingSystem.WINDOWS:
+			compile.extendsFrom windows
+			break
+		case OperatingSystem.LINUX:
+			compile.extendsFrom linux
+		break
+		case OperatingSystem.MAC_OS:
+			compile.extendsFrom macos
+			break
+	}
 }
 
 sourceCompatibility = 10
 targetCompatibility = 10
 
 dependencies {
+    allSystem "org.lwjgl:lwjgl:$lwjglVersion"
+	allSystem "org.lwjgl:lwjgl-assimp:$lwjglVersion"
+	allSystem "org.lwjgl:lwjgl-glfw:$lwjglVersion"
+	allSystem "org.lwjgl:lwjgl-openal:$lwjglVersion"
+	allSystem "org.lwjgl:lwjgl-stb:$lwjglVersion"
+	allSystem "org.lwjgl:lwjgl-vma:$lwjglVersion"
+	allSystem "org.lwjgl:lwjgl-vulkan:$lwjglVersion"
+	
+	windows "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNativesWin"
+	windows "org.lwjgl:lwjgl-assimp:$lwjglVersion:$lwjglNativesWin"
+	windows "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNativesWin"
+	windows "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNativesWin"
+	windows "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNativesWin"
+	windows "org.lwjgl:lwjgl-vma:$lwjglVersion:$lwjglNativesWin"
+	
+	linux "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNativesLinux"
+	linux "org.lwjgl:lwjgl-assimp:$lwjglVersion:$lwjglNativesLinux"
+	linux "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNativesLinux"
+	linux "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNativesLinux"
+	linux "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNativesLinux"
+	linux "org.lwjgl:lwjgl-vma:$lwjglVersion:$lwjglNativesLinux"
+	
+	macos "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNativesMacOS"
+	macos "org.lwjgl:lwjgl-assimp:$lwjglVersion:$lwjglNativesMacOS"
+	macos "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNativesMacOS"
+	macos "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNativesMacOS"
+	macos "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNativesMacOS"
+	macos "org.lwjgl:lwjgl-vma:$lwjglVersion:$lwjglNativesMacOS"
+	macos "org.lwjgl:lwjgl-vulkan:$lwjglVersion:$lwjglNativesMacOS"
+
     testImplementation 'junit:junit:4.12'
 	testImplementation 'org.mockito:mockito-core:2.23.0'
 }
 
 repositories {
     jcenter()
+}
+
+sourceSets.main.resources.srcDir 'src/main/java'
+
+task createJarWin(type: Jar) {
+	from sourceSets.main.output
+	manifest {
+		attributes 'Main-Class': mainClassName
+		attributes 'Class-Path': configurations.windows.files.collect { "lib/${it.name}" }.join(' ')
+	}
+}
+
+task createJarLinux(type: Jar) {
+	from sourceSets.main.output
+	manifest {
+		attributes 'Main-Class': mainClassName
+		attributes 'Class-Path': configurations.linux.files.collect { "lib/${it.name}" }.join(' ')
+	}
+}
+
+task createJarMacOS(type: Jar) {
+	from sourceSets.main.output
+	manifest {
+		attributes 'Main-Class': mainClassName
+		attributes 'Class-Path': configurations.macos.files.collect { "lib/${it.name}" }.join(' ')
+	}
+}
+
+task createBundle {
+	def bundle = "$buildDir/bundle"
+	outputs.dir bundle
+	delete files("$bundle")
+	
+	copy {
+		from "."
+		into bundle
+		include "assets/**"
+		include "config/**"
+		include "const/**"
+		include "shader/*.spv"
+	}
+	ant.propertyfile(file: "$bundle/config/system.properties") {
+		entry( key: 'appVersion', value: version)
+	}
+}
+
+distributions {
+	windows {
+		contents {
+			from createJarWin
+			from createBundle
+			into('lib') {
+				from configurations.windows
+			}
+		}
+	}
+	
+	linux {
+		contents {
+			from createJarLinux
+			from createBundle
+			into('lib') {
+				from configurations.linux
+			}
+		}
+	}
+	
+	macos {
+		contents {
+			from createJarMacOS
+			from createBundle
+			into('lib') {
+				from configurations.macos
+			}
+		}
+	}
 }

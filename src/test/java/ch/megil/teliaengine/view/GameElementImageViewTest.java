@@ -1,17 +1,11 @@
 package ch.megil.teliaengine.view;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import ch.megil.teliaengine.game.GameElement;
 import ch.megil.teliaengine.ui.GameElementImageView;
@@ -28,7 +22,7 @@ public class GameElementImageViewTest {
 	@Before
 	public void setUp() {
 		depiction = mock(Image.class);
-		gameElement = new GameElement(depiction, null);
+		gameElement = new GameElement(depiction, null, null);
 		imageView = new GameElementImageView(gameElement);
 	}
 	

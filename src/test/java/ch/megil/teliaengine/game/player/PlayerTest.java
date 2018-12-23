@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 public class PlayerTest {
 	
@@ -33,7 +34,7 @@ public class PlayerTest {
 
 	@Test
 	public void testUpdate() {
-		var player = new Player(depiction, playerHitbox);
+		var player = new Player(depiction, playerHitbox, Color.BLACK);
 		
 		assertEquals(0, player.getPosition().getX(), 0);
 		assertEquals(0, player.getPosition().getY(), 0);

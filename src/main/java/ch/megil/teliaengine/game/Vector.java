@@ -31,6 +31,14 @@ public class Vector {
 		return new Vector(this.x + vector.x, this.y + vector.y);
 	}
 	
+	public Vector subtract(Vector vector) {
+		return new Vector(this.x - vector.x, this.y - vector.y);
+	}
+	
+	public Vector multiplyByComponent(Vector vector) {
+		return new Vector(this.x * vector.x, this.y * vector.y);
+	}
+	
 	public Vector xVector() {
 		return new Vector(x, 0);
 	}

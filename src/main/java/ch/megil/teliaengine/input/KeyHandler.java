@@ -1,12 +1,11 @@
 package ch.megil.teliaengine.input;
 
+import static org.lwjgl.glfw.GLFW.*;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 
 public class KeyHandler {
 	private EnumSet<VirtualController> pressed;
@@ -48,8 +47,8 @@ public class KeyHandler {
 		return ret;
 	}
 	
-	public void press(KeyEvent e) {
-		var key = convert(e.getCode());
+	public void press(int glfwKey) {
+		var key = convert(glfwKey);
 		synchronized (this) {
 			if (!repeat.contains(key)) {
 				pressed.add(key);
@@ -57,27 +56,27 @@ public class KeyHandler {
 		}
 	}
 	
-	public void release(KeyEvent e) {
-		var key = convert(e.getCode());
+	public void release(int glfwKey) {
+		var key = convert(glfwKey);
 		synchronized (this) {
 			repeat.remove(key);
 			released.add(key);
 		}
 	}
 	
-	private VirtualController convert(KeyCode code) {
+	private VirtualController convert(int glfwKey) {
 		var vCode = VirtualController.NONE;
-		switch (code) {
-			case D:
-			case RIGHT:
+		switch (glfwKey) {
+			case GLFW_KEY_D:
+			case GLFW_KEY_RIGHT:
 				vCode = VirtualController.WALK_RIGHT;
 				break;
-			case A:
-			case LEFT:
+			case GLFW_KEY_A:
+			case GLFW_KEY_LEFT:
 				vCode = VirtualController.WALK_LEFT;
 				break;
-			case W:
-			case UP:
+			case GLFW_KEY_W:
+			case GLFW_KEY_UP:
 				vCode = VirtualController.JUMP;
 				break;
 			default:

@@ -8,6 +8,7 @@ import ch.megil.teliaengine.game.GameElement;
 import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 public class Player extends GameElement{
 	private static Player instance;
@@ -18,8 +19,8 @@ public class Player extends GameElement{
 	private Vector velocity;
 
 	
-	protected Player(Image depiction, Hitbox hitbox) {
-		super(depiction, hitbox);
+	protected Player(Image depiction, Hitbox hitbox, Color color) {
+		super(depiction, hitbox, color);
 		jumpUsed = false;
 		
 		acceleration = Vector.ZERO;
@@ -40,7 +41,7 @@ public class Player extends GameElement{
 		var player = get();
 		var hitboxSize = player.getHitbox().getVectorSize();
 		
-		var enginePlayer = new Player(player.getDepiction(), new Hitbox(player.getPosition(), hitboxSize.getX(), hitboxSize.getY()));
+		var enginePlayer = new Player(player.getDepiction(), new Hitbox(player.getPosition(), hitboxSize.getX(), hitboxSize.getY()), player.getColor());
 		enginePlayer.setPosition(player.getPosition());
 		
 		return enginePlayer;
