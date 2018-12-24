@@ -16,7 +16,6 @@ import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.logging.LogHandler;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 public class GameObjectSaveLoad {
 	public GameObject load(String name) throws AssetNotFoundException, AssetFormatException {
@@ -25,10 +24,11 @@ public class GameObjectSaveLoad {
 		
 		try (var reader = new BufferedReader(new FileReader(file))) {
 			var spec = reader.readLine().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
-			var depiction =  new Rectangle(Double.parseDouble(spec[0]), Double.parseDouble(spec[1]), Color.web(spec[2]));
+			var depiction = new TextureLoader().load(spec[2], Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			var hitbox = new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
+			var color = Color.web(spec[3]);
 			
-			var obj = new GameObject(name, depiction, hitbox);
+			var obj = new GameObject(name, depiction, hitbox, color);
 			
 			return obj;
 		} catch (IOException e) {

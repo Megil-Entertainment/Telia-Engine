@@ -4,35 +4,30 @@ import java.util.List;
 
 import ch.megil.teliaengine.configuration.PhysicsConstants;
 import ch.megil.teliaengine.file.PlayerLoad;
+import ch.megil.teliaengine.game.GameElement;
 import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
-import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
-public final class Player {
+public class Player extends GameElement{
 	private static Player instance;
-	private static Player engine;
 	
-	private Vector position;
-	private Node depiction;
-	private Hitbox hitbox;
 	private boolean jumpUsed;
 	
 	private Vector acceleration;
 	private Vector velocity;
+
 	
-	protected Player(Node depiction, Hitbox hitbox) {
+	protected Player(Image depiction, Hitbox hitbox, Color color) {
+		super(depiction, hitbox, color);
 		jumpUsed = false;
 		
 		acceleration = Vector.ZERO;
 		velocity = Vector.ZERO;
 		
-		this.depiction = depiction;
-		this.hitbox = hitbox;
-		
-		this.position = new Vector(depiction.getLayoutX(), depiction.getLayoutY());
-		
-		this.depiction.layoutXProperty().bindBidirectional(position.xProperty());
-		this.depiction.layoutYProperty().bindBidirectional(position.yProperty());
+		super.setPosition(Vector.ZERO);
+
 	}
 	
 	public static Player get() {
@@ -42,80 +37,52 @@ public final class Player {
 		return instance;
 	}
 	
-	public static Player getEngine() {
-		if (engine == null) {
-			engine = new PlayerLoad().load(Player::new);
-			engine.setPosX(get().getPosX());
-			engine.setPosY(get().getPosY());
-			engine.position.xProperty().addListener((obs, ov, nv) -> get().position.setX(nv.doubleValue()));
-			engine.position.yProperty().addListener((obs, ov, nv) -> get().position.setY(nv.doubleValue()));
-		}
-		return engine;
+	public static Player getEngineCopy() {
+		var player = get();
+		var hitboxSize = player.getHitbox().getVectorSize();
+		
+		var enginePlayer = new Player(player.getDepiction(), new Hitbox(player.getPosition(), hitboxSize.getX(), hitboxSize.getY()), player.getColor());
+		enginePlayer.setPosition(player.getPosition());
+		
+		return enginePlayer;
+	}
+	
+	public void applyForce(Vector f) {
+		acceleration = acceleration.add(f);
 	}
 	
 	public void applyAcceleration(Vector a) {
-		acceleration = acceleration.add(a);
-	}
-	
-	public void applyVelocity(Vector v) {
-		velocity = velocity.add(v);
+		velocity = velocity.add(a);
 	}
 	
 	public void update(List<Hitbox> possibleCollisions) {
 		velocity = velocity.add(acceleration);
 		velocity = new Vector(velocity.getX(), Math.min(velocity.getY(), PhysicsConstants.TERMINAL_FALL_VELOCITY.get().getY()));
-		
+
 		for (var v : velocity.splitToComponentSizeOne()) {
 			//x collision
-			var np = position.add(v.xVector());
-			position.setX(np.getX());
-			position.setY(np.getY());
+			var np = getPosition().add(v.xVector());
+			setPosition(np);
 			if (possibleCollisions.stream().anyMatch(getHitbox()::checkCollision)) {
-				np = position.add(v.xVector().negate());
-				position.setX(np.getX());
-				position.setY(np.getY());
+				np = getPosition().add(v.xVector().negate());
+				setPosition(np);
 			}
 			
 			//y collision
-			np = position.add(v.yVector());
-			position.setX(np.getX());
-			position.setY(np.getY());
+			np = getPosition().add(v.yVector());
+			setPosition(np);
 			if (possibleCollisions.stream().anyMatch(getHitbox()::checkCollision)) {
 				if (v.getY() > 0) {
 					jumpUsed = false;
 					acceleration = new Vector(acceleration.getX(), 0);
 					velocity = new Vector(velocity.getX(), 0);
 				}
-				np = position.add(v.yVector().negate());
-				position.setX(np.getX());
-				position.setY(np.getY());
+				np = getPosition().add(v.yVector().negate());
+				setPosition(np);
 			}
 		}
-	}
-	
-	public double getPosX() {
-		return position.getX();
-	}
-	
-	public void setPosX(double posX) {
-		this.position.setX(posX);
-	}
-
-	public double getPosY() {
-		return position.getY();
-	}
-	
-	public void setPosY(double posY) {
-		this.position.setY(posY);
-	}
-
-	public Node getDepiction() {
-		return depiction;
-	}
-	
-	public Hitbox getHitbox() {
-		hitbox.setOrigin(position);
-		return hitbox;
+		
+		setPosition(getPosition().round());
 	}
 	
 	public boolean isJumpUsed() {

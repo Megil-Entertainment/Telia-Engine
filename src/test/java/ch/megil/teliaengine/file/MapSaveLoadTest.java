@@ -23,6 +23,7 @@ import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
+import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.game.player.Player;
 
 public class MapSaveLoadTest {
@@ -40,6 +41,12 @@ public class MapSaveLoadTest {
 	private static GameObject obj2;
 	@Mock
 	private static Map testMap;
+	@Mock
+	private static Player player;
+	
+	private static Vector vector1;
+	private static Vector vector2;
+	private static Vector playerVector;
 
 	private MapSaveLoad mapSaveLoad;
 
@@ -53,19 +60,23 @@ public class MapSaveLoadTest {
 		}
 		
 		obj1 = mock(GameObject.class);
+		vector1 = new Vector(10.0, 20.0);
 		when(obj1.getName()).thenReturn("red");
-		when(obj1.getPosX()).thenReturn(10.0);
-		when(obj1.getPosY()).thenReturn(20.0);
+		when(obj1.getPosition()).thenReturn(vector1);
 
 		obj2 = mock(GameObject.class);
+		vector2 = new Vector(100.0, 50.0);
 		when(obj2.getName()).thenReturn("blue");
-		when(obj2.getPosX()).thenReturn(100.0);
-		when(obj2.getPosY()).thenReturn(50.0);
+		when(obj2.getPosition()).thenReturn(vector2);
 
 		testMap = mock(Map.class);
 		when(testMap.getWidth()).thenReturn(150.0);
 		when(testMap.getHeight()).thenReturn(100.0);
 		when(testMap.getMapObjects()).thenReturn(Arrays.asList(obj1, obj2));
+		
+		player = mock(Player.class);
+		playerVector = new Vector(20.0, 80.0);
+		when(player.getPosition()).thenReturn(playerVector);
 	}
 	
 	@Before
@@ -74,7 +85,7 @@ public class MapSaveLoadTest {
 		
 		var redObj = testObjectDir.newFile("red.tobj");
 		try (var writer = new BufferedWriter(new FileWriter(redObj))) {
-			writer.write("50.0:60.0:FF0000");
+			writer.write("50.0:60.0:red:#FF0000");
 		}
 		
 		var failObj = testObjectDir.newFile("fail.tobj");
@@ -128,10 +139,8 @@ public class MapSaveLoadTest {
 	@Test
 	public void testSave() throws Exception {
 		when(testMap.getName()).thenReturn(testMapsDir.getRoot().getName() + "/testSave");
-		Player.get().setPosX(20);
-		Player.get().setPosY(80);
 		
-		mapSaveLoad.save(testMap);
+		mapSaveLoad.save(testMap,player);
 		var file = testMapsDir.getRoot().listFiles((f, n) -> n.startsWith("testSave."))[0];
 
 		try (var reader = new BufferedReader(new FileReader(file))) {
@@ -150,8 +159,8 @@ public class MapSaveLoadTest {
 		assertEquals(mapName, map.getName());
 		assertEquals(100.0, map.getWidth(), 0);
 		assertEquals(70.0, map.getHeight(), 0);
-		assertEquals(15.0, Player.get().getPosX(), 0);
-		assertEquals(10.0, Player.get().getPosY(), 0);
+		assertEquals(15.0, Player.get().getPosition().getX(), 0);
+		assertEquals(10.0, Player.get().getPosition().getY(), 0);
 
 		assertEquals(2, map.getMapObjects().size());
 	}
@@ -188,8 +197,8 @@ public class MapSaveLoadTest {
 		assertEquals(mapName, map.getName());
 		assertEquals(100.0, map.getWidth(), 0);
 		assertEquals(70.0, map.getHeight(), 0);
-		assertEquals(15.0, Player.get().getPosX(), 0);
-		assertEquals(10.0, Player.get().getPosY(), 0);
+		assertEquals(15.0, Player.get().getPosition().getX(), 0);
+		assertEquals(10.0, Player.get().getPosition().getY(), 0);
 
 		assertEquals(4, map.getMapObjects().size());
 	}

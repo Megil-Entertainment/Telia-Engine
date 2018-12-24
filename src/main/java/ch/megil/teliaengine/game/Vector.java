@@ -4,69 +4,90 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-
 public class Vector {
 	public static final Vector ZERO = new Vector(0, 0);
 	
-	private DoubleProperty x;
-	private DoubleProperty y;
+	private double x;
+	private double y;
 	
 	public Vector(double x, double y) {
-		this.x = new SimpleDoubleProperty(x);
-		this.y = new SimpleDoubleProperty(y);
+		this.x = x;
+		this.y = y;
 	}
-	
+
 	public double getX() {
-		return x.get();
-	}
-	
-	public void setX(double x) {
-		this.x.set(x);
-	}
-	
-	public DoubleProperty xProperty() {
 		return x;
 	}
 	
 	public double getY() {
-		return y.get();
-	}
-	
-	public void setY(double y) {
-		this.y.set(y);
-	}
-	
-	public DoubleProperty yProperty() {
 		return y;
 	}
 	
 	public Vector negate() {
-		return new Vector(-getX(), -getY());
+		return new Vector(-x, -y);
 	}
 	
 	public Vector add(Vector vector) {
-		return new Vector(this.getX() + vector.getX(), this.getY() + vector.getY());
+		return new Vector(this.x + vector.x, this.y + vector.y);
+	}
+	
+	public Vector subtract(Vector vector) {
+		return new Vector(this.x - vector.x, this.y - vector.y);
+	}
+	
+	public Vector multiplyByComponent(Vector vector) {
+		return new Vector(this.x * vector.x, this.y * vector.y);
 	}
 	
 	public Vector xVector() {
-		return new Vector(getX(), 0);
+		return new Vector(x, 0);
 	}
 	
 	public Vector yVector() {
-		return new Vector(0, getY());
+		return new Vector(0, y);
 	}
 	
 	public List<Vector> splitToComponentSizeOne() {
-		var tx = (int) Math.abs(getX());
-		var ty = (int) Math.abs(getY());
+		var tx = (int) Math.abs(x);
+		var ty = (int) Math.abs(y);
 		if (tx == 0 && ty == 0) {
 			return new ArrayList<>();
 		} else if (tx > ty) {
-			return Collections.nCopies(tx, new Vector(getX()/tx, getY()/tx));
+			return Collections.nCopies(tx, new Vector(x/tx, y/tx));
 		} else {
-			return Collections.nCopies(ty, new Vector(getX()/ty, getY()/ty));
+			return Collections.nCopies(ty, new Vector(x/ty, y/ty));
 		}
+	}
+	
+	public Vector round() {
+		return new Vector(Math.round(x), Math.round(y));
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(x);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(y);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Vector other = (Vector) obj;
+		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
+			return false;
+		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
+			return false;
+		return true;
 	}
 }

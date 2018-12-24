@@ -1,70 +1,80 @@
 package ch.megil.teliaengine.game.player;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import ch.megil.teliaengine.game.Hitbox;
-import javafx.scene.Node;
-import javafx.scene.shape.Rectangle;
+import ch.megil.teliaengine.game.Vector;
+import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 public class PlayerTest {
-	private Node depiction;
-	private Hitbox hitbox;
+	
+	@Mock
+	private Image depiction;
+	private Hitbox playerHitbox;
+	
+	private List<Hitbox> collision;
 	
 	@Before
 	public void setUp() throws Exception {
-		depiction = new Rectangle(50, 50);
-		hitbox = new Hitbox(null, 50, 50);
+		depiction = mock(Image.class);
+		playerHitbox = new Hitbox(Vector.ZERO, 50, 50);
+		
+		collision = new ArrayList<>();
+		collision.add(new Hitbox(new Vector(0, 83), 100, 50));
 	}
 
 	@Test
-	public void testPlayer() {
-		depiction.setLayoutX(10);
-		depiction.setLayoutY(20);
-
-		var player = new Player(depiction, hitbox);
-		player.setPosX(5);
-		player.setPosY(15);
-
-		assertEquals(depiction, player.getDepiction());
-		assertEquals(5, player.getPosX(), 0);
-		assertEquals(15, player.getPosY(), 0);
-		assertEquals(5, depiction.getLayoutX(), 0);
-		assertEquals(15, depiction.getLayoutY(), 0);
-	}
-	
-	@Test
-	public void testPositionBinding() {
-		var player = new Player(depiction, hitbox);
-		player.setPosX(0);
-		player.setPosY(0);
-
-		assertEquals(0, player.getPosX(), 0);
-		assertEquals(0, player.getPosY(), 0);
-
-		depiction.setLayoutX(5);
-		depiction.setLayoutY(15);
-
-		assertEquals(5, player.getPosX(), 0);
-		assertEquals(15, player.getPosY(), 0);
+	public void testUpdate() {
+		var player = new Player(depiction, playerHitbox, Color.BLACK);
 		
-		player.setPosX(15);
-		player.setPosY(5);
-
-		assertEquals(15, depiction.getLayoutX(), 0);
-		assertEquals(5, depiction.getLayoutY(), 0);
-	}
-	
-	@Test
-	public void testHitbox() {
-		var player = new Player(depiction, hitbox);
+		assertEquals(0, player.getPosition().getX(), 0);
+		assertEquals(0, player.getPosition().getY(), 0);
 		
-		player.setPosX(20);
-		player.setPosY(30);
+		player.applyForce(new Vector(5, 3));
+		player.update(collision);
+		assertEquals(5, player.getPosition().getX(), 0);
+		assertEquals(3, player.getPosition().getY(), 0);
 		
-		assertEquals(20, player.getHitbox().getOrigin().getX(), 0);
-		assertEquals(30, player.getHitbox().getOrigin().getY(), 0);
+		player.update(collision);
+		assertEquals(15, player.getPosition().getX(), 0);
+		assertEquals(9, player.getPosition().getY(), 0);
+		
+		player.applyForce(new Vector(-5, -3));
+		player.update(collision);
+		assertEquals(25, player.getPosition().getX(), 0);
+		assertEquals(15, player.getPosition().getY(), 0);
+		
+		player.applyAcceleration(new Vector(-10, -6));
+		player.update(collision);
+		assertEquals(25, player.getPosition().getX(), 0);
+		assertEquals(15, player.getPosition().getY(), 0);
+		
+		player.update(collision);
+		assertEquals(25, player.getPosition().getX(), 0);
+		assertEquals(15, player.getPosition().getY(), 0);
+		
+		player.applyForce(new Vector(0, 5));
+		player.applyAcceleration(new Vector(3, 2));
+		player.update(collision);
+		assertEquals(28, player.getPosition().getX(), 0);
+		assertEquals(22, player.getPosition().getY(), 0);
+		
+		player.applyForce(new Vector(0, -5));
+		player.update(collision);
+		assertEquals(31, player.getPosition().getX(), 0);
+		assertEquals(29, player.getPosition().getY(), 0);
+		
+		player.update(collision);
+		assertEquals(34, player.getPosition().getX(), 0);
+		assertEquals(33, player.getPosition().getY(), 0);
 	}
 }

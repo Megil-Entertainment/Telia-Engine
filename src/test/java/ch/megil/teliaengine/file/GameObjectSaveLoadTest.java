@@ -39,7 +39,7 @@ public class GameObjectSaveLoadTest {
 
 		var red = testObjectDir.newFile("red.tobj");
 		try (var writer = new BufferedWriter(new FileWriter(red))) {
-			writer.write("50.0:60.0:FF0000");
+			writer.write("50.0:60.0:red:#FF0000");
 		}
 		
 		var fail = testObjectDir.newFile("fail.tobj");
@@ -53,11 +53,10 @@ public class GameObjectSaveLoadTest {
 		var obj = gameObjectSaveLoad.load(testObjectDir.getRoot().getName() + "/red");
 
 		assertEquals(testObjectDir.getRoot().getName() + "/red", obj.getName());
-		assertEquals(0.0, obj.getPosX(), 0);
-		assertEquals(0.0, obj.getPosY(), 0);
-		assertEquals(50.0, ((Rectangle) obj.getDepiction()).getWidth(), 0);
-		assertEquals(60.0, ((Rectangle) obj.getDepiction()).getHeight(), 0);
-		assertEquals(Color.RED, ((Rectangle) obj.getDepiction()).getFill());
+		assertEquals(0.0, obj.getPosition().getX(), 0);
+		assertEquals(0.0, obj.getPosition().getY(), 0);
+		assertEquals(50.0, (obj.getDepiction()).getWidth(), 0);
+		assertEquals(60.0, (obj.getDepiction()).getHeight(), 0);
 	}
 	
 	@Test(expected = AssetNotFoundException.class)

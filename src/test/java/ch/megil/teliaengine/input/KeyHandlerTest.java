@@ -1,28 +1,22 @@
 package ch.megil.teliaengine.input;
 
 import static org.junit.Assert.assertEquals;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT;
 
 import java.util.EnumSet;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-
 public class KeyHandlerTest {
-	private KeyEvent keyRight;
-	private KeyEvent keyLeft;
+	private int keyRight;
+	private int keyLeft;
 
-	private KeyEvent create(KeyCode code) {
-		return new KeyEvent(null, null, KeyEvent.KEY_PRESSED, null, null, code, false, false, false, false);
-	}
-	
 	@Before
 	public void setUp() throws Exception {
-		keyRight = create(KeyCode.RIGHT);
-
-		keyLeft = create(KeyCode.LEFT);
+		keyRight = GLFW_KEY_RIGHT;
+		keyLeft = GLFW_KEY_LEFT;
 	}
 
 	@Test
