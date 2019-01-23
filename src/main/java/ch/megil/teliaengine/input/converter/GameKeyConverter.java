@@ -10,7 +10,7 @@ import ch.megil.teliaengine.input.VirtualController;
 public class GameKeyConverter implements KeyConverter {
 	private Map<Integer, VirtualController> keyboad;
 	private Map<Integer, VirtualController> gamepadButtons;
-	private Map<Integer, AxisInput> gamepadAxes;
+	private Map<AxisInput, VirtualController> gamepadAxes;
 	
 	public GameKeyConverter() {
 		keyboad = new HashMap<>();
@@ -25,8 +25,8 @@ public class GameKeyConverter implements KeyConverter {
 		gamepadButtons.put(GLFW_GAMEPAD_BUTTON_A, VirtualController.JUMP);
 		
 		gamepadAxes = new HashMap<>();
-		gamepadAxes.put(GLFW_GAMEPAD_AXIS_LEFT_X, new AxisInput(VirtualController.WALK_LEFT, -1f, -0.85f));
-		gamepadAxes.put(GLFW_GAMEPAD_AXIS_LEFT_X, new AxisInput(VirtualController.WALK_RIGHT, 0.85f, 1f));
+		gamepadAxes.put(new AxisInput(GLFW_GAMEPAD_AXIS_LEFT_X, -1f, -0.85f), VirtualController.WALK_LEFT);
+		gamepadAxes.put(new AxisInput(GLFW_GAMEPAD_AXIS_LEFT_X, 0.85f, 1f), VirtualController.WALK_RIGHT);
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class GameKeyConverter implements KeyConverter {
 	}
 
 	@Override
-	public Map<Integer, AxisInput> getGamepadAxes() {
+	public Map<AxisInput, VirtualController> getGamepadAxes() {
 		return gamepadAxes;
 	}
 }

@@ -1,20 +1,18 @@
 package ch.megil.teliaengine.input.converter;
 
-import ch.megil.teliaengine.input.VirtualController;
-
 public class AxisInput {
-	private VirtualController input;
+	private int glfwGamepadAxis;
 	private float minValue;
 	private float maxValue;
 	
-	public AxisInput(VirtualController input, float minValue, float maxValue) {
-		this.input = input;
+	public AxisInput(int glfwGamepadAxis, float minValue, float maxValue) {
+		this.glfwGamepadAxis = glfwGamepadAxis;
 		this.minValue = minValue;
 		this.maxValue = maxValue;
 	}
 	
-	public VirtualController getInput() {
-		return input;
+	public int getGlfwGamepadAxis() {
+		return glfwGamepadAxis;
 	}
 	
 	public boolean isInThreshold(float value) {

@@ -7,5 +7,5 @@ import ch.megil.teliaengine.input.VirtualController;
 public interface KeyConverter {
 	public Map<Integer, VirtualController> getKeyboad();
 	public Map<Integer, VirtualController> getGamepadButtons();
-	public Map<Integer, AxisInput> getGamepadAxes();
+	public Map<AxisInput, VirtualController> getGamepadAxes();
 }

@@ -70,10 +70,10 @@ public class InputHandler {
 		var axesMapping = keyConverter.getGamepadAxes();
 		
 		for (var axis : axesMapping.entrySet()) {
-			if (axis.getValue().isInThreshold(axesState.get(axis.getKey()))) {
-				startInput(axis.getValue().getInput());
+			if (axis.getKey().isInThreshold(axesState.get(axis.getKey().getGlfwGamepadAxis()))) {
+				startInput(axis.getValue());
 			} else {
-				endInput(axis.getValue().getInput());
+				endInput(axis.getValue());
 			}
 		}
 	}
