@@ -14,10 +14,8 @@ public class GameLoop extends AnimationTimer {
 	private static GameLoop instance;
 	
 	private long lastRun;
-	private KeyHandler keyHandler;
 	
 	protected GameLoop() {
-		keyHandler = new KeyHandler();
 	}
 	
 	public static GameLoop get() {
@@ -28,7 +26,7 @@ public class GameLoop extends AnimationTimer {
 	}
 	
 	public void runInputs() {
-		var strokes = keyHandler.getKeyStrokes();
+//		var strokes = keyHandler.getKeyStrokes();
 		var pressed = strokes.get(0);
 		var released = strokes.get(1);
 		
@@ -75,9 +73,5 @@ public class GameLoop extends AnimationTimer {
 			Player.get().applyForce(PhysicsConstants.GRAVITY.get());
 			Player.get().update(GameState.get().getMap().getMapObjects().stream().map(GameObject::getHitbox).collect(Collectors.toList()));
 		}
-	}
-	
-	public KeyHandler getKeyHandler() {
-		return keyHandler;
 	}
 }
