@@ -5,7 +5,8 @@ import java.util.stream.Collectors;
 import ch.megil.teliaengine.configuration.PhysicsConstants;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.player.Player;
-import ch.megil.teliaengine.input.KeyHandler;
+import ch.megil.teliaengine.input.InputHandler;
+import ch.megil.teliaengine.input.converter.GameKeyConverter;
 import javafx.animation.AnimationTimer;
 
 public class GameLoop extends AnimationTimer {
@@ -14,8 +15,10 @@ public class GameLoop extends AnimationTimer {
 	private static GameLoop instance;
 	
 	private long lastRun;
+	private InputHandler inputHandler;
 	
 	protected GameLoop() {
+		this.inputHandler = new InputHandler(new GameKeyConverter());
 	}
 	
 	public static GameLoop get() {
@@ -26,7 +29,7 @@ public class GameLoop extends AnimationTimer {
 	}
 	
 	public void runInputs() {
-//		var strokes = keyHandler.getKeyStrokes();
+		var strokes = inputHandler.getInputs();
 		var pressed = strokes.get(0);
 		var released = strokes.get(1);
 		
@@ -73,5 +76,9 @@ public class GameLoop extends AnimationTimer {
 			Player.get().applyForce(PhysicsConstants.GRAVITY.get());
 			Player.get().update(GameState.get().getMap().getMapObjects().stream().map(GameObject::getHitbox).collect(Collectors.toList()));
 		}
+	}
+	
+	public InputHandler getInputHandler() {
+		return inputHandler;
 	}
 }

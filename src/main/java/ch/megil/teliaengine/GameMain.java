@@ -163,7 +163,7 @@ public class GameMain {
 	
 	private void initKeyhandling() {
 		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-			//TODO: add keycallback
+			GameLoop.get().getInputHandler().registerKeyAction(key, action);
 		});
 	}
 	
