@@ -40,7 +40,9 @@ public class InputHandler {
 		
 		synchronized (this) {
 			ret.add(startInput.clone());
+			startInput.clear();
 			ret.add(endInput.clone());
+			endInput.clear();
 		}
 		
 		return ret;
