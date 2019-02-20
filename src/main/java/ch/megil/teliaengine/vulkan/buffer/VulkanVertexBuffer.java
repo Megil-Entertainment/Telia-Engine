@@ -1,15 +1,15 @@
-package ch.megil.teliaengine.vulkan;
+package ch.megil.teliaengine.vulkan.buffer;
 
 import static org.lwjgl.system.MemoryUtil.memAddress;
 import static org.lwjgl.system.MemoryUtil.memAlloc;
 import static org.lwjgl.system.MemoryUtil.memFree;
-import static org.lwjgl.vulkan.VK10.VK_FORMAT_R32G32B32_SFLOAT;
-import static org.lwjgl.vulkan.VK10.VK_FORMAT_R32G32_SFLOAT;
-import static org.lwjgl.vulkan.VK10.VK_VERTEX_INPUT_RATE_VERTEX;
+import static org.lwjgl.vulkan.VK10.*;
 
 import org.lwjgl.vulkan.VkVertexInputAttributeDescription;
 import org.lwjgl.vulkan.VkVertexInputBindingDescription;
 
+import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
+import ch.megil.teliaengine.vulkan.VulkanPhysicalDevice;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 import ch.megil.teliaengine.vulkan.obj.VulkanObject;
 
@@ -34,7 +34,7 @@ public class VulkanVertexBuffer extends VulkanBuffer {
 	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
 	 */
 	public void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, int maxVertecies) throws VulkanException {
-		super.init(physicalDevice, logicalDevice, VERTEX_SIZE*maxVertecies);
+		super.init(physicalDevice, logicalDevice, VERTEX_SIZE*maxVertecies, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_SHARING_MODE_EXCLUSIVE, (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
 		this.maxVertecies = maxVertecies;
 		clearBuffer(logicalDevice);
 	}

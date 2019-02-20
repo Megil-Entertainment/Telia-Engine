@@ -10,6 +10,7 @@ import java.nio.LongBuffer;
 
 import org.lwjgl.vulkan.*;
 
+import ch.megil.teliaengine.vulkan.buffer.VulkanVertexBuffer;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
 /**

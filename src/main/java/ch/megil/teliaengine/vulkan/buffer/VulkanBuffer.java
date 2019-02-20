@@ -1,4 +1,4 @@
-package ch.megil.teliaengine.vulkan;
+package ch.megil.teliaengine.vulkan.buffer;
 
 import static org.lwjgl.system.MemoryUtil.memAllocLong;
 import static org.lwjgl.system.MemoryUtil.memAllocPointer;
@@ -6,12 +6,10 @@ import static org.lwjgl.system.MemoryUtil.memCopy;
 import static org.lwjgl.system.MemoryUtil.memFree;
 import static org.lwjgl.vulkan.VK10.*;
 
-import org.lwjgl.vulkan.VkBufferCreateInfo;
-import org.lwjgl.vulkan.VkMemoryAllocateInfo;
-import org.lwjgl.vulkan.VkMemoryRequirements;
-import org.lwjgl.vulkan.VkPhysicalDevice;
-import org.lwjgl.vulkan.VkPhysicalDeviceMemoryProperties;
+import org.lwjgl.vulkan.*;
 
+import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
+import ch.megil.teliaengine.vulkan.VulkanPhysicalDevice;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
 /**
@@ -34,13 +32,16 @@ public abstract class VulkanBuffer {
 	 * @param physicalDevice An initialized {@link VulkanPhysicalDevice}
 	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
 	 * @param size bytesize of the buffer
+	 * @param usage of the buffer (see {@link VK10#VK_BUFFER_USAGE_INDEX_BUFFER_BIT})
+	 * @param sharingMode of the buffer (see {@link VK10#VK_SHARING_MODE_EXCLUSIVE})
+	 * @param properties of the buffer (see {@link VK10#VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT})
 	 */
-	protected void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, long size) throws VulkanException {
+	protected void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, long size, int usage, int sharingMode, int properties) throws VulkanException {
 		var bufferInfo = VkBufferCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO)
 				.size(size)
-				.usage(VK_BUFFER_USAGE_INDEX_BUFFER_BIT)
-				.sharingMode(VK_SHARING_MODE_EXCLUSIVE);
+				.usage(usage)
+				.sharingMode(sharingMode);
 		
         var memoryRequirements = VkMemoryRequirements.calloc();
 		var memoryAllocInfo = VkMemoryAllocateInfo.calloc();
@@ -58,7 +59,7 @@ public abstract class VulkanBuffer {
 			
 			vkGetBufferMemoryRequirements(logicalDevice.get(), buffer, memoryRequirements);
 			
-			var properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+//			var properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 			var memoryType = findMemoryType(physicalDevice.get(), memoryRequirements.memoryTypeBits(), properties);
 			
 			bufferSize = memoryRequirements.size();

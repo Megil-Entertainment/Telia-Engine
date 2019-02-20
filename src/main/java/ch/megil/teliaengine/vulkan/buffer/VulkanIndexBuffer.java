@@ -1,5 +1,12 @@
-package ch.megil.teliaengine.vulkan;
+package ch.megil.teliaengine.vulkan.buffer;
 
+import static org.lwjgl.vulkan.VK10.VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+import static org.lwjgl.vulkan.VK10.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+import static org.lwjgl.vulkan.VK10.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+import static org.lwjgl.vulkan.VK10.VK_SHARING_MODE_EXCLUSIVE;
+
+import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
+import ch.megil.teliaengine.vulkan.VulkanPhysicalDevice;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 import ch.megil.teliaengine.vulkan.obj.VulkanObject;
 
@@ -17,7 +24,7 @@ public class VulkanIndexBuffer extends VulkanBuffer {
 	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
 	 */
 	public void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, int maxIndicies) throws VulkanException {
-		super.init(physicalDevice, logicalDevice, INDEX_SIZE*maxIndicies);
+		super.init(physicalDevice, logicalDevice, INDEX_SIZE*maxIndicies, VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_SHARING_MODE_EXCLUSIVE, (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
 		this.maxIndicies = maxIndicies;
 	}
 	

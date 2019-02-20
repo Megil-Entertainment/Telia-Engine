@@ -5,8 +5,8 @@ import java.nio.ShortBuffer;
 
 import ch.megil.teliaengine.game.GameElement;
 import ch.megil.teliaengine.game.Vector;
-import ch.megil.teliaengine.vulkan.VulkanIndexBuffer;
-import ch.megil.teliaengine.vulkan.VulkanVertexBuffer;
+import ch.megil.teliaengine.vulkan.buffer.VulkanIndexBuffer;
+import ch.megil.teliaengine.vulkan.buffer.VulkanVertexBuffer;
 import ch.megil.teliaengine.vulkan.obj.VulkanObject;
 
 public abstract class VulkanElement extends VulkanObject {
