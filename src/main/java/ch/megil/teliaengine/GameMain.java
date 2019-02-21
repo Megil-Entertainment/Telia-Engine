@@ -19,6 +19,7 @@ import org.lwjgl.vulkan.VkSubmitInfo;
 
 import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.file.MapSaveLoad;
+import ch.megil.teliaengine.file.VulkanTextureLoader;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.Map;
@@ -104,6 +105,8 @@ public class GameMain {
 		
 		try {
 			init();
+			//TODO: remove when finished with texture loader
+			new VulkanTextureLoader().load(physicalDevice, logicalDevice, "player", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
 			vertexBuffer.writeVertecies(logicalDevice, map);
 			indexBuffer.writeIndicies(logicalDevice, map);
 			vertexBuffer.writeVertecies(logicalDevice, player, map.getNumberOfVertecies());
@@ -112,6 +115,9 @@ public class GameMain {
 			GameLoop.get().start();
 			initKeyhandling();
 			loop();
+		} catch (AssetNotFoundException e) {
+			//TODO: remove when finished with texture loader
+			e.printStackTrace();
 		} finally {
 			cleanUp();
 			map.free();
