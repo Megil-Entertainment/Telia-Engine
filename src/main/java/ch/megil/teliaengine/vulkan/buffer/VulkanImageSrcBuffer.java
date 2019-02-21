@@ -11,7 +11,6 @@ import java.nio.ByteBuffer;
 import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
 import ch.megil.teliaengine.vulkan.VulkanPhysicalDevice;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
-import ch.megil.teliaengine.vulkan.obj.VulkanObject;
 
 public class VulkanImageSrcBuffer extends VulkanBuffer {
 	/**
