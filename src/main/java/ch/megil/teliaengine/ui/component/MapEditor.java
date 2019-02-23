@@ -6,12 +6,16 @@ import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.ui.GameElementImageView;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -22,6 +26,7 @@ public class MapEditor extends Pane {
 	private static final double KEY_INPUT_HIDDEN_SIZE = 50;
 	private static final double KEY_INPUT_HIDDEN_OFFSET = -50;
 	private static final Color INNER_SHADOW_COLOR = Color.CORNFLOWERBLUE;
+	private static Background EDITOR_BACKGROUND = new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY));
 	
 	private Map map;
 	private Player player;
@@ -40,6 +45,7 @@ public class MapEditor extends Pane {
 	private TextArea hiddenKeyInput;
 	
 	public MapEditor() {
+		this.setBackground(EDITOR_BACKGROUND);
 		hiddenKeyInput = new TextArea();
 		getChildren().add(hiddenKeyInput);
 		hiddenKeyInput.setEditable(false);
@@ -161,6 +167,7 @@ public class MapEditor extends Pane {
 	
 	public void onMoveMap(MouseEvent event) {
 		if(event.isSecondaryButtonDown()) {
+			MapEditor.this.setBackground(EDITOR_BACKGROUND);
 			var clip = (Rectangle) getClip();
 			setTranslateX(event.getSceneX() + dx);
 			setTranslateY(event.getSceneY() + dy);
