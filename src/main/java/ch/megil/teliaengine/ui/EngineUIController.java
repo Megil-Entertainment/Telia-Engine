@@ -102,20 +102,28 @@ public class EngineUIController {
 	
 	@FXML
 	private void gameRun() {
-		fileSaveMap();
-		var stage = new Stage();
-		try {
-			var main = new GameMain(mapEditor.getMap().getName());
-			main.run();
-		} catch (Exception e) {
-			stage.hide();
-			LogHandler.log(e, Level.SEVERE);
-			
+		if(mapEditor.getMap() == null) {
 			var alert = new Alert(AlertType.ERROR);
-			alert.setTitle("Load Error");
+			alert.setTitle("Run Error");
 			alert.setHeaderText(null);
-			alert.setContentText("There was an error while loading the game.");
+			alert.setContentText("Game can not be runned without an active map");
 			alert.showAndWait();
+		}else {
+			fileSaveMap();
+			var stage = new Stage();
+			try {
+				var main = new GameMain(mapEditor.getMap().getName());
+				main.run();
+			} catch (Exception e) {
+				stage.hide();
+				LogHandler.log(e, Level.SEVERE);
+			
+				var alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Load Error");
+				alert.setHeaderText(null);
+				alert.setContentText("There was an error while loading the game.");
+				alert.showAndWait();
+			}
 		}
 	}
 
