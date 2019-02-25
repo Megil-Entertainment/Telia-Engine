@@ -3,9 +3,7 @@ package ch.megil.teliaengine.game;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.scene.paint.Color;
-
-public class Map{
+public class Map {
 	private String name;
 	private double width;
 	private double height;
