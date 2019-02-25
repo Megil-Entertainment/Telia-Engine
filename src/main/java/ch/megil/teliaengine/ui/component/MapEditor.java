@@ -6,6 +6,7 @@ import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.ui.GameElementImageView;
 import javafx.collections.ListChangeListener;
+import javafx.css.Style;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
@@ -26,7 +27,8 @@ public class MapEditor extends Pane {
 	private static final double KEY_INPUT_HIDDEN_SIZE = 50;
 	private static final double KEY_INPUT_HIDDEN_OFFSET = -50;
 	private static final Color INNER_SHADOW_COLOR = Color.CORNFLOWERBLUE;
-	private static Background EDITOR_BACKGROUND = new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY));
+	private static final Color MAP_BACKGROUND = Color.WHITE;
+	private static final Color MAP_BACKGROUND_STROKE = Color.BLACK;
 	
 	private Map map;
 	private Player player;
@@ -43,9 +45,9 @@ public class MapEditor extends Pane {
 	private GameElementImageView selected;
 	
 	private TextArea hiddenKeyInput;
+	private Rectangle mapBackground;
 	
 	public MapEditor() {
-		this.setBackground(EDITOR_BACKGROUND);
 		hiddenKeyInput = new TextArea();
 		getChildren().add(hiddenKeyInput);
 		hiddenKeyInput.setEditable(false);
@@ -56,6 +58,7 @@ public class MapEditor extends Pane {
 		var clip = new Rectangle();
 		clip.widthProperty().bind(this.widthProperty());
 		clip.heightProperty().bind(this.heightProperty());
+		clip.setEffect(nodeSelected);
 		setClip(clip);
 		setOnMousePressed(this::onClickMap);
 		setOnMouseDragged(this::onMoveMap);
@@ -86,7 +89,7 @@ public class MapEditor extends Pane {
 	
 	public void onClickNode(MouseEvent event) {
 		hiddenKeyInput.requestFocus();
-		if (event.isPrimaryButtonDown()) {
+		if (event.isPrimaryButtonDown() && event.getSource() != mapBackground) {
 			var source = (GameElementImageView) event.getSource();
 			if(selected != null) {
 				selected.setEffect(nodeDeselected);
@@ -154,7 +157,7 @@ public class MapEditor extends Pane {
 	}
 	
 	public void onMoveNode(MouseEvent event) {
-		if(event.isPrimaryButtonDown()) {
+		if(event.isPrimaryButtonDown() && event.getSource() != mapBackground) {
 			var source = (GameElementImageView) event.getSource();
 			source.setImageViewLayoutX(
 					roundToNearest((event.getSceneX() + dx), gridWidth));
@@ -167,7 +170,6 @@ public class MapEditor extends Pane {
 	
 	public void onMoveMap(MouseEvent event) {
 		if(event.isSecondaryButtonDown()) {
-			MapEditor.this.setBackground(EDITOR_BACKGROUND);
 			var clip = (Rectangle) getClip();
 			setTranslateX(event.getSceneX() + dx);
 			setTranslateY(event.getSceneY() + dy);
@@ -204,6 +206,14 @@ public class MapEditor extends Pane {
 		getChildren().add(hiddenKeyInput);
 		
 		this.map = map;
+		
+		mapBackground = new Rectangle();
+		mapBackground.setWidth(map.getWidth());
+		mapBackground.setHeight(map.getHeight());
+		mapBackground.setFill(MAP_BACKGROUND);
+		mapBackground.setStroke(MAP_BACKGROUND_STROKE);
+		getChildren().add(mapBackground);
+		
 		map.getMapObjects().forEach(o -> getChildren().add(new GameElementImageView(o)));
 		this.player = Player.getEngineCopy();
 		getChildren().add(new GameElementImageView(player));
