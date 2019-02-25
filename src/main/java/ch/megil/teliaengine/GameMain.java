@@ -107,6 +107,7 @@ public class GameMain {
 			init();
 			//TODO: remove when finished with texture loader
 			new VulkanTextureLoader().load(physicalDevice, logicalDevice, "player", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
+			
 			vertexBuffer.writeVertecies(logicalDevice, map);
 			indexBuffer.writeIndicies(logicalDevice, map);
 			vertexBuffer.writeVertecies(logicalDevice, player, map.getNumberOfVertecies());

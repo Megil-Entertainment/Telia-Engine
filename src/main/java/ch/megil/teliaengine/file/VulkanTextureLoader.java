@@ -12,6 +12,7 @@ import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
 import ch.megil.teliaengine.vulkan.VulkanPhysicalDevice;
 import ch.megil.teliaengine.vulkan.buffer.VulkanImageSrcBuffer;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
+import ch.megil.teliaengine.vulkan.image.VulkanTexture;
 
 public class VulkanTextureLoader {
 	public void load(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, String name, double width, double height) throws AssetNotFoundException, VulkanException {
@@ -40,6 +41,7 @@ public class VulkanTextureLoader {
 			memFree(pTexWidth);
 		}
 		
-		//TODO: create image
+		var image = new VulkanTexture();
+		image.init(physicalDevice, logicalDevice, texWidth, texHeight);
 	}
 }
