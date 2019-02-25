@@ -22,6 +22,8 @@ public class MapEditor extends Pane {
 	private static final double KEY_INPUT_HIDDEN_SIZE = 50;
 	private static final double KEY_INPUT_HIDDEN_OFFSET = -50;
 	private static final Color INNER_SHADOW_COLOR = Color.CORNFLOWERBLUE;
+	private static final Color MAP_BACKGROUND = Color.WHITE;
+	private static final Color MAP_BACKGROUND_STROKE = Color.BLACK;
 	
 	private Map map;
 	private Player player;
@@ -38,6 +40,7 @@ public class MapEditor extends Pane {
 	private GameElementImageView selected;
 	
 	private TextArea hiddenKeyInput;
+	private Rectangle mapBackground;
 	
 	public MapEditor() {
 		hiddenKeyInput = new TextArea();
@@ -47,6 +50,9 @@ public class MapEditor extends Pane {
 		hiddenKeyInput.setLayoutX(KEY_INPUT_HIDDEN_OFFSET);
 		hiddenKeyInput.setLayoutY(KEY_INPUT_HIDDEN_OFFSET);
 		hiddenKeyInput.setOnKeyReleased(this::onKeyPressed);
+		mapBackground = new Rectangle();
+		mapBackground.setFill(MAP_BACKGROUND);
+		mapBackground.setStroke(MAP_BACKGROUND_STROKE);
 		var clip = new Rectangle();
 		clip.widthProperty().bind(this.widthProperty());
 		clip.heightProperty().bind(this.heightProperty());
@@ -80,7 +86,7 @@ public class MapEditor extends Pane {
 	
 	public void onClickNode(MouseEvent event) {
 		hiddenKeyInput.requestFocus();
-		if (event.isPrimaryButtonDown()) {
+		if (event.isPrimaryButtonDown() && event.getSource() != mapBackground) {
 			var source = (GameElementImageView) event.getSource();
 			if(selected != null) {
 				selected.setEffect(nodeDeselected);
@@ -148,7 +154,7 @@ public class MapEditor extends Pane {
 	}
 	
 	public void onMoveNode(MouseEvent event) {
-		if(event.isPrimaryButtonDown()) {
+		if(event.isPrimaryButtonDown() && event.getSource() != mapBackground) {
 			var source = (GameElementImageView) event.getSource();
 			source.setImageViewLayoutX(
 					roundToNearest((event.getSceneX() + dx), gridWidth));
@@ -197,6 +203,11 @@ public class MapEditor extends Pane {
 		getChildren().add(hiddenKeyInput);
 		
 		this.map = map;
+		
+		mapBackground.setWidth(map.getWidth());
+		mapBackground.setHeight(map.getHeight());
+		getChildren().add(mapBackground);
+		
 		map.getMapObjects().forEach(o -> getChildren().add(new GameElementImageView(o)));
 		this.player = Player.getEngineCopy();
 		getChildren().add(new GameElementImageView(player));
