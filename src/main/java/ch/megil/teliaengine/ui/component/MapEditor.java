@@ -50,6 +50,9 @@ public class MapEditor extends Pane {
 		hiddenKeyInput.setLayoutX(KEY_INPUT_HIDDEN_OFFSET);
 		hiddenKeyInput.setLayoutY(KEY_INPUT_HIDDEN_OFFSET);
 		hiddenKeyInput.setOnKeyReleased(this::onKeyPressed);
+		mapBackground = new Rectangle();
+		mapBackground.setFill(MAP_BACKGROUND);
+		mapBackground.setStroke(MAP_BACKGROUND_STROKE);
 		var clip = new Rectangle();
 		clip.widthProperty().bind(this.widthProperty());
 		clip.heightProperty().bind(this.heightProperty());
@@ -201,11 +204,8 @@ public class MapEditor extends Pane {
 		
 		this.map = map;
 		
-		mapBackground = new Rectangle();
 		mapBackground.setWidth(map.getWidth());
 		mapBackground.setHeight(map.getHeight());
-		mapBackground.setFill(MAP_BACKGROUND);
-		mapBackground.setStroke(MAP_BACKGROUND_STROKE);
 		getChildren().add(mapBackground);
 		
 		map.getMapObjects().forEach(o -> getChildren().add(new GameElementImageView(o)));
