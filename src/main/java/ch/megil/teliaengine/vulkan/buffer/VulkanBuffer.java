@@ -9,6 +9,7 @@ import static org.lwjgl.vulkan.VK10.*;
 import org.lwjgl.vulkan.*;
 
 import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
+import ch.megil.teliaengine.vulkan.VulkanMemory;
 import ch.megil.teliaengine.vulkan.VulkanPhysicalDevice;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
@@ -17,10 +18,8 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
  * needs setup first with {@link #init} and needs to be cleaned
  * up before destruction with {@link #cleanUp}.
  */
-public abstract class VulkanBuffer {
+public abstract class VulkanBuffer extends VulkanMemory {
 	private static final long MEMORY_OFFSET = 0;
-	private static final int BASE_MASK = 1;
-	private static final int FLAG_NOT_SET = 0;
 	private static final long MAP_OFFSET = 0;
 	private static final int NO_FLAGS = 0;
 	
@@ -44,7 +43,6 @@ public abstract class VulkanBuffer {
 				.sharingMode(sharingMode);
 		
         var memoryRequirements = VkMemoryRequirements.calloc();
-		var memoryAllocInfo = VkMemoryAllocateInfo.calloc();
 		
 		var pBuffer = memAllocLong(1);
 		var pMemory = memAllocLong(1);
@@ -58,18 +56,8 @@ public abstract class VulkanBuffer {
 			buffer = pBuffer.get(0);
 			
 			vkGetBufferMemoryRequirements(logicalDevice.get(), buffer, memoryRequirements);
-			
-			var memoryType = findMemoryType(physicalDevice.get(), memoryRequirements.memoryTypeBits(), properties);
-			
 			bufferSize = memoryRequirements.size();
-			memoryAllocInfo.sType(VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO)
-					.allocationSize(bufferSize)
-					.memoryTypeIndex(memoryType);
-			
-			res = vkAllocateMemory(logicalDevice.get(), memoryAllocInfo, null, pMemory);
-			if (res != VK_SUCCESS) {
-				throw new VulkanException(res);
-			}
+			allocateMemory(physicalDevice, logicalDevice, memoryRequirements, properties, pMemory);
 			memory = pMemory.get(0);
 			
 			res = vkBindBufferMemory(logicalDevice.get(), buffer, memory, MEMORY_OFFSET);
@@ -79,27 +67,8 @@ public abstract class VulkanBuffer {
 		} finally {
 			memFree(pMemory);
 			memFree(pBuffer);
-			memoryAllocInfo.free();
 			memoryRequirements.free();
 			bufferInfo.free();
-		}
-	}
-	
-	private int findMemoryType(VkPhysicalDevice physicalDevice, int typeFilter, int properties) throws VulkanException {
-		var memoryProperties = VkPhysicalDeviceMemoryProperties.calloc();
-		vkGetPhysicalDeviceMemoryProperties(physicalDevice, memoryProperties);
-		
-		try {
-			for (var i = 0; i < memoryProperties.memoryTypeCount(); i++) {
-				if ((typeFilter & (BASE_MASK << i)) != FLAG_NOT_SET &&
-						(memoryProperties.memoryTypes(i).propertyFlags() & properties) == properties) {
-					return i;
-				}
-			}
-	
-			throw new VulkanException("No compatible memory found.");
-		} finally {
-			memoryProperties.free();
 		}
 	}
 	
