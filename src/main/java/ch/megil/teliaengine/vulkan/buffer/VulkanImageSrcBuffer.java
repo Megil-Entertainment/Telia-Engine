@@ -12,6 +12,10 @@ import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
 import ch.megil.teliaengine.vulkan.VulkanPhysicalDevice;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
+/**
+ * This class needs setup first with {@link #init} and
+ * needs to be cleaned up before destruction with {@link #cleanUp}.
+ */
 public class VulkanImageSrcBuffer extends VulkanBuffer {
 	/**
 	 * @param physicalDevice An initialized {@link VulkanPhysicalDevice}
