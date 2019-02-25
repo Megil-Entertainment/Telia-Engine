@@ -15,7 +15,7 @@ import org.lwjgl.vulkan.VkPhysicalDeviceMemoryProperties;
 
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
-public abstract class VulkanMemory {
+public class VulkanMemory {
 	private static final int BASE_MASK = 1;
 	private static final int FLAG_NOT_SET = 0;
 	
@@ -26,7 +26,7 @@ public abstract class VulkanMemory {
 	 * @param properties of the buffer (see {@link VK10#VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT})
 	 * @param memoryPointer new pointer, will point to where the memory will have been allocated
 	 */
-	protected void allocateMemory(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, VkMemoryRequirements memoryRequirements, int properties, LongBuffer memoryPointer) throws VulkanException {
+	public void allocateMemory(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, VkMemoryRequirements memoryRequirements, int properties, LongBuffer memoryPointer) throws VulkanException {
 		var memoryType = findMemoryType(physicalDevice.get(), memoryRequirements.memoryTypeBits(), properties);
 		
 		var memoryAllocInfo = VkMemoryAllocateInfo.calloc()
@@ -40,7 +40,7 @@ public abstract class VulkanMemory {
 				throw new VulkanException(res);
 			}
 		} finally {
-			
+			memoryAllocInfo.free();
 		}
 	}
 	

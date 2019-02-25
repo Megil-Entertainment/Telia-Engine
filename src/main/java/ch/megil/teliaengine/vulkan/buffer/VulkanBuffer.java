@@ -18,7 +18,7 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
  * needs setup first with {@link #init} and needs to be cleaned
  * up before destruction with {@link #cleanUp}.
  */
-public abstract class VulkanBuffer extends VulkanMemory {
+public abstract class VulkanBuffer {
 	private static final long MEMORY_OFFSET = 0;
 	private static final long MAP_OFFSET = 0;
 	private static final int NO_FLAGS = 0;
@@ -57,7 +57,7 @@ public abstract class VulkanBuffer extends VulkanMemory {
 			
 			vkGetBufferMemoryRequirements(logicalDevice.get(), buffer, memoryRequirements);
 			bufferSize = memoryRequirements.size();
-			allocateMemory(physicalDevice, logicalDevice, memoryRequirements, properties, pMemory);
+			new VulkanMemory().allocateMemory(physicalDevice, logicalDevice, memoryRequirements, properties, pMemory);
 			memory = pMemory.get(0);
 			
 			res = vkBindBufferMemory(logicalDevice.get(), buffer, memory, MEMORY_OFFSET);
