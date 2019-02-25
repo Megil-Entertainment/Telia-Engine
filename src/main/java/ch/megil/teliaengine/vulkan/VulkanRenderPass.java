@@ -9,6 +9,7 @@ import org.lwjgl.vulkan.*;
 
 import ch.megil.teliaengine.vulkan.buffer.VulkanIndexBuffer;
 import ch.megil.teliaengine.vulkan.buffer.VulkanVertexBuffer;
+import ch.megil.teliaengine.vulkan.command.VulkanCommandPool;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
 /**

@@ -29,6 +29,7 @@ import ch.megil.teliaengine.gamelogic.GameState;
 import ch.megil.teliaengine.vulkan.*;
 import ch.megil.teliaengine.vulkan.buffer.VulkanIndexBuffer;
 import ch.megil.teliaengine.vulkan.buffer.VulkanVertexBuffer;
+import ch.megil.teliaengine.vulkan.command.VulkanCommandPool;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 import ch.megil.teliaengine.vulkanui.VulkanMap;
 import ch.megil.teliaengine.vulkanui.VulkanPlayer;

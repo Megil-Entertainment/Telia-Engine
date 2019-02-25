@@ -1,10 +1,11 @@
-package ch.megil.teliaengine.vulkan;
+package ch.megil.teliaengine.vulkan.command;
 
 import static org.lwjgl.vulkan.VK10.*;
 
 import org.lwjgl.vulkan.VkCommandBuffer;
 import org.lwjgl.vulkan.VkCommandBufferBeginInfo;
 
+import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
 public class VulkanCommandBuffer {

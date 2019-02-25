@@ -1,4 +1,4 @@
-package ch.megil.teliaengine.vulkan;
+package ch.megil.teliaengine.vulkan.command;
 
 import static org.lwjgl.system.MemoryUtil.memAllocLong;
 import static org.lwjgl.system.MemoryUtil.memAllocPointer;
@@ -12,6 +12,8 @@ import org.lwjgl.vulkan.VkCommandBuffer;
 import org.lwjgl.vulkan.VkCommandBufferAllocateInfo;
 import org.lwjgl.vulkan.VkCommandPoolCreateInfo;
 
+import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
+import ch.megil.teliaengine.vulkan.VulkanQueue;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
 /**
