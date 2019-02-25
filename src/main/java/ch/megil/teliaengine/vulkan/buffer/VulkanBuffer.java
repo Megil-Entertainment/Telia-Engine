@@ -33,9 +33,9 @@ public abstract class VulkanBuffer {
 	 * @param size bytesize of the buffer
 	 * @param usage of the buffer (see {@link VK10#VK_BUFFER_USAGE_INDEX_BUFFER_BIT})
 	 * @param sharingMode of the buffer (see {@link VK10#VK_SHARING_MODE_EXCLUSIVE})
-	 * @param properties of the buffer (see {@link VK10#VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT})
+	 * @param memProperties memory properties of the buffer (see {@link VK10#VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT})
 	 */
-	protected void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, long size, int usage, int sharingMode, int properties) throws VulkanException {
+	protected void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, long size, int usage, int sharingMode, int memProperties) throws VulkanException {
 		var bufferInfo = VkBufferCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO)
 				.size(size)
@@ -57,7 +57,7 @@ public abstract class VulkanBuffer {
 			
 			vkGetBufferMemoryRequirements(logicalDevice.get(), buffer, memoryRequirements);
 			bufferSize = memoryRequirements.size();
-			new VulkanMemory().allocateMemory(physicalDevice, logicalDevice, memoryRequirements, properties, pMemory);
+			new VulkanMemory().allocateMemory(physicalDevice, logicalDevice, memoryRequirements, memProperties, pMemory);
 			memory = pMemory.get(0);
 			
 			res = vkBindBufferMemory(logicalDevice.get(), buffer, memory, MEMORY_OFFSET);
