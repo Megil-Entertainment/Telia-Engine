@@ -23,6 +23,7 @@ public class AssetExplorer extends TreeItem<String>{
 	private String fullPath;
 	private boolean isDirectory;
 	
+	@SuppressWarnings("unchecked")
 	public AssetExplorer(Path file) {
 		super(file.toString());
 		this.fullPath = file.toString();
@@ -67,12 +68,26 @@ public class AssetExplorer extends TreeItem<String>{
 								source.getChildren().add(treeNode);
 							}
 						}
+					}else {
+						
 					}
 				}catch(IOException x) {
 					x.printStackTrace();
 				}
 			}
 		});
+		
+		this.addEventHandler(TreeItem.branchCollapsedEvent(), new EventHandler() {
+			@Override
+			public void handle(Event e) {
+				AssetExplorer source = (AssetExplorer)e.getSource();
+				if(source.isDirectory && !source.isExpanded()) {
+					ImageView iv = (ImageView)source.getGraphic();
+					iv.setImage(folderCollapseImage);
+				}
+			}
+		});
+		
 	}
 	
 	
