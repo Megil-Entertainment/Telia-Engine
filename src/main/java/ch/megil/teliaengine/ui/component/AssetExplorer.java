@@ -1,9 +1,15 @@
 package ch.megil.teliaengine.ui.component;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -41,8 +47,33 @@ public class AssetExplorer extends TreeItem<String>{
 				this.setValue(value);
 			}
 		}
+		
+		this.addEventHandler(TreeItem.branchExpandedEvent(), new EventHandler() {
+			@Override
+			public void handle(Event e) {
+				AssetExplorer source = (AssetExplorer)e.getSource();
+				if(source.isDirectory && source.isExpanded()) {
+					ImageView iv = (ImageView)source.getGraphic();
+					iv.setImage(folderExpandImage);
+				}
+				try {
+					if(source.getChildren().isEmpty()) {
+						Path path = Paths.get(source.getFullPath());
+						BasicFileAttributes attribs=Files.readAttributes(path,BasicFileAttributes.class);
+						if(attribs.isDirectory()) {
+							DirectoryStream<Path> dir=Files.newDirectoryStream(path);
+							for(Path file:dir) {
+								AssetExplorer treeNode = new AssetExplorer(file);
+								source.getChildren().add(treeNode);
+							}
+						}
+					}
+				}catch(IOException x) {
+					x.printStackTrace();
+				}
+			}
+		});
 	}
-	
 	
 	
 	public String getFullPath() {
