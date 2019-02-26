@@ -29,7 +29,7 @@ import ch.megil.teliaengine.gamelogic.GameState;
 import ch.megil.teliaengine.vulkan.*;
 import ch.megil.teliaengine.vulkan.buffer.VulkanIndexBuffer;
 import ch.megil.teliaengine.vulkan.buffer.VulkanVertexBuffer;
-import ch.megil.teliaengine.vulkan.command.VulkanCommandPool;
+import ch.megil.teliaengine.vulkan.command.VulkanRenderCommandPool;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 import ch.megil.teliaengine.vulkanui.VulkanMap;
 import ch.megil.teliaengine.vulkanui.VulkanPlayer;
@@ -64,7 +64,7 @@ public class GameMain {
 	private VulkanShader shader;
 	private VulkanPipeline pipeline;
 	private VulkanFramebuffers framebuffers;
-	private VulkanCommandPool renderCommandPool;
+	private VulkanRenderCommandPool renderCommandPool;
 	private VulkanVertexBuffer vertexBuffer;
 	private VulkanIndexBuffer indexBuffer;
 	private VulkanSemaphore semaphore;
@@ -85,7 +85,7 @@ public class GameMain {
 		shader = new VulkanShader();
 		pipeline = new VulkanPipeline();
 		framebuffers = new VulkanFramebuffers();
-		renderCommandPool = new VulkanCommandPool();
+		renderCommandPool = new VulkanRenderCommandPool();
 		vertexBuffer = new VulkanVertexBuffer();
 		indexBuffer = new VulkanIndexBuffer();
 		semaphore = new VulkanSemaphore();
@@ -149,7 +149,7 @@ public class GameMain {
 		shader.init(logicalDevice);
 		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer);
 		framebuffers.init(logicalDevice, swapchain, renderPass);
-		renderCommandPool.init(logicalDevice, queue, swapchain.getImageCount());
+		renderCommandPool.init(logicalDevice, queue, swapchain);
 		vertexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfVertecies() + player.getNumberOfVertecies());
 		indexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfIndecies() + player.getNumberOfIndecies());
 		

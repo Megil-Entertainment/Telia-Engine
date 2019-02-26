@@ -8,17 +8,19 @@ import org.lwjgl.vulkan.VkCommandBufferBeginInfo;
 import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
-public class VulkanCommandBuffer {
+public abstract class VulkanCommandBuffer {
 	private VkCommandBuffer commandBuffer;
 
 	public VulkanCommandBuffer(VkCommandBuffer commandBuffer) {
 		this.commandBuffer = commandBuffer;
 	}
 	
-	public void begin() throws VulkanException {
+	public abstract void begin() throws VulkanException;
+	
+	protected void begin(int flags) throws VulkanException {
 		var beginInfo = VkCommandBufferBeginInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO)
-				.flags(VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT);
+				.flags(flags);
 		
 		var res = vkBeginCommandBuffer(commandBuffer, beginInfo);
 		try {

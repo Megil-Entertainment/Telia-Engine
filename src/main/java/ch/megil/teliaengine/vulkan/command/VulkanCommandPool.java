@@ -8,6 +8,7 @@ import static org.lwjgl.vulkan.VK10.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.vulkan.VkCommandBuffer;
 import org.lwjgl.vulkan.VkCommandBufferAllocateInfo;
 import org.lwjgl.vulkan.VkCommandPoolCreateInfo;
@@ -20,9 +21,9 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
  * This class needs setup first with {@link #init} and
  * needs to be cleaned up before destruction with {@link #cleanUp}.
  */
-public class VulkanCommandPool {
+public abstract class VulkanCommandPool {
 	private long commandPool;
-	private List<VulkanCommandBuffer> commandBuffers;
+	protected List<VulkanCommandBuffer> commandBuffers;
 	
 	public VulkanCommandPool() {
 		commandBuffers = new ArrayList<>();
@@ -32,7 +33,7 @@ public class VulkanCommandPool {
 	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
 	 * @param queue An initialized {@link VulkanQueue}
 	 */
-	public void init(VulkanLogicalDevice logicalDevice, VulkanQueue queue) throws VulkanException {
+	protected void init(VulkanLogicalDevice logicalDevice, VulkanQueue queue) throws VulkanException {
 		var commandPoolCreateInfo = VkCommandPoolCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO)
 				.queueFamilyIndex(queue.getGraphicsFamily());
@@ -57,33 +58,52 @@ public class VulkanCommandPool {
 	 * @param queue An initialized {@link VulkanQueue}
 	 * @param numOfBuffers number of buffers ready at initializing level
 	 */
-	public void init(VulkanLogicalDevice logicalDevice, VulkanQueue queue, int numOfBuffers) throws VulkanException {
+	protected void init(VulkanLogicalDevice logicalDevice, VulkanQueue queue, int numOfBuffers) throws VulkanException {
 		init(logicalDevice, queue);
-		initBuffers(logicalDevice, numOfBuffers);
+		initManagedBuffers(logicalDevice, numOfBuffers);
 	}
 	
-	public void initBuffers(VulkanLogicalDevice logicalDevice, int numOfBuffers) throws VulkanException {
+	protected abstract VulkanCommandBuffer createBuffer(VkCommandBuffer buffer);
+	
+	/**
+	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
+	 * @param numOfBuffers number of buffers to create
+	 * @param commandBuffers pointer where created commandBuffers are saved to
+	 */
+	protected void initBuffers(VulkanLogicalDevice logicalDevice, int numOfBuffers, PointerBuffer commandBuffers) throws VulkanException {
 		var cmdBufferAllocInfo = VkCommandBufferAllocateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO)
 				.commandPool(commandPool)
 				.level(VK_COMMAND_BUFFER_LEVEL_PRIMARY)
 				.commandBufferCount(numOfBuffers);
 		
-		var pCmdBuffer = memAllocPointer(numOfBuffers);
-		var res = vkAllocateCommandBuffers(logicalDevice.get(), cmdBufferAllocInfo, pCmdBuffer);
+		var res = vkAllocateCommandBuffers(logicalDevice.get(), cmdBufferAllocInfo, commandBuffers);
 		
 		try {
 			if (res != VK_SUCCESS) {
 				throw new VulkanException(res);
 			}
+		} finally {
+			cmdBufferAllocInfo.free();
+		}
+	}
+	
+	/**
+	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
+	 * @param numOfBuffers number of buffers to create
+	 */
+	public void initManagedBuffers(VulkanLogicalDevice logicalDevice, int numOfBuffers) throws VulkanException {
+		var pCmdBuffer = memAllocPointer(numOfBuffers);
+
+		try {
+			initBuffers(logicalDevice, numOfBuffers, pCmdBuffer);
 			
 			for (int i = 0; i < numOfBuffers; i++) {
 				var cmdBuffer = new VkCommandBuffer(pCmdBuffer.get(i), logicalDevice.get());
-				commandBuffers.add(new VulkanCommandBuffer(cmdBuffer));
+				commandBuffers.add(createBuffer(cmdBuffer));
 			}
 		} finally {
 			memFree(pCmdBuffer);
-			cmdBufferAllocInfo.free();
 		}
 	}
 	
