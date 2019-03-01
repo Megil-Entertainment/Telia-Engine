@@ -15,9 +15,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class AssetExplorer extends TreeItem<String>{
-	public static Image folderCollapseImage=new Image("/icons/folderImage.png");
-	public static Image folderExpandImage=new Image("/icons/folderExpandIcon.png");
-	public static Image fileImage=new Image("/icons/textIcon.png");
+	public static Image folderCollapseImage=new Image(ClassLoader.getSystemResourceAsStream("ch/megil/teliaengine/ui/component/folderImage.png"));
+	public static Image folderExpandImage=new Image(ClassLoader.getSystemResourceAsStream("ch/megil/teliaengine/ui/component/folderExpandIcon.png"));
+	public static Image fileImage=new Image(ClassLoader.getSystemResourceAsStream("ch/megil/teliaengine/ui/component/textIcon.png"));
 	
 	//stores the full path to the file or directory
 	private String fullPath;
