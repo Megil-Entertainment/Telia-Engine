@@ -5,13 +5,13 @@ import java.net.UnknownHostException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
+import ch.megil.teliaengine.file.IconLoader;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -36,7 +36,7 @@ public class JavaFXFileBrowseDemoApp extends Application{
 	    try{
 	    	hostName=InetAddress.getLocalHost().getHostName();}
 	    catch(UnknownHostException x){}
-	    TreeItem<String> rootNode = new TreeItem<>(hostName,new ImageView(new Image(ClassLoader.getSystemResourceAsStream("ch/megil/teliaengine/ui/component/computerIcon.png"))));
+	    TreeItem<String> rootNode = new TreeItem<>(hostName,new ImageView(new IconLoader().load("computerIcon", 32, 32)));
 	    Iterable<Path> rootDirectories=FileSystems.getDefault().getRootDirectories();
 	    for(Path name:rootDirectories){
 	      AssetExplorer treeNode=new AssetExplorer(name);

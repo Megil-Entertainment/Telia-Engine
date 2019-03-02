@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 
+import ch.megil.teliaengine.file.IconLoader;
+import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.TreeItem;
@@ -15,9 +17,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class AssetExplorer extends TreeItem<String>{
-	public static Image folderCollapseImage=new Image(ClassLoader.getSystemResourceAsStream("ch/megil/teliaengine/ui/component/folderImage.png"));
-	public static Image folderExpandImage=new Image(ClassLoader.getSystemResourceAsStream("ch/megil/teliaengine/ui/component/folderExpandIcon.png"));
-	public static Image fileImage=new Image(ClassLoader.getSystemResourceAsStream("ch/megil/teliaengine/ui/component/textIcon.png"));
+	public static Image folderCollapseImage;
+	public static Image folderExpandImage;
+	public static Image fileImage;
 	
 	//stores the full path to the file or directory
 	private String fullPath;
@@ -27,6 +29,14 @@ public class AssetExplorer extends TreeItem<String>{
 	public AssetExplorer(Path file) {
 		super(file.toString());
 		this.fullPath = file.toString();
+		
+		try {
+			folderCollapseImage = new IconLoader().load("folderImage", 32, 32);
+			folderExpandImage = new IconLoader().load("folderExpandIcon", 32, 32);
+			fileImage = new IconLoader().load("textIcon", 32, 32);
+		}catch(AssetNotFoundException x){
+			x.printStackTrace();
+		}
 		
 		//test if this is a directory and set icon
 		if(Files.isDirectory(file)) {
