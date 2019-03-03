@@ -69,6 +69,7 @@ public class GameMain {
 	private VulkanVertexBuffer vertexBuffer;
 	private VulkanIndexBuffer indexBuffer;
 	private VulkanSemaphore semaphore;
+	private VulkanSampler sampler;
 	
 	private VulkanMap map;
 	private VulkanPlayer player;
@@ -90,6 +91,7 @@ public class GameMain {
 		vertexBuffer = new VulkanVertexBuffer();
 		indexBuffer = new VulkanIndexBuffer();
 		semaphore = new VulkanSemaphore();
+		sampler = new VulkanSampler();
 	}
 	
 	public GameMain(String mapName) throws AssetNotFoundException, AssetFormatException {
@@ -171,6 +173,7 @@ public class GameMain {
 		}
 		
 		semaphore.init(logicalDevice, SEM_NUM_OF_SEM);
+		sampler.init(logicalDevice);
 		
 		glfwShowWindow(window);
 	}
@@ -248,6 +251,7 @@ public class GameMain {
 	
 	public void cleanUp() {
 		// Destroy bottom up
+		sampler.cleanUp(logicalDevice);
 		semaphore.cleanUp(logicalDevice);
 		vertexBuffer.cleanUp(logicalDevice);
 		renderCommandPool.cleanUp(logicalDevice);
