@@ -4,11 +4,7 @@ import static org.lwjgl.system.MemoryUtil.memAllocLong;
 import static org.lwjgl.system.MemoryUtil.memFree;
 import static org.lwjgl.vulkan.VK10.*;
 
-import org.lwjgl.vulkan.VK10;
-import org.lwjgl.vulkan.VkBufferImageCopy;
-import org.lwjgl.vulkan.VkImageCreateInfo;
-import org.lwjgl.vulkan.VkImageMemoryBarrier;
-import org.lwjgl.vulkan.VkMemoryRequirements;
+import org.lwjgl.vulkan.*;
 
 import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
 import ch.megil.teliaengine.vulkan.VulkanMemory;
@@ -29,10 +25,14 @@ public abstract class VulkanImage {
 	private static final int NO_ARRAY = 1;
 	private static final int NO_FLAGS = 0;
 	
+	public static final int NO_ACCESS_MASK = 0;
+	
 	private int width;
 	private int height;
+	private int format;
 	
 	protected long image;
+	protected long imageView;
 	protected long memory;
 	
 	/**
@@ -49,6 +49,7 @@ public abstract class VulkanImage {
 	public void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, int width, int height, int format, int tiling, int usage, int sharingMode, int memProperties) throws VulkanException {
 		this.width = width;
 		this.height = height;
+		this.format = format;
 		
 		var imgCreateInfo = VkImageCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO)
@@ -120,11 +121,28 @@ public abstract class VulkanImage {
 						.levelCount(NO_MIPMAP)
 						.baseArrayLayer(0)
 						.layerCount(NO_ARRAY))
-				.srcAccessMask(0) //TODO:
-				.dstAccessMask(0); //TODO:
+				.srcAccessMask(0)
+				.dstAccessMask(0);
 			
-			//TODO:
-			vkCmdPipelineBarrier(cmdBuffer.get(), 0, 0, 0, null, null, barrier);
+			int srcStage, dstStage;
+			
+			if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+				barrier
+					.srcAccessMask(NO_ACCESS_MASK)
+					.dstAccessMask(VK_ACCESS_TRANSFER_WRITE_BIT);
+				srcStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+				dstStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+			} else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+				barrier
+					.srcAccessMask(VK_ACCESS_TRANSFER_WRITE_BIT)
+					.dstAccessMask(VK_ACCESS_SHADER_READ_BIT);
+				srcStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+				dstStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+			} else  {
+				throw new VulkanException("unsuported transfer");
+			}
+			
+			vkCmdPipelineBarrier(cmdBuffer.get(), srcStage, dstStage, 0, null, null, barrier);
 			
 			cmdBuffer.submit(queue);
 		} finally {
@@ -142,7 +160,7 @@ public abstract class VulkanImage {
 				.bufferOffset(0)
 				.bufferRowLength(0)
 				.bufferImageHeight(0)
-				.imageSubresource(sr -> sr
+				.imageSubresource(srr -> srr
 						.aspectMask(VK_IMAGE_ASPECT_COLOR_BIT)
 						.mipLevel(0)
 						.baseArrayLayer(0)
@@ -158,7 +176,40 @@ public abstract class VulkanImage {
 		}
 	}
 	
+	public void createView(VulkanLogicalDevice logicalDevice) throws VulkanException {
+		var imageViewCreateInfo = VkImageViewCreateInfo.calloc()
+				.sType(VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO)
+				.image(image)
+				.viewType(VK_IMAGE_VIEW_TYPE_2D)
+				.format(format)
+				.subresourceRange(sr -> sr
+						.aspectMask(VK_IMAGE_ASPECT_COLOR_BIT)
+						.baseMipLevel(0)
+						.levelCount(NO_MIPMAP)
+						.baseArrayLayer(0)
+						.layerCount(NO_ARRAY));
+		
+		var pView = memAllocLong(1);
+		var res = vkCreateImageView(logicalDevice.get(), imageViewCreateInfo, null, pView);
+		try {
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
+			
+			this.imageView = pView.get(0);
+		} finally {
+			memFree(pView);
+			imageViewCreateInfo.free();
+		}
+	}
+	
+	//TODO: call
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {
+		if (imageView != VK_NULL_HANDLE) {
+			vkDestroyImageView(logicalDevice.get(), imageView, null);
+			imageView = VK_NULL_HANDLE;
+		}
+		
 		if (image != VK_NULL_HANDLE) {
 			vkDestroyImage(logicalDevice.get(), image, null);
 			image = VK_NULL_HANDLE;

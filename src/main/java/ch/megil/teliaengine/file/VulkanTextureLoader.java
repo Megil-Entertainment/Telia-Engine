@@ -48,6 +48,8 @@ public class VulkanTextureLoader {
 			image.transition(queue, cmdBuffer, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 			image.copyBufferToImage(buffer, queue, cmdBuffer);
 			image.transition(queue, cmdBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+			
+			image.createView(logicalDevice);
 		} catch (Exception e) {
 			image.cleanUp(logicalDevice);
 			throw e;
