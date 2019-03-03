@@ -5,6 +5,7 @@ import static org.lwjgl.system.MemoryUtil.memFree;
 import static org.lwjgl.vulkan.VK10.*;
 
 import org.lwjgl.vulkan.VK10;
+import org.lwjgl.vulkan.VkBufferImageCopy;
 import org.lwjgl.vulkan.VkImageCreateInfo;
 import org.lwjgl.vulkan.VkImageMemoryBarrier;
 import org.lwjgl.vulkan.VkMemoryRequirements;
@@ -13,6 +14,7 @@ import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
 import ch.megil.teliaengine.vulkan.VulkanMemory;
 import ch.megil.teliaengine.vulkan.VulkanPhysicalDevice;
 import ch.megil.teliaengine.vulkan.VulkanQueue;
+import ch.megil.teliaengine.vulkan.buffer.VulkanImageSrcBuffer;
 import ch.megil.teliaengine.vulkan.command.VulkanSingleCommandBuffer;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 /**
@@ -26,6 +28,9 @@ public abstract class VulkanImage {
 	private static final int NO_MIPMAP = 1;
 	private static final int NO_ARRAY = 1;
 	private static final int NO_FLAGS = 0;
+	
+	private int width;
+	private int height;
 	
 	protected long image;
 	protected long memory;
@@ -42,6 +47,9 @@ public abstract class VulkanImage {
 	 * @param memProperties memory properties of the image (see {@link VK10#VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT})
 	 */
 	public void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, int width, int height, int format, int tiling, int usage, int sharingMode, int memProperties) throws VulkanException {
+		this.width = width;
+		this.height = height;
+		
 		var imgCreateInfo = VkImageCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO)
 				.imageType(VK_IMAGE_TYPE_2D)
@@ -109,9 +117,9 @@ public abstract class VulkanImage {
 				.subresourceRange(srr -> srr
 						.aspectMask(VK_IMAGE_ASPECT_COLOR_BIT)
 						.baseMipLevel(0)
-						.levelCount(1)
+						.levelCount(NO_MIPMAP)
 						.baseArrayLayer(0)
-						.layerCount(1))
+						.layerCount(NO_ARRAY))
 				.srcAccessMask(0) //TODO:
 				.dstAccessMask(0); //TODO:
 			
@@ -121,6 +129,32 @@ public abstract class VulkanImage {
 			cmdBuffer.submit(queue);
 		} finally {
 			barrier.free();
+		}
+	}
+	
+	public void copyBufferToImage(VulkanImageSrcBuffer imgSrc, VulkanQueue queue, VulkanSingleCommandBuffer cmdBuffer) throws VulkanException {
+		var region = VkBufferImageCopy.calloc(1);
+		
+		try {
+			cmdBuffer.begin();
+			
+			region
+				.bufferOffset(0)
+				.bufferRowLength(0)
+				.bufferImageHeight(0)
+				.imageSubresource(sr -> sr
+						.aspectMask(VK_IMAGE_ASPECT_COLOR_BIT)
+						.mipLevel(0)
+						.baseArrayLayer(0)
+						.layerCount(1))
+				.imageOffset(off -> off.set(0, 0, 0))
+				.imageExtent(ext -> ext.set(width, height, DEPTH_2D));
+			
+			vkCmdCopyBufferToImage(cmdBuffer.get(), imgSrc.get(), image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, region);
+			
+			cmdBuffer.submit(queue);
+		} finally {
+			
 		}
 	}
 	
