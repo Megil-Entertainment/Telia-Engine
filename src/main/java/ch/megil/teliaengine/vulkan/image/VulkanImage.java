@@ -6,11 +6,14 @@ import static org.lwjgl.vulkan.VK10.*;
 
 import org.lwjgl.vulkan.VK10;
 import org.lwjgl.vulkan.VkImageCreateInfo;
+import org.lwjgl.vulkan.VkImageMemoryBarrier;
 import org.lwjgl.vulkan.VkMemoryRequirements;
 
 import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
 import ch.megil.teliaengine.vulkan.VulkanMemory;
 import ch.megil.teliaengine.vulkan.VulkanPhysicalDevice;
+import ch.megil.teliaengine.vulkan.VulkanQueue;
+import ch.megil.teliaengine.vulkan.command.VulkanSingleCommandBuffer;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 /**
  * This class is a parent class for different image types and
@@ -81,6 +84,43 @@ public abstract class VulkanImage {
 			memFree(pImage);
 			memoryRequirements.free();
 			imgCreateInfo.free();
+		}
+	}
+	
+	/**
+	 * @param queue An initialized {@link VulkanQueue} to submit the commands to
+	 * @param cmdBuffer An initialized {@link VulkanSingleCommandBuffer}
+	 * @param oldLayout current layout of the image (see {@link VK10#VK_IMAGE_LAYOUT_UNDEFINED})
+	 * @param newLayout layout to transition to (see {@link VK10#VK_IMAGE_LAYOUT_UNDEFINED})
+	 */
+	public void transition(VulkanQueue queue, VulkanSingleCommandBuffer cmdBuffer, int oldLayout, int newLayout) throws VulkanException {
+		var barrier = VkImageMemoryBarrier.calloc(1);
+		
+		try {
+			cmdBuffer.begin();
+			
+			barrier
+				.sType(VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER)
+				.oldLayout(oldLayout)
+				.newLayout(newLayout)
+				.srcQueueFamilyIndex(VK_QUEUE_FAMILY_IGNORED)
+				.dstQueueFamilyIndex(VK_QUEUE_FAMILY_IGNORED)
+				.image(image)
+				.subresourceRange(srr -> srr
+						.aspectMask(VK_IMAGE_ASPECT_COLOR_BIT)
+						.baseMipLevel(0)
+						.levelCount(1)
+						.baseArrayLayer(0)
+						.layerCount(1))
+				.srcAccessMask(0) //TODO:
+				.dstAccessMask(0); //TODO:
+			
+			//TODO:
+			vkCmdPipelineBarrier(cmdBuffer.get(), 0, 0, 0, null, null, barrier);
+			
+			cmdBuffer.submit(queue);
+		} finally {
+			barrier.free();
 		}
 	}
 	
