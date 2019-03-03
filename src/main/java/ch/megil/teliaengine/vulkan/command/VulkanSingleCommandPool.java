@@ -26,7 +26,7 @@ public class VulkanSingleCommandPool extends VulkanCommandPool {
 		
 		try {
 			initBuffers(logicalDevice, SINGLE_BUFFER, pCmdBuffer);
-			var cmdBuffer = new VkCommandBuffer(pCmdBuffer.get(1), logicalDevice.get());
+			var cmdBuffer = new VkCommandBuffer(pCmdBuffer.get(0), logicalDevice.get());
 			var buffer = new VulkanSingleCommandBuffer(cmdBuffer);
 			commandBuffers.add(buffer);
 			return buffer;

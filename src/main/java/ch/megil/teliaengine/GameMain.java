@@ -30,6 +30,7 @@ import ch.megil.teliaengine.vulkan.*;
 import ch.megil.teliaengine.vulkan.buffer.VulkanIndexBuffer;
 import ch.megil.teliaengine.vulkan.buffer.VulkanVertexBuffer;
 import ch.megil.teliaengine.vulkan.command.VulkanRenderCommandPool;
+import ch.megil.teliaengine.vulkan.command.VulkanSingleCommandPool;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 import ch.megil.teliaengine.vulkanui.VulkanMap;
 import ch.megil.teliaengine.vulkanui.VulkanPlayer;
@@ -107,7 +108,10 @@ public class GameMain {
 		try {
 			init();
 			//TODO: remove when finished with texture loader
-			new VulkanTextureLoader().load(physicalDevice, logicalDevice, "player", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
+			var pool = new VulkanSingleCommandPool();
+			pool.init(logicalDevice, queue);
+			new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, pool.getCommandBuffer(logicalDevice), "player", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
+			pool.cleanUp(logicalDevice);
 			
 			vertexBuffer.writeVertecies(logicalDevice, map);
 			indexBuffer.writeIndicies(logicalDevice, map);
