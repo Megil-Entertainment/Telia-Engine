@@ -8,10 +8,9 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 
-public class AssetExplorer extends TreeView<String>{
-	
-	public AssetExplorer(String rootPath) throws AssetNotFoundException {
-	var root = new File(rootPath);
+public class AssetExplorer extends TreeView<String>{	
+	public void initialize(String rootPath) throws AssetNotFoundException {
+		var root = new File(rootPath);
 		
 		var treeRoot = new TreeItem<>(root.getName(), null);
 		treeRoot.setGraphic(new ImageView(new IconLoader().load("folderExpandIcon", 32, 32)));

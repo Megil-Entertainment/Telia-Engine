@@ -11,6 +11,7 @@ import ch.megil.teliaengine.file.MapSaveLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.logging.LogHandler;
+import ch.megil.teliaengine.ui.component.AssetExplorer;
 import ch.megil.teliaengine.ui.component.MapEditor;
 import ch.megil.teliaengine.ui.component.ObjectExplorer;
 import javafx.fxml.FXML;
@@ -26,6 +27,8 @@ public class EngineUIController {
 	private MapEditor mapEditor;
 	@FXML
 	private ObjectExplorer objectExplorer;
+	@FXML
+	private AssetExplorer assetExplorer;
 	
 	private MapSaveLoad mapSaveLoad;
 
@@ -33,6 +36,11 @@ public class EngineUIController {
 	private void initialize() {
 		mapSaveLoad = new MapSaveLoad();
 		objectExplorer.setMapEditor(mapEditor);
+		try {
+			assetExplorer.initialize("assets");
+		} catch (AssetNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@FXML
