@@ -8,9 +8,16 @@ import org.lwjgl.vulkan.VkSamplerCreateInfo;
 
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
+/**
+ * This class needs setup first with {@link #init} and
+ * needs to be cleaned up before destruction with {@link #cleanUp}.
+ */
 public class VulkanSampler {
 	private long sampler;
 	
+	/**
+	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
+	 */
 	public void init(VulkanLogicalDevice logicalDevice) throws VulkanException {
 		var createInfo = VkSamplerCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO)
@@ -20,6 +27,7 @@ public class VulkanSampler {
 				.addressModeV(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE)
 				.addressModeW(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE)
 				.anisotropyEnable(false)
+				.maxAnisotropy(1)
 				.unnormalizedCoordinates(false)
 				.compareEnable(false)
 				.mipmapMode(VK_SAMPLER_MIPMAP_MODE_LINEAR)

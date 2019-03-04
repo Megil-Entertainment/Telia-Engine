@@ -13,6 +13,7 @@ import ch.megil.teliaengine.vulkan.VulkanQueue;
 import ch.megil.teliaengine.vulkan.buffer.VulkanImageSrcBuffer;
 import ch.megil.teliaengine.vulkan.command.VulkanSingleCommandBuffer;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
+
 /**
  * This class is a parent class for different image types and
  * needs setup first with {@link #init} and needs to be cleaned
