@@ -19,7 +19,8 @@ import ch.megil.teliaengine.input.converter.KeyConverter;
 public class InputHandler {
 	private EnumSet<VirtualController> startInput;
 	private EnumSet<VirtualController> endInput;
-	private EnumSet<VirtualController> pressed;
+	private EnumSet<VirtualController> keyboardPressed;
+	private EnumSet<VirtualController> gamepadPressed;
 	
 	private KeyConverter keyConverter;
 	
@@ -28,7 +29,8 @@ public class InputHandler {
 		
 		startInput = EnumSet.noneOf(VirtualController.class);
 		endInput = EnumSet.noneOf(VirtualController.class);
-		pressed = EnumSet.noneOf(VirtualController.class);
+		keyboardPressed = EnumSet.noneOf(VirtualController.class);
+		gamepadPressed = EnumSet.noneOf(VirtualController.class);
 	}
 	
 	/**
@@ -48,20 +50,20 @@ public class InputHandler {
 		return ret;
 	}
 	
-	private void startInput(VirtualController input) {
+	private void startInput(VirtualController input, EnumSet<VirtualController> pressAdd) {
 		synchronized (this) {
-			if (!pressed.contains(input)) {
+			if (!keyboardPressed.contains(input) && !gamepadPressed.contains(input)) {
 				startInput.add(input);
-				pressed.add(input);
+				pressAdd.add(input);
 			}
 		}
 	}
 	
-	private void endInput(VirtualController input) {
+	private void endInput(VirtualController input, EnumSet<VirtualController> pressCheck) {
 		synchronized (this) {
-			if (pressed.contains(input)) {
+			if (pressCheck.contains(input)) {
 				endInput.add(input);
-				pressed.remove(input);
+				pressCheck.remove(input);
 			}
 		}
 	}
@@ -71,9 +73,9 @@ public class InputHandler {
 		
 		for (var axis : axesMapping.entrySet()) {
 			if (axis.getKey().isInThreshold(axesState.get(axis.getKey().getGlfwGamepadAxis()))) {
-				startInput(axis.getValue());
+				startInput(axis.getValue(), gamepadPressed);
 			} else {
-				endInput(axis.getValue());
+				endInput(axis.getValue(), gamepadPressed);
 			}
 		}
 	}
@@ -83,9 +85,9 @@ public class InputHandler {
 		
 		for (var button : buttonsMapping.entrySet()) {
 			if (buttonsState.get(button.getKey()) == GLFW_PRESS) {
-				startInput(button.getValue());
+				startInput(button.getValue(), gamepadPressed);
 			} else {
-				endInput(button.getValue());
+				endInput(button.getValue(), gamepadPressed);
 			}
 		}
 	}
@@ -103,11 +105,11 @@ public class InputHandler {
 	}
 	
 	public void registerKeyAction(int glfwKey, int action) {
-		var key = keyConverter.getKeyboad().get(glfwKey);
+		var key = keyConverter.getKeyboad().getOrDefault(glfwKey, VirtualController.NONE);
 		if (action == GLFW_PRESS) {
-			startInput(key);
+			startInput(key, keyboardPressed);
 		} else if (action == GLFW_RELEASE) {
-			endInput(key);
+			endInput(key, keyboardPressed);
 		}
 	}
 }
