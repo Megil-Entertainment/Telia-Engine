@@ -105,7 +105,7 @@ public class InputHandler {
 	}
 	
 	public void registerKeyAction(int glfwKey, int action) {
-		var key = keyConverter.getKeyboad().getOrDefault(glfwKey, VirtualController.NONE);
+		var key = keyConverter.getKeyboard().getOrDefault(glfwKey, VirtualController.NONE);
 		if (action == GLFW_PRESS) {
 			startInput(key, keyboardPressed);
 		} else if (action == GLFW_RELEASE) {

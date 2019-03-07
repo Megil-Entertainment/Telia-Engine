@@ -8,18 +8,18 @@ import java.util.Map;
 import ch.megil.teliaengine.input.VirtualController;
 
 public class GameKeyConverter implements KeyConverter {
-	private Map<Integer, VirtualController> keyboad;
+	private Map<Integer, VirtualController> keyboard;
 	private Map<Integer, VirtualController> gamepadButtons;
 	private Map<AxisInput, VirtualController> gamepadAxes;
 	
 	public GameKeyConverter() {
-		keyboad = new HashMap<>();
-		keyboad.put(GLFW_KEY_D, VirtualController.WALK_RIGHT);
-		keyboad.put(GLFW_KEY_RIGHT, VirtualController.WALK_RIGHT);
-		keyboad.put(GLFW_KEY_A, VirtualController.WALK_LEFT);
-		keyboad.put(GLFW_KEY_LEFT, VirtualController.WALK_LEFT);
-		keyboad.put(GLFW_KEY_W, VirtualController.JUMP);
-		keyboad.put(GLFW_KEY_UP, VirtualController.JUMP);
+		keyboard = new HashMap<>();
+		keyboard.put(GLFW_KEY_D, VirtualController.WALK_RIGHT);
+		keyboard.put(GLFW_KEY_RIGHT, VirtualController.WALK_RIGHT);
+		keyboard.put(GLFW_KEY_A, VirtualController.WALK_LEFT);
+		keyboard.put(GLFW_KEY_LEFT, VirtualController.WALK_LEFT);
+		keyboard.put(GLFW_KEY_W, VirtualController.JUMP);
+		keyboard.put(GLFW_KEY_UP, VirtualController.JUMP);
 		
 		gamepadButtons = new HashMap<>();
 		gamepadButtons.put(GLFW_GAMEPAD_BUTTON_A, VirtualController.JUMP);
@@ -30,8 +30,8 @@ public class GameKeyConverter implements KeyConverter {
 	}
 
 	@Override
-	public Map<Integer, VirtualController> getKeyboad() {
-		return keyboad;
+	public Map<Integer, VirtualController> getKeyboard() {
+		return keyboard;
 	}
 
 	@Override

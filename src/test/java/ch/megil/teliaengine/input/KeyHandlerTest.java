@@ -35,7 +35,7 @@ public class KeyHandlerTest {
 		keyMap.put(keyLeft, VirtualController.WALK_LEFT);
 		
 		converter = mock(KeyConverter.class);
-		when(converter.getKeyboad()).thenReturn(keyMap);
+		when(converter.getKeyboard()).thenReturn(keyMap);
 	}
 
 	@Test
