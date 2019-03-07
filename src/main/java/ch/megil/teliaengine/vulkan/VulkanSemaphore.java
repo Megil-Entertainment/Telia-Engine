@@ -13,9 +13,17 @@ import org.lwjgl.vulkan.VkSemaphoreCreateInfo;
 
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
+/**
+ * This class needs setup first with {@link #init} and
+ * needs to be cleaned up before destruction with {@link #cleanUp}.
+ */
 public class VulkanSemaphore {
 	private LongBuffer[] semaphore;
 	
+	/**
+	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
+	 * @param numOfSem number of semaphores wanted
+	 */
 	public void init(VulkanLogicalDevice logicalDevice, int numOfSem) throws VulkanException {
 		semaphore = new LongBuffer[numOfSem];
 		
