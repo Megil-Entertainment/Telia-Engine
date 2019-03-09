@@ -3,14 +3,18 @@ package ch.megil.teliaengine.ui.component;
 import java.io.File;
 
 import ch.megil.teliaengine.file.IconLoader;
+import ch.megil.teliaengine.file.MapSaveLoad;
+import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
 
-public class AssetExplorer extends TreeView<String>{	
+public class AssetExplorer extends TreeView<String>{
+	private MapSaveLoad mapSaveLoad;
+	private MapEditor mapEditor;
+	
 	public void initialize(String rootPath) throws AssetNotFoundException {
 		var root = new File(rootPath);
 		
@@ -27,6 +31,7 @@ public class AssetExplorer extends TreeView<String>{
 		
 		setOnMouseClicked(me -> {if (me.getClickCount() == 2) onEntryOpen();});
 		setOnKeyTyped(ke -> {if (ke.getCode() == KeyCode.ENTER) onEntryOpen();});
+		mapSaveLoad = new MapSaveLoad();
 	}
 	
 	private void addNewTreeEntryFile(TreeItem<String> parent, File file) throws AssetNotFoundException {
@@ -47,15 +52,24 @@ public class AssetExplorer extends TreeView<String>{
 		if(newFilename.contains(".")) {
 			int extIndex = newFilename.lastIndexOf(".");
 			newFilename = newFilename.substring(0, extIndex);
-			System.out.println(newFilename);
 		}
 		return newFilename;
 	}
 	
 	private void onEntryOpen() {
 		var item = getSelectionModel().getSelectedItem();
-		
 		if (item.isLeaf()) {
+			try {
+				mapEditor.setMap(mapSaveLoad.load(item.getValue().toString(), false));
+			} catch (AssetNotFoundException e) {
+				e.printStackTrace();
+			} catch (AssetFormatException e) {
+				e.printStackTrace();
+			}
 		}
+	}
+	
+	public void setMapEditor(MapEditor mapEditor) {
+		this.mapEditor = mapEditor;
 	}
 }

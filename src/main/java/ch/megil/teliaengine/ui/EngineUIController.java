@@ -40,6 +40,7 @@ public class EngineUIController {
 		try {
 			assetExplorer.initialize("assets");
 			assetExplorer.setMaxWidth(300);
+			assetExplorer.setMapEditor(mapEditor);
 		} catch (AssetNotFoundException e) {
 			e.printStackTrace();
 		}
