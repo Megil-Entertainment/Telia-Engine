@@ -36,8 +36,10 @@ public class EngineUIController {
 	private void initialize() {
 		mapSaveLoad = new MapSaveLoad();
 		objectExplorer.setMapEditor(mapEditor);
+		objectExplorer.setMaxWidth(300);
 		try {
 			assetExplorer.initialize("assets");
+			assetExplorer.setMaxWidth(300);
 		} catch (AssetNotFoundException e) {
 			e.printStackTrace();
 		}

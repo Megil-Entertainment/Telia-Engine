@@ -7,6 +7,8 @@ import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 
 public class AssetExplorer extends TreeView<String>{	
 	public void initialize(String rootPath) throws AssetNotFoundException {
@@ -22,10 +24,13 @@ public class AssetExplorer extends TreeView<String>{
 		}
 		
 		this.setRoot(treeRoot);
+		
+		setOnMouseClicked(me -> {if (me.getClickCount() == 2) onEntryOpen();});
+		setOnKeyTyped(ke -> {if (ke.getCode() == KeyCode.ENTER) onEntryOpen();});
 	}
 	
 	private void addNewTreeEntryFile(TreeItem<String> parent, File file) throws AssetNotFoundException {
-		var treeItem = new TreeItem<>(file.getName());		
+		var treeItem = new TreeItem<>(stripFilename(file.getName()));		
 		if (file.isDirectory()) {
 			treeItem.setGraphic(new ImageView(new IconLoader().load("folderExpandIcon", 32, 32)));
 			for (var child : file.listFiles()) {
@@ -35,5 +40,22 @@ public class AssetExplorer extends TreeView<String>{
 			treeItem.setGraphic(new ImageView(new IconLoader().load("textIcon", 32, 32)));
 		}
 		parent.getChildren().add(treeItem);
-	} 
+	}
+	
+	private String stripFilename(String filename) {
+		var newFilename = filename;
+		if(newFilename.contains(".")) {
+			int extIndex = newFilename.lastIndexOf(".");
+			newFilename = newFilename.substring(0, extIndex);
+			System.out.println(newFilename);
+		}
+		return newFilename;
+	}
+	
+	private void onEntryOpen() {
+		var item = getSelectionModel().getSelectedItem();
+		
+		if (item.isLeaf()) {
+		}
+	}
 }
