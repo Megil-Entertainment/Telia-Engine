@@ -14,7 +14,9 @@ public enum SystemConfiguration {
 	MAP_GRID_WIDTH("mapGridWidth"),
 	MAP_GRID_HEIGHT("mapGridHeight"),
 	GAME_NAME("gameName"),
-	ICONS("icons");
+	ICONS("icons"),
+	FILE_ICON("fileIcon"),
+	FOLDER_EXPANDED_ICON("folderExpandedIcon");
 	
 	private static Properties sysProp;
 	
