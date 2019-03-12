@@ -16,7 +16,7 @@ public enum SystemConfiguration {
 	GAME_NAME("gameName"),
 	ICONS("icons"),
 	FILE_ICON("fileIcon"),
-	FOLDER_EXPANDED_ICON("folderExpandedIcon");
+	FOLDER_ICON("folderIcon");
 	
 	private static Properties sysProp;
 	

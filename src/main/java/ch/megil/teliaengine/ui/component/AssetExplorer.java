@@ -26,7 +26,7 @@ public class AssetExplorer extends TreeView<String>{
 		this.mapEditor = mapEditor;
 		
 		var treeRoot = new TreeItem<>(root.getName(), null);
-		treeRoot.setGraphic(new ImageView(new IconLoader().load(SystemConfiguration.FOLDER_EXPANDED_ICON.getConfiguration(), 32, 32)));
+		treeRoot.setGraphic(new ImageView(new IconLoader().load(SystemConfiguration.FOLDER_ICON.getConfiguration(), 32, 32)));
 		
 		if(root.isDirectory()) {
 			for (var child : root.listFiles()) {
@@ -44,7 +44,7 @@ public class AssetExplorer extends TreeView<String>{
 	private void addNewTreeEntryFile(TreeItem<String> parent, File file) throws AssetNotFoundException {
 		var treeItem = new TreeItem<>(stripFilename(file.getName()));		
 		if (file.isDirectory()) {
-			treeItem.setGraphic(new ImageView(new IconLoader().load(SystemConfiguration.FOLDER_EXPANDED_ICON.getConfiguration(), 32, 32)));
+			treeItem.setGraphic(new ImageView(new IconLoader().load(SystemConfiguration.FOLDER_ICON.getConfiguration(), 32, 32)));
 			for (var child : file.listFiles()) {
 				addNewTreeEntryFile(treeItem, child);
 			}
@@ -68,8 +68,8 @@ public class AssetExplorer extends TreeView<String>{
 		if (item.isLeaf()) {
 			try {
 				mapEditor.setMap(mapSaveLoad.load(item.getValue().toString(), false));
-			} catch (AssetNotFoundException| AssetFormatException e) {
-				LogHandler.log("Failure with the assets", Level.SEVERE);;
+			} catch (AssetNotFoundException | AssetFormatException e) {
+				LogHandler.log(e, Level.SEVERE);;
 			}
 		}
 	}

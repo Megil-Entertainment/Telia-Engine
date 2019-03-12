@@ -22,9 +22,7 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 
-public class EngineUIController {
-	private final String ASSET_EXPLORER_ROOT = "assets";
-	
+public class EngineUIController {	
 	@FXML
 	private MapEditor mapEditor;
 	@FXML
@@ -40,10 +38,10 @@ public class EngineUIController {
 		objectExplorer.setMapEditor(mapEditor);
 		objectExplorer.setMaxWidth(300);
 		try {
-			assetExplorer.initialize(ASSET_EXPLORER_ROOT, mapEditor);
+			assetExplorer.initialize(GameConfiguration.ASSETS.getConfiguration(), mapEditor);
 			assetExplorer.setMaxWidth(300);
 		} catch (AssetNotFoundException e) {
-			LogHandler.log("Asset not found", Level.SEVERE);
+			LogHandler.log(e, Level.SEVERE);
 		}
 	}
 	
