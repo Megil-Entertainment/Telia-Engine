@@ -13,7 +13,10 @@ public enum SystemConfiguration {
 	OBJECT_LIST_HOVER("objectListHover"),
 	MAP_GRID_WIDTH("mapGridWidth"),
 	MAP_GRID_HEIGHT("mapGridHeight"),
-	GAME_NAME("gameName");
+	GAME_NAME("gameName"),
+	ICONS("icons"),
+	FILE_ICON("fileIcon"),
+	FOLDER_ICON("folderIcon");
 	
 	private static Properties sysProp;
 	
