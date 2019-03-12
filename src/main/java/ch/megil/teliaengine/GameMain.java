@@ -163,11 +163,7 @@ public class GameMain {
 	
 	private void initKeyhandling() {
 		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-			if (action == GLFW_PRESS) {
-				GameLoop.get().getKeyHandler().press(key);
-			} else if (action == GLFW_RELEASE) {
-				GameLoop.get().getKeyHandler().release(key);
-			}
+			GameLoop.get().getInputHandler().registerKeyAction(key, action);
 		});
 	}
 	
