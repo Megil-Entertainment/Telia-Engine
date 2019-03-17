@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Level;
 
+import ch.megil.teliaengine.configuration.FileExtConfiguration;
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
@@ -25,7 +26,7 @@ public class MapSaveLoad {
 	
 	public void save(Map map, Player player) {
 		checkAndCreateDirectory();
-		var fileName = GameConfiguration.ASSETS_MAPS.getConfiguration() + "/" + map.getName() + GameConfiguration.FILE_EXT_MAP.getConfiguration();
+		var fileName = GameConfiguration.ASSETS_MAPS.getConfiguration() + "/" + map.getName() + FileExtConfiguration.FILE_EXT_MAP.getConfiguration();
 		
 		var propSeperator = GameConfiguration.SEPERATOR_PROPERTY.getConfiguration();
 		var entrySeperator = GameConfiguration.SEPARATOR_ENTRY.getConfiguration();
@@ -43,7 +44,7 @@ public class MapSaveLoad {
 	
 	public Map load(String mapName, boolean recoverMode) throws AssetNotFoundException, AssetFormatException {
 		var fileName = GameConfiguration.ASSETS_MAPS.getConfiguration() + "/" + mapName
-				+ GameConfiguration.FILE_EXT_MAP.getConfiguration();
+				+ FileExtConfiguration.FILE_EXT_MAP.getConfiguration();
 		var file = new File(fileName);
 
 		try (var scanner = new Scanner(file)) {

@@ -11,13 +11,13 @@ public enum ObjectListConfiguration {
 	OBJECT_LIST_BG("objectListBg"),
 	OBJECT_LIST_HOVER("objectListHover");
 	
-private static Properties sysProp;
+private static Properties objListProp;
 	
 	static {
-		sysProp = new XProperties();
+		objListProp = new XProperties();
 
-		try (var in = new FileInputStream(ConfigurationContstants.SYSTEM_CONFIGURATION)) {
-			sysProp.load(in);
+		try (var in = new FileInputStream(ConfigurationContstants.OBJECT_LIST_CONFIGURATION)) {
+			objListProp.load(in);
 		} catch (Exception e) {
 			LogHandler.log(e, Level.SEVERE);
 		}
@@ -30,6 +30,6 @@ private static Properties sysProp;
 	}
 	
 	public String getConfiguration() {
-		return sysProp.getProperty(key);
+		return objListProp.getProperty(key);
 	}
 }

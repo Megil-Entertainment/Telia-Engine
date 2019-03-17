@@ -11,13 +11,13 @@ public enum IconConfiguration {
 	FILE_ICON("fileIcon"),
 	FOLDER_ICON("folderIcon");
 	
-	private static Properties sysProp;
+	private static Properties iconProp;
 	
 	static {
-		sysProp = new XProperties();
+		iconProp = new XProperties();
 
-		try (var in = new FileInputStream(ConfigurationContstants.SYSTEM_CONFIGURATION)) {
-			sysProp.load(in);
+		try (var in = new FileInputStream(ConfigurationContstants.ICON_CONFIGURATION)) {
+			iconProp.load(in);
 		} catch (Exception e) {
 			LogHandler.log(e, Level.SEVERE);
 		}
@@ -30,6 +30,6 @@ public enum IconConfiguration {
 	}
 	
 	public String getConfiguration() {
-		return sysProp.getProperty(key);
+		return iconProp.getProperty(key);
 	}
 }

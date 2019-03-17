@@ -14,9 +14,6 @@ public enum GameConfiguration {
 	ASSET_PLAYER("assetPlayer"),
 	PLAYER_WIDTH("playerWidth"),
 	PLAYER_HEIGHT("playerHeight"),
-	FILE_EXT_MAP("fileExtMap"),
-	FILE_EXT_OBJECT("fileExtObject"),
-	FILE_EXT_TEXTURE("fileExtTexture"),
 	SEPARATOR_ENTRY("separatorEntry"),
 	SEPERATOR_PROPERTY("seperatorProperty");
 	
