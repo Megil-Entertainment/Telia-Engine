@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.logging.Level;
 
+import ch.megil.teliaengine.configuration.FileExtConfiguration;
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.Hitbox;
@@ -18,7 +19,7 @@ import javafx.scene.paint.Color;
 
 public class PlayerLoad {
 	public Player load(PlayerConstructor constructor) {
-		var fileName = GameConfiguration.ASSET_PLAYER.getConfiguration();
+		var fileName = GameConfiguration.ASSET_PLAYER.getConfiguration() + FileExtConfiguration.FILE_EXT_OBJECT.getConfiguration();
 		var file = new File(fileName);
 		
 		Image depiction = new WritableImage(Integer.parseInt(GameConfiguration.PLAYER_WIDTH.getConfiguration()),
