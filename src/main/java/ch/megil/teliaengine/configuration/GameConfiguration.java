@@ -13,9 +13,8 @@ public enum GameConfiguration {
 	ASSETS_TEXTURES("assetsTextures"),
 	ASSET_PLAYER("assetPlayer"),
 	PLAYER_WIDTH("playerWidth"),
-	PLAYER_HEIGHT("playerHeight"),
-	SEPARATOR_ENTRY("separatorEntry"),
-	SEPERATOR_PROPERTY("seperatorProperty");
+	PLAYER_HEIGHT("playerHeight");
+
 	
 	private static Properties gameProp;
 	

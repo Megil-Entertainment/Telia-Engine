@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import ch.megil.teliaengine.configuration.FileExtConfiguration;
+import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
@@ -16,15 +16,16 @@ import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.logging.LogHandler;
+import ch.megil.teliaengine.project.ProjectController;
 import javafx.scene.paint.Color;
 
 public class GameObjectSaveLoad {
 	public GameObject load(String name) throws AssetNotFoundException, AssetFormatException {
-		var fileName = GameConfiguration.ASSETS_OBJECTS.getConfiguration() + "/" + name + FileExtConfiguration.FILE_EXT_OBJECT.getConfiguration();
+		var fileName = ProjectController.get().getProjectPath() + GameConfiguration.ASSETS_OBJECTS.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
 		var file = new File(fileName);
 		
 		try (var reader = new BufferedReader(new FileReader(file))) {
-			var spec = reader.readLine().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
+			var spec = reader.readLine().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			var depiction = new TextureLoader().load(spec[2], Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			var hitbox = new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			var color = Color.web(spec[3]);
@@ -45,7 +46,7 @@ public class GameObjectSaveLoad {
 		var path = new File(GameConfiguration.ASSETS_OBJECTS.getConfiguration());
 		
 		for (var file : path.list()) {
-			var name = file.split(FileExtConfiguration.FILE_EXT_OBJECT.getConfiguration())[0];
+			var name = file.split(FileConfiguration.FILE_EXT_OBJECT.getConfiguration())[0];
 			try {
 				res.add(load(name));
 			} catch (AssetNotFoundException | AssetFormatException e) {

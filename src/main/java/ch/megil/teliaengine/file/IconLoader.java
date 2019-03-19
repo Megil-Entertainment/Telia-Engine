@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import ch.megil.teliaengine.configuration.FileExtConfiguration;
+import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.configuration.IconConfiguration;
 import ch.megil.teliaengine.configuration.SystemConfiguration;
@@ -13,7 +13,7 @@ import javafx.scene.image.Image;
 
 public class IconLoader {
 	public Image load(String name, double width, double height) throws AssetNotFoundException {
-		var fileName = IconConfiguration.ICONS.getConfiguration() + "/" + name + FileExtConfiguration.FILE_EXT_TEXTURE.getConfiguration();
+		var fileName = IconConfiguration.ICONS.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration();
 		var file = new File(fileName);
 		
 		try (var is = new FileInputStream(file)) {

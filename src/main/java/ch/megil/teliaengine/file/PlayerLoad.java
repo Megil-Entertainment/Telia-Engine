@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.logging.Level;
 
-import ch.megil.teliaengine.configuration.FileExtConfiguration;
+import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.Hitbox;
@@ -19,7 +19,7 @@ import javafx.scene.paint.Color;
 
 public class PlayerLoad {
 	public Player load(PlayerConstructor constructor) {
-		var fileName = GameConfiguration.ASSET_PLAYER.getConfiguration() + FileExtConfiguration.FILE_EXT_OBJECT.getConfiguration();
+		var fileName = GameConfiguration.ASSET_PLAYER.getConfiguration() + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
 		var file = new File(fileName);
 		
 		Image depiction = new WritableImage(Integer.parseInt(GameConfiguration.PLAYER_WIDTH.getConfiguration()),
@@ -31,9 +31,9 @@ public class PlayerLoad {
 		var color = Color.BLACK;
 		
 		try (var scanner = new Scanner(file)) {
-			scanner.useDelimiter(GameConfiguration.SEPARATOR_ENTRY.getConfiguration());
+			scanner.useDelimiter(FileConfiguration.SEPARATOR_ENTRY.getConfiguration());
 			
-			var spec = scanner.next().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
+			var spec = scanner.next().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			depiction = new TextureLoader().load(spec[2], Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			hitbox =  new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			color = Color.web(spec[3]);

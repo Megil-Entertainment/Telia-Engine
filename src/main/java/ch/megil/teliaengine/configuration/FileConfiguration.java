@@ -6,18 +6,20 @@ import java.util.logging.Level;
 
 import ch.megil.teliaengine.logging.LogHandler;
 
-public enum FileExtConfiguration {
+public enum FileConfiguration {
 	FILE_EXT_MAP("fileExtMap"),
 	FILE_EXT_OBJECT("fileExtObject"),
-	FILE_EXT_TEXTURE("fileExtTexture");
+	FILE_EXT_TEXTURE("fileExtTexture"),
+	SEPARATOR_ENTRY("separatorEntry"),
+	SEPERATOR_PROPERTY("seperatorProperty");
 	
-private static Properties fileExtProp;
+private static Properties fileProp;
 	
 	static {
-		fileExtProp = new XProperties();
+		fileProp = new XProperties();
 
-		try (var in = new FileInputStream(ConfigurationContstants.FILE_EXT_CONFIGURATION)) {
-			fileExtProp.load(in);
+		try (var in = new FileInputStream(ConfigurationContstants.FILE_CONFIGURATION)) {
+			fileProp.load(in);
 		} catch (Exception e) {
 			LogHandler.log(e, Level.SEVERE);
 		}
@@ -25,11 +27,11 @@ private static Properties fileExtProp;
 	
 	private String key;
 	
-	private FileExtConfiguration(String key) {
+	private FileConfiguration(String key) {
 		this.key = key;
 	}
 	
 	public String getConfiguration() {
-		return fileExtProp.getProperty(key);
+		return fileProp.getProperty(key);
 	}
 }
