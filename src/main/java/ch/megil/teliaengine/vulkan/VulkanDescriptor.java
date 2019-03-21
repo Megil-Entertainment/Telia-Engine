@@ -1,10 +1,10 @@
 package ch.megil.teliaengine.vulkan;
 
 import static org.lwjgl.system.MemoryUtil.memAllocLong;
+import static org.lwjgl.system.MemoryUtil.memFree;
 import static org.lwjgl.vulkan.VK10.*;
 
-import org.lwjgl.vulkan.VkDescriptorSetLayoutBinding;
-import org.lwjgl.vulkan.VkDescriptorSetLayoutCreateInfo;
+import org.lwjgl.vulkan.*;
 
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
@@ -13,7 +13,48 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
  * needs to be cleaned up before destruction with {@link #cleanUp}.
  */
 public class VulkanDescriptor {
+	private long pool;
+	private long layout;
+	private long set;
+	
 	public void init(VulkanLogicalDevice logicalDevice) throws VulkanException {
+		initPool(logicalDevice.get());
+		initLayout(logicalDevice.get());
+		initSet(logicalDevice.get());
+	}
+	
+	private void initPool(VkDevice device) throws VulkanException {
+		var pPool = memAllocLong(1);
+		
+		var poolSizes = VkDescriptorPoolSize.calloc(2);
+		poolSizes.get(0)
+			.type(VK_DESCRIPTOR_TYPE_SAMPLER)
+			.descriptorCount(1);
+		
+		poolSizes.get(1)
+			.type(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE)
+			.descriptorCount(8);
+		
+		var createInfo = VkDescriptorPoolCreateInfo.calloc()
+				.sType(VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO)
+				.pPoolSizes(poolSizes)
+				.maxSets(9);
+		
+		var res = vkCreateDescriptorPool(device, createInfo, null, pPool);
+		
+		try {
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
+			pool = pPool.get(0);
+		} finally {
+			createInfo.free();
+		}
+	}
+	
+	private void initLayout(VkDevice device) throws VulkanException {
+		var pLayout = memAllocLong(1);
+		
 		var descriptorLayout = VkDescriptorSetLayoutBinding.calloc(2);
 		descriptorLayout.get(0)
 			.binding(0)
@@ -31,21 +72,62 @@ public class VulkanDescriptor {
 				.sType(VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO)
 				.pBindings(descriptorLayout);
 		VkDescriptorSetLayoutCreateInfo.nbindingCount(createInfo.address(), 2);
-		
-		var layout = memAllocLong(1);
-		var res = vkCreateDescriptorSetLayout(logicalDevice.get(), createInfo, null, layout);
+
+		var res = vkCreateDescriptorSetLayout(device, createInfo, null, pLayout);
 		
 		try {
 			if (res != VK_SUCCESS) {
 				throw new VulkanException(res);
 			}
+			
+			layout = pLayout.get(0);
 		} finally {
 			createInfo.free();
 			descriptorLayout.free();
+			memFree(pLayout);
 		}
 	}
 	
-	public void cleanUp() {
+	private void initSet(VkDevice device) throws VulkanException {
+		var pLayout = memAllocLong(1).put(layout);
+		var pSet = memAllocLong(1);
 		
+		var allocInfo = VkDescriptorSetAllocateInfo.calloc()
+				.sType(VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO)
+				.descriptorPool(pool)
+				.pSetLayouts(pLayout);
+		
+		VkDescriptorSetAllocateInfo.ndescriptorSetCount(allocInfo.address(), 1);
+		
+		try {
+			
+			var res = vkAllocateDescriptorSets(device, allocInfo, pSet);
+			if (res != VK_SUCCESS) {
+				throw new VulkanException(res);
+			}
+			
+			set = pSet.get(0);
+		} finally {
+			allocInfo.free();
+			memFree(pLayout);
+			memFree(pSet);
+		}
+	}
+	
+	public void cleanUp(VulkanLogicalDevice logicalDevice) {
+		if (set != VK_NULL_HANDLE) {
+			vkFreeDescriptorSets(logicalDevice.get(), pool, set);
+			set = VK_NULL_HANDLE;
+		}
+		
+		if (layout != VK_NULL_HANDLE) {
+			vkDestroyDescriptorSetLayout(logicalDevice.get(), layout, null);
+			layout = VK_NULL_HANDLE;
+		}
+		
+		if (pool != VK_NULL_HANDLE) {
+			vkDestroyDescriptorPool(logicalDevice.get(), pool, null);
+			pool = VK_NULL_HANDLE;
+		}
 	}
 }
