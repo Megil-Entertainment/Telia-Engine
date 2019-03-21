@@ -39,6 +39,7 @@ public class VulkanDescriptor {
 				.sType(VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO)
 				.pPoolSizes(poolSizes)
 				.maxSets(9);
+		VkDescriptorPoolCreateInfo.npoolSizeCount(createInfo.address(), 2);
 		
 		var res = vkCreateDescriptorPool(device, createInfo, null, pPool);
 		
@@ -55,14 +56,14 @@ public class VulkanDescriptor {
 	private void initLayout(VkDevice device) throws VulkanException {
 		var pLayout = memAllocLong(1);
 		
-		var descriptorLayout = VkDescriptorSetLayoutBinding.calloc(2);
-		descriptorLayout.get(0)
+		var layoutBindings = VkDescriptorSetLayoutBinding.calloc(2);
+		layoutBindings.get(0)
 			.binding(0)
 			.descriptorCount(1)
 			.stageFlags(VK_SHADER_STAGE_FRAGMENT_BIT)
 			.descriptorType(VK_DESCRIPTOR_TYPE_SAMPLER);
 		
-		descriptorLayout.get(1)
+		layoutBindings.get(1)
 			.binding(1)
 			.descriptorCount(8)
 			.stageFlags(VK_SHADER_STAGE_FRAGMENT_BIT)
@@ -70,7 +71,7 @@ public class VulkanDescriptor {
 		
 		var createInfo = VkDescriptorSetLayoutCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO)
-				.pBindings(descriptorLayout);
+				.pBindings(layoutBindings);
 		VkDescriptorSetLayoutCreateInfo.nbindingCount(createInfo.address(), 2);
 
 		var res = vkCreateDescriptorSetLayout(device, createInfo, null, pLayout);
@@ -83,12 +84,13 @@ public class VulkanDescriptor {
 			layout = pLayout.get(0);
 		} finally {
 			createInfo.free();
-			descriptorLayout.free();
+			layoutBindings.free();
 			memFree(pLayout);
 		}
 	}
 	
 	private void initSet(VkDevice device) throws VulkanException {
+		//TODO: find bug
 		var pLayout = memAllocLong(1).put(layout);
 		var pSet = memAllocLong(1);
 		
@@ -96,11 +98,9 @@ public class VulkanDescriptor {
 				.sType(VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO)
 				.descriptorPool(pool)
 				.pSetLayouts(pLayout);
-		
-		VkDescriptorSetAllocateInfo.ndescriptorSetCount(allocInfo.address(), 1);
+		VkDescriptorSetAllocateInfo.ndescriptorSetCount(allocInfo.address(), 2);
 		
 		try {
-			
 			var res = vkAllocateDescriptorSets(device, allocInfo, pSet);
 			if (res != VK_SUCCESS) {
 				throw new VulkanException(res);
@@ -115,10 +115,10 @@ public class VulkanDescriptor {
 	}
 	
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {
-		if (set != VK_NULL_HANDLE) {
-			vkFreeDescriptorSets(logicalDevice.get(), pool, set);
-			set = VK_NULL_HANDLE;
-		}
+//		if (set != VK_NULL_HANDLE) {
+//			vkFreeDescriptorSets(logicalDevice.get(), pool, set);
+//			set = VK_NULL_HANDLE;
+//		}
 		
 		if (layout != VK_NULL_HANDLE) {
 			vkDestroyDescriptorSetLayout(logicalDevice.get(), layout, null);
