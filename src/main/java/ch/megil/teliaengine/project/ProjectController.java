@@ -5,12 +5,13 @@ import java.io.File;
 import ch.megil.teliaengine.configuration.PhysicsConstants;
 
 public class ProjectController {
+	private final String DOT_DIRECTORY = ".";
 	private static ProjectController instance;
 	
 	private File project;
 	
 	private ProjectController() {
-		project = new File(".");
+		project = new File(DOT_DIRECTORY);
 	}
 	
 	public static ProjectController get() {
