@@ -21,7 +21,7 @@ import javafx.scene.paint.Color;
 
 public class GameObjectSaveLoad {
 	public GameObject load(String name) throws AssetNotFoundException, AssetFormatException {
-		var fileName = ProjectController.get().getProjectPath() + GameConfiguration.ASSETS_OBJECTS.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
+		var fileName = GameConfiguration.ASSETS_OBJECTS.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
 		var file = new File(fileName);
 		
 		try (var reader = new BufferedReader(new FileReader(file))) {
