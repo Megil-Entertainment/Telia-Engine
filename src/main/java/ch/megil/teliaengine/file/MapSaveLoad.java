@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Level;
 
+import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
@@ -25,10 +26,10 @@ public class MapSaveLoad {
 	
 	public void save(Map map, Player player) {
 		checkAndCreateDirectory();
-		var fileName = GameConfiguration.ASSETS_MAPS.getConfiguration() + "/" + map.getName() + GameConfiguration.FILE_EXT_MAP.getConfiguration();
+		var fileName = GameConfiguration.ASSETS_MAPS.getConfiguration() + "/" + map.getName() + FileConfiguration.FILE_EXT_MAP.getConfiguration();
 		
-		var propSeperator = GameConfiguration.SEPERATOR_PROPERTY.getConfiguration();
-		var entrySeperator = GameConfiguration.SEPARATOR_ENTRY.getConfiguration();
+		var propSeperator = FileConfiguration.SEPERATOR_PROPERTY.getConfiguration();
+		var entrySeperator = FileConfiguration.SEPARATOR_ENTRY.getConfiguration();
 		
 		try (var writer = new BufferedWriter(new FileWriter(fileName))) {
 			writer.write(map.getWidth() + propSeperator + map.getHeight() + entrySeperator);
@@ -43,14 +44,14 @@ public class MapSaveLoad {
 	
 	public Map load(String mapName, boolean recoverMode) throws AssetNotFoundException, AssetFormatException {
 		var fileName = GameConfiguration.ASSETS_MAPS.getConfiguration() + "/" + mapName
-				+ GameConfiguration.FILE_EXT_MAP.getConfiguration();
+				+ FileConfiguration.FILE_EXT_MAP.getConfiguration();
 		var file = new File(fileName);
 
 		try (var scanner = new Scanner(file)) {
-			scanner.useDelimiter(GameConfiguration.SEPARATOR_ENTRY.getConfiguration());
+			scanner.useDelimiter(FileConfiguration.SEPARATOR_ENTRY.getConfiguration());
 
-			var mapSize = scanner.next().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
-			var playerPos = scanner.next().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
+			var mapSize = scanner.next().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
+			var playerPos = scanner.next().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			
 			var player = Player.get();
 			player.setPosX(Double.parseDouble(playerPos[0]));
@@ -60,7 +61,7 @@ public class MapSaveLoad {
 
 			var objectLoader = new GameObjectSaveLoad();
 			while (scanner.hasNext()) {
-				var objSpec = scanner.next().split(GameConfiguration.SEPERATOR_PROPERTY.getConfiguration());
+				var objSpec = scanner.next().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 				try {
 					var obj = objectLoader.load(objSpec[0]);
 					obj.setPosX(Double.parseDouble(objSpec[1]));

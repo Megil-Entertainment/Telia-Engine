@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import ch.megil.teliaengine.GameMain;
+import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.file.MapSaveLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
@@ -70,7 +71,7 @@ public class EngineUIController {
 	private void fileLoadMap() {
 		var mapDir = new File(GameConfiguration.ASSETS_MAPS.getConfiguration());
 		var mapNames = Arrays.stream(mapDir.listFiles())
-				.map(m -> m.getName().replace(GameConfiguration.FILE_EXT_MAP.getConfiguration(), "")).sorted()
+				.map(m -> m.getName().replace(FileConfiguration.FILE_EXT_MAP.getConfiguration(), "")).sorted()
 				.collect(Collectors.toList());
 
 		if (mapNames.size() == 0) {
