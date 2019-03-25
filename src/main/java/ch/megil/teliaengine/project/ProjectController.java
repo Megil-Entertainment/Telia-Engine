@@ -2,6 +2,7 @@ package ch.megil.teliaengine.project;
 
 import java.io.File;
 
+import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.configuration.PhysicsConstants;
 
 public class ProjectController {
@@ -28,6 +29,7 @@ public class ProjectController {
 	
 	private void refresh() {
 		PhysicsConstants.reload();
+		GameConfiguration.reload();
 	}
 	
 	public String getProjectPath() {
