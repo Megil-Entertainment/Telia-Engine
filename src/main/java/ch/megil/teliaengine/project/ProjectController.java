@@ -27,7 +27,6 @@ public class ProjectController {
 	}
 	
 	private void refresh() {
-		//TODO: Refresh Configuration
 		PhysicsConstants.reload();
 	}
 	

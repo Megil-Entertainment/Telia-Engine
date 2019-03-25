@@ -5,6 +5,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 import ch.megil.teliaengine.logging.LogHandler;
+import ch.megil.teliaengine.project.ProjectController;
 
 public enum GameConfiguration {
 	ASSETS("assets"),
@@ -19,9 +20,12 @@ public enum GameConfiguration {
 	private static Properties gameProp;
 	
 	static {
+		reload();
+	}
+	
+	public static void reload() {
 		gameProp = new XProperties();
-
-		try (var in = new FileInputStream(ConfigurationContstants.GAME_CONFIGURATION)) {
+		try (var in = new FileInputStream(ProjectController.get().getProjectPath() + ConfigurationContstants.GAME_CONFIGURATION)) {
 			gameProp.load(in);
 		} catch (Exception e) {
 			LogHandler.log(e, Level.SEVERE);

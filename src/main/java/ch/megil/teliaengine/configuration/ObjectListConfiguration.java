@@ -7,11 +7,10 @@ import java.util.logging.Level;
 import ch.megil.teliaengine.logging.LogHandler;
 
 public enum ObjectListConfiguration {
-	
 	OBJECT_LIST_BG("objectListBg"),
 	OBJECT_LIST_HOVER("objectListHover");
 	
-private static Properties objListProp;
+	private static Properties objListProp;
 	
 	static {
 		objListProp = new XProperties();
