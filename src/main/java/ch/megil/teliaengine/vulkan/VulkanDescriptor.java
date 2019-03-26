@@ -4,6 +4,8 @@ import static org.lwjgl.system.MemoryUtil.memAllocLong;
 import static org.lwjgl.system.MemoryUtil.memFree;
 import static org.lwjgl.vulkan.VK10.*;
 
+import java.nio.LongBuffer;
+
 import org.lwjgl.vulkan.*;
 
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
@@ -14,12 +16,12 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
  */
 public class VulkanDescriptor {
 	private long pool;
-	private long layout;
+	private LongBuffer layout;
 	private long set;
 	
 	public void init(VulkanLogicalDevice logicalDevice) throws VulkanException {
 		initPool(logicalDevice.get());
-		initLayout(logicalDevice.get());
+		layout = initLayout(logicalDevice.get());
 		initSet(logicalDevice.get());
 	}
 	
@@ -53,7 +55,7 @@ public class VulkanDescriptor {
 		}
 	}
 	
-	private void initLayout(VkDevice device) throws VulkanException {
+	private LongBuffer initLayout(VkDevice device) throws VulkanException {
 		var pLayout = memAllocLong(1);
 		
 		var layoutBindings = VkDescriptorSetLayoutBinding.calloc(2);
@@ -75,30 +77,26 @@ public class VulkanDescriptor {
 		VkDescriptorSetLayoutCreateInfo.nbindingCount(createInfo.address(), 2);
 
 		var res = vkCreateDescriptorSetLayout(device, createInfo, null, pLayout);
-		
 		try {
 			if (res != VK_SUCCESS) {
 				throw new VulkanException(res);
 			}
 			
-			layout = pLayout.get(0);
+			return pLayout;
 		} finally {
 			createInfo.free();
 			layoutBindings.free();
-			memFree(pLayout);
 		}
 	}
 	
 	private void initSet(VkDevice device) throws VulkanException {
-		//TODO: find bug
-		var pLayout = memAllocLong(1).put(layout);
 		var pSet = memAllocLong(1);
 		
 		var allocInfo = VkDescriptorSetAllocateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO)
 				.descriptorPool(pool)
-				.pSetLayouts(pLayout);
-		VkDescriptorSetAllocateInfo.ndescriptorSetCount(allocInfo.address(), 2);
+				.pSetLayouts(layout);
+		VkDescriptorSetAllocateInfo.ndescriptorSetCount(allocInfo.address(), 1);
 		
 		try {
 			var res = vkAllocateDescriptorSets(device, allocInfo, pSet);
@@ -109,20 +107,20 @@ public class VulkanDescriptor {
 			set = pSet.get(0);
 		} finally {
 			allocInfo.free();
-			memFree(pLayout);
 			memFree(pSet);
 		}
 	}
 	
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {
-//		if (set != VK_NULL_HANDLE) {
-//			vkFreeDescriptorSets(logicalDevice.get(), pool, set);
-//			set = VK_NULL_HANDLE;
-//		}
+		if (set != VK_NULL_HANDLE) {
+			vkFreeDescriptorSets(logicalDevice.get(), pool, set);
+			set = VK_NULL_HANDLE;
+		}
 		
-		if (layout != VK_NULL_HANDLE) {
-			vkDestroyDescriptorSetLayout(logicalDevice.get(), layout, null);
-			layout = VK_NULL_HANDLE;
+		if (layout != null) {
+			vkDestroyDescriptorSetLayout(logicalDevice.get(), layout.get(0), null);
+			memFree(layout);
+			layout = null;
 		}
 		
 		if (pool != VK_NULL_HANDLE) {
