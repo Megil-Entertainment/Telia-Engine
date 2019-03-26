@@ -15,6 +15,10 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
  * needs to be cleaned up before destruction with {@link #cleanUp}.
  */
 public class VulkanDescriptor {
+	public static final int SAMPLER_COUNT = 1;
+	public static final int IMAGE_COUNT = 8;
+	public static final int BINDING_COUNT = 2;
+	
 	private long pool;
 	private LongBuffer layout;
 	private long set;
@@ -27,21 +31,21 @@ public class VulkanDescriptor {
 	
 	private void initPool(VkDevice device) throws VulkanException {
 		var pPool = memAllocLong(1);
-		
-		var poolSizes = VkDescriptorPoolSize.calloc(2);
+
+		var poolSizes = VkDescriptorPoolSize.calloc(BINDING_COUNT);
 		poolSizes.get(0)
 			.type(VK_DESCRIPTOR_TYPE_SAMPLER)
-			.descriptorCount(1);
+			.descriptorCount(SAMPLER_COUNT);
 		
 		poolSizes.get(1)
 			.type(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE)
-			.descriptorCount(8);
+			.descriptorCount(IMAGE_COUNT);
 		
 		var createInfo = VkDescriptorPoolCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO)
 				.pPoolSizes(poolSizes)
-				.maxSets(9);
-		VkDescriptorPoolCreateInfo.npoolSizeCount(createInfo.address(), 2);
+				.maxSets(SAMPLER_COUNT + IMAGE_COUNT);
+		VkDescriptorPoolCreateInfo.npoolSizeCount(createInfo.address(), BINDING_COUNT);
 		
 		var res = vkCreateDescriptorPool(device, createInfo, null, pPool);
 		
@@ -58,23 +62,23 @@ public class VulkanDescriptor {
 	private LongBuffer initLayout(VkDevice device) throws VulkanException {
 		var pLayout = memAllocLong(1);
 		
-		var layoutBindings = VkDescriptorSetLayoutBinding.calloc(2);
+		var layoutBindings = VkDescriptorSetLayoutBinding.calloc(BINDING_COUNT);
 		layoutBindings.get(0)
 			.binding(0)
-			.descriptorCount(1)
+			.descriptorCount(SAMPLER_COUNT)
 			.stageFlags(VK_SHADER_STAGE_FRAGMENT_BIT)
 			.descriptorType(VK_DESCRIPTOR_TYPE_SAMPLER);
 		
 		layoutBindings.get(1)
 			.binding(1)
-			.descriptorCount(8)
+			.descriptorCount(IMAGE_COUNT)
 			.stageFlags(VK_SHADER_STAGE_FRAGMENT_BIT)
 			.descriptorType(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE);
 		
 		var createInfo = VkDescriptorSetLayoutCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO)
 				.pBindings(layoutBindings);
-		VkDescriptorSetLayoutCreateInfo.nbindingCount(createInfo.address(), 2);
+		VkDescriptorSetLayoutCreateInfo.nbindingCount(createInfo.address(), BINDING_COUNT);
 
 		var res = vkCreateDescriptorSetLayout(device, createInfo, null, pLayout);
 		try {
