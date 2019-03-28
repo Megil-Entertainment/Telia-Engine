@@ -18,10 +18,11 @@ import ch.megil.teliaengine.vulkan.VulkanQueue;
 import ch.megil.teliaengine.vulkan.buffer.VulkanImageSrcBuffer;
 import ch.megil.teliaengine.vulkan.command.VulkanSingleCommandBuffer;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
+import ch.megil.teliaengine.vulkan.image.VulkanImage;
 import ch.megil.teliaengine.vulkan.image.VulkanTexture;
 
 public class VulkanTextureLoader {
-	public void load(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, VulkanQueue queue, VulkanSingleCommandBuffer cmdBuffer, String name, double width, double height) throws AssetNotFoundException, VulkanException {
+	public VulkanImage load(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, VulkanQueue queue, VulkanSingleCommandBuffer cmdBuffer, String name, double width, double height) throws AssetNotFoundException, VulkanException {
 		var fileName = GameConfiguration.ASSETS_TEXTURES.getConfiguration() + "/" + name + GameConfiguration.FILE_EXT_TEXTURE.getConfiguration();
 		
 		var pTexWidth = memAllocInt(1);
@@ -41,7 +42,7 @@ public class VulkanTextureLoader {
 		var image = new VulkanTexture();
 		
 		try {
-			buffer.init(physicalDevice, logicalDevice, size);
+			buffer.init(physicalDevice, logicalDevice, size, new int[] {queue.getGraphicsFamily(), queue.getPresentFamily()});
 			buffer.writeImage(logicalDevice, pixels);
 			
 			image.init(physicalDevice, logicalDevice, texWidth, texHeight, format);
@@ -50,6 +51,8 @@ public class VulkanTextureLoader {
 			image.transition(queue, cmdBuffer, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 			
 			image.createView(logicalDevice);
+			
+			return image;
 		} catch (Exception e) {
 			image.cleanUp(logicalDevice);
 			throw e;

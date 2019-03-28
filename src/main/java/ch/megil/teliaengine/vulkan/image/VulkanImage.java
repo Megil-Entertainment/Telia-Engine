@@ -204,6 +204,10 @@ public abstract class VulkanImage {
 		}
 	}
 	
+	public long getImageView() {
+		return imageView;
+	}
+	
 	//TODO: call
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {
 		if (imageView != VK_NULL_HANDLE) {

@@ -115,6 +115,10 @@ public class VulkanDescriptor {
 		}
 	}
 	
+	public long getSet() {
+		return set;
+	}
+	
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {
 		if (set != VK_NULL_HANDLE) {
 			vkFreeDescriptorSets(logicalDevice.get(), pool, set);

@@ -3,19 +3,17 @@ package ch.megil.teliaengine;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
 import static org.lwjgl.glfw.GLFWVulkan.glfwVulkanSupported;
-import static org.lwjgl.system.MemoryUtil.NULL;
-import static org.lwjgl.system.MemoryUtil.memAllocInt;
-import static org.lwjgl.system.MemoryUtil.memAllocLong;
-import static org.lwjgl.system.MemoryUtil.memAllocPointer;
-import static org.lwjgl.system.MemoryUtil.memFree;
+import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.vulkan.KHRSwapchain.VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 import static org.lwjgl.vulkan.KHRSwapchain.vkAcquireNextImageKHR;
 import static org.lwjgl.vulkan.KHRSwapchain.vkQueuePresentKHR;
 import static org.lwjgl.vulkan.VK10.*;
 
 import org.lwjgl.vulkan.VkClearValue;
+import org.lwjgl.vulkan.VkDescriptorImageInfo;
 import org.lwjgl.vulkan.VkPresentInfoKHR;
 import org.lwjgl.vulkan.VkSubmitInfo;
+import org.lwjgl.vulkan.VkWriteDescriptorSet;
 
 import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.file.MapSaveLoad;
@@ -112,10 +110,66 @@ public class GameMain {
 		try {
 			init();
 			//TODO: remove when finished with texture loader
+			//start texture test block
 			var pool = new VulkanSingleCommandPool();
 			pool.init(logicalDevice, queue);
-			new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, pool.getCommandBuffer(logicalDevice), "player", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
+			var image = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, pool.getCommandBuffer(logicalDevice), "player", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
 			pool.cleanUp(logicalDevice);
+			var descImageInfo = VkDescriptorImageInfo.calloc(8);
+			descImageInfo.get(0)
+				.sampler(VK_NULL_HANDLE)
+				.imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+				.imageView(image.getImageView());
+			
+//			VkWriteDescriptorSet setWrites[2];
+			var setWrites = VkWriteDescriptorSet.calloc(2);
+//
+//			VkDescriptorImageInfo samplerInfo = {};
+//			samplerInfo.sampler = demoData.sampler;
+			var descSamplerInfo = VkDescriptorImageInfo.calloc(1);
+			descSamplerInfo.sampler(sampler.get());
+//
+//			setWrites[0] = {};
+//			setWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+//			setWrites[0].dstBinding = 0;
+//			setWrites[0].dstArrayElement = 0;
+//			setWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+//			setWrites[0].descriptorCount = 1;
+//			setWrites[0].dstSet = demoData.descriptorSet;
+//			setWrites[0].pBufferInfo = 0;
+//			setWrites[0].pImageInfo = &samplerInfo;
+			setWrites.get(0)
+				.sType(VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET)
+				.dstBinding(0)
+				.dstArrayElement(0)
+				.descriptorType(VK_DESCRIPTOR_TYPE_SAMPLER)
+				.dstSet(descriptor.getSet())
+				//check buffer info
+				.pImageInfo(descSamplerInfo);
+			VkWriteDescriptorSet.ndescriptorCount(setWrites.get(0).address(), 1);
+//
+//			setWrites[1] = {};
+//			setWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+//			setWrites[1].dstBinding = 1;
+//			setWrites[1].dstArrayElement = 0;
+//			setWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+//			setWrites[1].descriptorCount = TEXTURE_ARRAY_SIZE;
+//			setWrites[1].pBufferInfo = 0;
+//			setWrites[1].dstSet = demoData.descriptorSet;
+//			setWrites[1].pImageInfo = demoData.descriptorImageInfos;
+			setWrites.get(1)
+				.sType(VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET)
+				.dstBinding(1)
+				.dstArrayElement(0)
+				.descriptorType(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE)
+				.dstSet(descriptor.getSet())
+				//check buffer info
+				.pImageInfo(descImageInfo);
+			VkWriteDescriptorSet.ndescriptorCount(setWrites.get(1).address(), 1);
+//
+//			vkUpdateDescriptorSets(appContext.device, 2, setWrites, 0, nullptr);
+			vkUpdateDescriptorSets(logicalDevice.get(), setWrites, null);
+			//end texture test block
 			
 			vertexBuffer.writeVertecies(logicalDevice, map);
 			indexBuffer.writeIndicies(logicalDevice, map);
@@ -158,8 +212,8 @@ public class GameMain {
 		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer);
 		framebuffers.init(logicalDevice, swapchain, renderPass);
 		renderCommandPool.init(logicalDevice, queue, swapchain);
-		vertexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfVertecies() + player.getNumberOfVertecies());
-		indexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfIndecies() + player.getNumberOfIndecies());
+		vertexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfVertecies() + player.getNumberOfVertecies(), new int[] {queue.getGraphicsFamily()});
+		indexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfIndecies() + player.getNumberOfIndecies(), new int[] {queue.getGraphicsFamily()});
 		
 		var clearColor = VkClearValue.calloc(1);
 		clearColor.color()

@@ -1,5 +1,6 @@
 package ch.megil.teliaengine.vulkan.buffer;
 
+import static org.lwjgl.system.MemoryUtil.memAllocInt;
 import static org.lwjgl.system.MemoryUtil.memAllocLong;
 import static org.lwjgl.system.MemoryUtil.memAllocPointer;
 import static org.lwjgl.system.MemoryUtil.memCopy;
@@ -32,15 +33,24 @@ public abstract class VulkanBuffer {
 	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
 	 * @param size bytesize of the buffer
 	 * @param usage of the buffer (see {@link VK10#VK_BUFFER_USAGE_INDEX_BUFFER_BIT})
-	 * @param sharingMode of the buffer (see {@link VK10#VK_SHARING_MODE_EXCLUSIVE})
+	 * @param queueFamilyIndecies of the queues the buffer will be used on
 	 * @param memProperties memory properties of the buffer (see {@link VK10#VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT})
 	 */
-	protected void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, long size, int usage, int sharingMode, int memProperties) throws VulkanException {
+	protected void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, long size, int usage, int[] queueFamilyIndecies, int memProperties) throws VulkanException {
+		var pQueueIndecies = memAllocInt(queueFamilyIndecies.length).put(queueFamilyIndecies);
+		
+		var sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		if (queueFamilyIndecies.length > 1) {
+			sharingMode = VK_SHARING_MODE_CONCURRENT;
+		}
+		
 		var bufferInfo = VkBufferCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO)
 				.size(size)
 				.usage(usage)
-				.sharingMode(sharingMode);
+				.sharingMode(sharingMode)
+				.pQueueFamilyIndices(pQueueIndecies);
+		VkBufferCreateInfo.nqueueFamilyIndexCount(bufferInfo.address(), queueFamilyIndecies.length);
 		
         var memoryRequirements = VkMemoryRequirements.calloc();
 		
@@ -69,14 +79,15 @@ public abstract class VulkanBuffer {
 			memFree(pBuffer);
 			memoryRequirements.free();
 			bufferInfo.free();
+			memFree(pQueueIndecies);
 		}
 	}
 	
-	protected void write(VulkanLogicalDevice logicalDevice, long address, long size) throws VulkanException {
-		write(logicalDevice, address, size, MAP_OFFSET);
+	protected void write(VulkanLogicalDevice logicalDevice, long address, long size, boolean bindMemory) throws VulkanException {
+		write(logicalDevice, address, size, MAP_OFFSET, bindMemory);
 	}
 	
-	protected void write(VulkanLogicalDevice logicalDevice, long address, long size, long offset) throws VulkanException {
+	protected void write(VulkanLogicalDevice logicalDevice, long address, long size, long offset, boolean bindMemory) throws VulkanException {
 		var pData = memAllocPointer(1);
 		var res = vkMapMemory(logicalDevice.get(), memory, offset, bufferSize, NO_FLAGS, pData);
 		
@@ -87,9 +98,11 @@ public abstract class VulkanBuffer {
 			memCopy(address, pData.get(), size);
 			vkUnmapMemory(logicalDevice.get(), memory);
 			
-			res = vkBindBufferMemory(logicalDevice.get(), buffer, memory, MEMORY_OFFSET);
-			if (res != VK_SUCCESS) {
-				throw new VulkanException(res);
+			if (bindMemory) {
+				res = vkBindBufferMemory(logicalDevice.get(), buffer, memory, MEMORY_OFFSET);
+				if (res != VK_SUCCESS) {
+					throw new VulkanException(res);
+				}
 			}
 		} finally {
 			memFree(pData);

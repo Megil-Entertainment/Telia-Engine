@@ -21,20 +21,24 @@ import ch.megil.teliaengine.vulkan.obj.VulkanObject;
  */
 public class VulkanVertexBuffer extends VulkanBuffer {
 	private static final int VALUE_SIZE = 4;
-	private static final int VERTEX_VALUES = 2+3; //2 cords + 3 colors
+	private static final int VERTEX_VALUES = 2+3+2; //2 cords + 3 colors + 2 tex cords
 	public static final int VERTEX_SIZE = VERTEX_VALUES*VALUE_SIZE;
 	private static final int COLOR_OFFSET = 2*VALUE_SIZE;
+	private static final int TEXTURE_OFFSET = (2+3)*VALUE_SIZE;
 	
 	private static final float CLEAR_VALUE = 0.0f;
+	
+	private static final boolean BIND_MEMORY = true;
 	
 	private int maxVertecies;
 	
 	/**
 	 * @param physicalDevice An initialized {@link VulkanPhysicalDevice}
 	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
+	 * @param queueFamilyIndecies of the queues the buffer will be used on
 	 */
-	public void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, int maxVertecies) throws VulkanException {
-		super.init(physicalDevice, logicalDevice, VERTEX_SIZE*maxVertecies, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_SHARING_MODE_EXCLUSIVE, (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
+	public void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, int maxVertecies, int[] queueFamilyIndecies) throws VulkanException {
+		super.init(physicalDevice, logicalDevice, VERTEX_SIZE*maxVertecies, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, queueFamilyIndecies, (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
 		this.maxVertecies = maxVertecies;
 		clearBuffer(logicalDevice);
 	}
@@ -47,17 +51,17 @@ public class VulkanVertexBuffer extends VulkanBuffer {
 			fb.put(CLEAR_VALUE);
 		}
 		
-		write(logicalDevice, memAddress(buffer), buffer.capacity());
+		write(logicalDevice, memAddress(buffer), buffer.capacity(), BIND_MEMORY);
 		
 		memFree(buffer);
 	}
 	
 	public void writeVertecies(VulkanLogicalDevice logicalDevice, VulkanObject vulkanObject) throws VulkanException {
-		super.write(logicalDevice, vulkanObject.getVerteciesAddress(), vulkanObject.getVerteciesSize());
+		super.write(logicalDevice, vulkanObject.getVerteciesAddress(), vulkanObject.getVerteciesSize(), BIND_MEMORY);
 	}
 	
 	public void writeVertecies(VulkanLogicalDevice logicalDevice, VulkanObject vulkanObject, int vertexOffset) throws VulkanException {
-		super.write(logicalDevice, vulkanObject.getVerteciesAddress(), vulkanObject.getVerteciesSize(), VERTEX_SIZE*vertexOffset);
+		super.write(logicalDevice, vulkanObject.getVerteciesAddress(), vulkanObject.getVerteciesSize(), VERTEX_SIZE*vertexOffset, BIND_MEMORY);
 	}
 	
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {
@@ -81,17 +85,22 @@ public class VulkanVertexBuffer extends VulkanBuffer {
 	 * Needs to be freed outside to prevent memory leakes.
 	 */
 	public VkVertexInputAttributeDescription.Buffer callocAttribute() {
-		var vertexAttribute = VkVertexInputAttributeDescription.calloc(2);
+		var vertexAttribute = VkVertexInputAttributeDescription.calloc(3);
 		vertexAttribute.get(0)
 			.binding(0)
 			.location(0)
 			.format(VK_FORMAT_R32G32_SFLOAT) //2 32 bit float values
 			.offset(0);
 		vertexAttribute.get(1)
-				.binding(0)
-				.location(1)
-				.format(VK_FORMAT_R32G32B32_SFLOAT)
-				.offset(COLOR_OFFSET);
+			.binding(0)
+			.location(1)
+			.format(VK_FORMAT_R32G32B32_SFLOAT)
+			.offset(COLOR_OFFSET);
+		vertexAttribute.get(2)
+			.binding(0)
+			.location(2)
+			.format(VK_FORMAT_R32G32_SFLOAT) //2 32 bit float values
+			.offset(TEXTURE_OFFSET);
 		
 		return vertexAttribute;
 	}
