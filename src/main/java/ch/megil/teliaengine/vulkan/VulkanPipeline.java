@@ -213,6 +213,10 @@ public class VulkanPipeline {
 		}
 	}
 	
+	public long getLayout() {
+		return pipelineLayout;
+	}
+	
 	public long getGraphicsPipeline() {
 		return graphicsPipeline;
 	}

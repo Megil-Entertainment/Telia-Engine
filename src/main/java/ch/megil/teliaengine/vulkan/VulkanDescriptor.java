@@ -21,12 +21,14 @@ public class VulkanDescriptor {
 	
 	private long pool;
 	private LongBuffer layout;
+	private LongBuffer pSet;
 	private long set;
 	
 	public void init(VulkanLogicalDevice logicalDevice) throws VulkanException {
 		initPool(logicalDevice.get());
 		layout = initLayout(logicalDevice.get());
-		initSet(logicalDevice.get());
+		pSet = initSet(logicalDevice.get());
+		set = pSet.get(0);
 	}
 	
 	private void initPool(VkDevice device) throws VulkanException {
@@ -56,6 +58,8 @@ public class VulkanDescriptor {
 			pool = pPool.get(0);
 		} finally {
 			createInfo.free();
+			poolSizes.free();
+			memFree(pPool);
 		}
 	}
 	
@@ -87,13 +91,16 @@ public class VulkanDescriptor {
 			}
 			
 			return pLayout;
+		} catch (Exception e) {
+			memFree(pLayout);
+			throw e;
 		} finally {
 			createInfo.free();
 			layoutBindings.free();
 		}
 	}
 	
-	private void initSet(VkDevice device) throws VulkanException {
+	private LongBuffer initSet(VkDevice device) throws VulkanException {
 		var pSet = memAllocLong(1);
 		
 		var allocInfo = VkDescriptorSetAllocateInfo.calloc()
@@ -108,11 +115,14 @@ public class VulkanDescriptor {
 				throw new VulkanException(res);
 			}
 			
-			set = pSet.get(0);
+			return pSet;
 		} finally {
 			allocInfo.free();
-			memFree(pSet);
 		}
+	}
+	
+	public LongBuffer getSetPointer() {
+		return pSet;
 	}
 	
 	public long getSet() {
@@ -123,6 +133,10 @@ public class VulkanDescriptor {
 		if (set != VK_NULL_HANDLE) {
 			vkFreeDescriptorSets(logicalDevice.get(), pool, set);
 			set = VK_NULL_HANDLE;
+		}
+		if (pSet != null) {
+			memFree(pSet);
+			pSet = null;
 		}
 		
 		if (layout != null) {

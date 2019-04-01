@@ -114,30 +114,18 @@ public class GameMain {
 			var pool = new VulkanSingleCommandPool();
 			pool.init(logicalDevice, queue);
 			var image = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, pool.getCommandBuffer(logicalDevice), "player", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
-			pool.cleanUp(logicalDevice);
-			var descImageInfo = VkDescriptorImageInfo.calloc(8);
-			descImageInfo.get(0)
-				.sampler(VK_NULL_HANDLE)
-				.imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-				.imageView(image.getImageView());
+//			pool.cleanUp(logicalDevice);
+			var descImageInfo = VkDescriptorImageInfo.calloc(VulkanDescriptor.IMAGE_COUNT);
+			for (int i = 0; i < VulkanDescriptor.IMAGE_COUNT; i++) {
+				descImageInfo.get(i)
+					.sampler(VK_NULL_HANDLE)
+					.imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+					.imageView(image.getImageView());
+			}
 			
-//			VkWriteDescriptorSet setWrites[2];
 			var setWrites = VkWriteDescriptorSet.calloc(2);
-//
-//			VkDescriptorImageInfo samplerInfo = {};
-//			samplerInfo.sampler = demoData.sampler;
 			var descSamplerInfo = VkDescriptorImageInfo.calloc(1);
 			descSamplerInfo.sampler(sampler.get());
-//
-//			setWrites[0] = {};
-//			setWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-//			setWrites[0].dstBinding = 0;
-//			setWrites[0].dstArrayElement = 0;
-//			setWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
-//			setWrites[0].descriptorCount = 1;
-//			setWrites[0].dstSet = demoData.descriptorSet;
-//			setWrites[0].pBufferInfo = 0;
-//			setWrites[0].pImageInfo = &samplerInfo;
 			setWrites.get(0)
 				.sType(VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET)
 				.dstBinding(0)
@@ -147,16 +135,6 @@ public class GameMain {
 				//check buffer info
 				.pImageInfo(descSamplerInfo);
 			VkWriteDescriptorSet.ndescriptorCount(setWrites.get(0).address(), 1);
-//
-//			setWrites[1] = {};
-//			setWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-//			setWrites[1].dstBinding = 1;
-//			setWrites[1].dstArrayElement = 0;
-//			setWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-//			setWrites[1].descriptorCount = TEXTURE_ARRAY_SIZE;
-//			setWrites[1].pBufferInfo = 0;
-//			setWrites[1].dstSet = demoData.descriptorSet;
-//			setWrites[1].pImageInfo = demoData.descriptorImageInfos;
 			setWrites.get(1)
 				.sType(VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET)
 				.dstBinding(1)
@@ -166,8 +144,6 @@ public class GameMain {
 				//check buffer info
 				.pImageInfo(descImageInfo);
 			VkWriteDescriptorSet.ndescriptorCount(setWrites.get(1).address(), 1);
-//
-//			vkUpdateDescriptorSets(appContext.device, 2, setWrites, 0, nullptr);
 			vkUpdateDescriptorSets(logicalDevice.get(), setWrites, null);
 			//end texture test block
 			
@@ -215,18 +191,18 @@ public class GameMain {
 		vertexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfVertecies() + player.getNumberOfVertecies(), new int[] {queue.getGraphicsFamily()});
 		indexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfIndecies() + player.getNumberOfIndecies(), new int[] {queue.getGraphicsFamily()});
 		
-		var clearColor = VkClearValue.calloc(1);
-		clearColor.color()
-				.float32(0, CLEAR_R)
-				.float32(1, CLEAR_G)
-				.float32(2, CLEAR_B)
-				.float32(3, CLEAR_A);
-		
-		try {
-			renderPass.linkRender(swapchain, pipeline, framebuffers, renderCommandPool, vertexBuffer, indexBuffer, clearColor, BASE_WIDTH, BASE_HEIGHT);
-		} finally {
-			clearColor.free();
-		}
+//		var clearColor = VkClearValue.calloc(1);
+//		clearColor.color()
+//				.float32(0, CLEAR_R)
+//				.float32(1, CLEAR_G)
+//				.float32(2, CLEAR_B)
+//				.float32(3, CLEAR_A);
+//		
+//		try {
+//			renderPass.linkRender(swapchain, pipeline, framebuffers, renderCommandPool, vertexBuffer, indexBuffer, descriptor, clearColor, BASE_WIDTH, BASE_HEIGHT);
+//		} finally {
+//			clearColor.free();
+//		}
 		
 		semaphore.init(logicalDevice, SEM_NUM_OF_SEM);
 		sampler.init(logicalDevice);
@@ -246,6 +222,19 @@ public class GameMain {
 	}
 	
 	private void loop() throws VulkanException {
+		var clearColor = VkClearValue.calloc(1);
+		clearColor.color()
+				.float32(0, CLEAR_R)
+				.float32(1, CLEAR_G)
+				.float32(2, CLEAR_B)
+				.float32(3, CLEAR_A);
+		
+		try {
+			renderPass.linkRender(swapchain, pipeline, framebuffers, renderCommandPool, vertexBuffer, indexBuffer, descriptor, clearColor, BASE_WIDTH, BASE_HEIGHT);
+		} finally {
+			clearColor.free();
+		}
+		
 		var pImageIndex = memAllocInt(1);
 		var pRenderCommandBuffer = memAllocPointer(1);
 		var pSwapchain = memAllocLong(1);

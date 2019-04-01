@@ -47,6 +47,7 @@ public abstract class VulkanImage {
 	 * @param sharingMode of the image (see {@link VK10#VK_SHARING_MODE_EXCLUSIVE})
 	 * @param memProperties memory properties of the image (see {@link VK10#VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT})
 	 */
+	//super.init(physicalDevice, logicalDevice, width, height, imageFormat, VK_IMAGE_TILING_OPTIMAL, (VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT), VK_SHARING_MODE_EXCLUSIVE, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	public void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, int width, int height, int format, int tiling, int usage, int sharingMode, int memProperties) throws VulkanException {
 		this.width = width;
 		this.height = height;
@@ -63,6 +64,7 @@ public abstract class VulkanImage {
 				.arrayLayers(NO_ARRAY)
 				.format(format)
 				.tiling(tiling)
+				.initialLayout(VK_IMAGE_LAYOUT_UNDEFINED)
 				.usage(usage)
 				.sharingMode(sharingMode)
 				.samples(VK_SAMPLE_COUNT_1_BIT)
@@ -90,7 +92,7 @@ public abstract class VulkanImage {
 				throw new VulkanException(res);
 			}
 		} finally {
-			memFree(pMemory);
+//			memFree(pMemory);
 			memFree(pImage);
 			memoryRequirements.free();
 			imgCreateInfo.free();
@@ -121,9 +123,9 @@ public abstract class VulkanImage {
 						.baseMipLevel(0)
 						.levelCount(NO_MIPMAP)
 						.baseArrayLayer(0)
-						.layerCount(NO_ARRAY))
-				.srcAccessMask(0)
-				.dstAccessMask(0);
+						.layerCount(NO_ARRAY));
+				//.srcAccessMask(0)
+				//.dstAccessMask(0);
 			
 			int srcStage, dstStage;
 			
@@ -183,6 +185,11 @@ public abstract class VulkanImage {
 				.image(image)
 				.viewType(VK_IMAGE_VIEW_TYPE_2D)
 				.format(format)
+				.components(c -> c
+						.r(VK_COMPONENT_SWIZZLE_IDENTITY)
+						.g(VK_COMPONENT_SWIZZLE_IDENTITY)
+						.b(VK_COMPONENT_SWIZZLE_IDENTITY)
+						.a(VK_COMPONENT_SWIZZLE_IDENTITY))
 				.subresourceRange(sr -> sr
 						.aspectMask(VK_IMAGE_ASPECT_COLOR_BIT)
 						.baseMipLevel(0)

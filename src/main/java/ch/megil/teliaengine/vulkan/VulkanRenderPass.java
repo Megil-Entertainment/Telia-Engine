@@ -85,7 +85,7 @@ public class VulkanRenderPass {
 		}
 	}
 	
-	public void linkRender(VulkanSwapchain swapchain, VulkanPipeline pipeline, VulkanFramebuffers framebuffers, VulkanCommandPool commandPool, VulkanVertexBuffer vertexBuffer, VulkanIndexBuffer indexBuffer, VkClearValue.Buffer clearColor, int width, int height) throws VulkanException {
+	public void linkRender(VulkanSwapchain swapchain, VulkanPipeline pipeline, VulkanFramebuffers framebuffers, VulkanCommandPool commandPool, VulkanVertexBuffer vertexBuffer, VulkanIndexBuffer indexBuffer, VulkanDescriptor descriptor, VkClearValue.Buffer clearColor, int width, int height) throws VulkanException {
 		var beginInfo = VkRenderPassBeginInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO)
 				.renderPass(renderPass)
@@ -124,8 +124,10 @@ public class VulkanRenderPass {
 		        vkCmdSetScissor(cmdbuffer.get(), 0, scissor);
 				
 				vkCmdBindPipeline(cmdbuffer.get(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getGraphicsPipeline());
+				vkCmdBindDescriptorSets(cmdbuffer.get(), VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getLayout(), 0, descriptor.getSetPointer(), null);
 				vkCmdBindVertexBuffers(cmdbuffer.get(), BASE_BINDING, pVertexBuffer, vertexOffsets);
 				vkCmdBindIndexBuffer(cmdbuffer.get(), indexBuffer.get(), INDEX_OFFSET, VK_INDEX_TYPE_UINT16);
+				
 				vkCmdDrawIndexed(cmdbuffer.get(), indexBuffer.getMaxIndicies(), INSTANCE_COUNT, BASE_INDEX, VERTEX_OFFSET, BASE_INSTANCE);
 				
 				vkCmdEndRenderPass(cmdbuffer.get());

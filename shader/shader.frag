@@ -14,4 +14,8 @@ void main(void) {
   color = texture(sampler2D(textures[0], samp), texCord);
   //color = vec4(texCord, 0.0, 1.0);
   //color = vec4(1.0, 0.0, 0.0, 1.0);
+  //color = texture(sampler2D(textures, samp), texCord);
+  
+  //vec3 tex = texture(sampler2D(textures[0], samp), texCord).xyz;
+  //color = vec4(tex, 1.0);
 }
