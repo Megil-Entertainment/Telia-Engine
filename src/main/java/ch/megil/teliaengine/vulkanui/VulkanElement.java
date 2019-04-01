@@ -26,7 +26,7 @@ public abstract class VulkanElement extends VulkanObject {
 	private int numberOfVertecies;
 	private int numberOfIndecies;
 	
-	public VulkanElement(int numberOfObjects, double spreadWidth, double spreadHeight) {
+	public VulkanElement(int numberOfObjects, double spreadWidth, double spreadHeight, Vector cameraOffset) {
 		super(VulkanVertexBuffer.VERTEX_SIZE * numberOfObjects * VERTECIES_PER_OBJECT,
 				VulkanIndexBuffer.INDEX_SIZE * numberOfObjects * INDICIES_PER_OBJECT);
 		scaleVector = new Vector(SCALE_MODIFIER/spreadWidth, SCALE_MODIFIER/spreadHeight);
