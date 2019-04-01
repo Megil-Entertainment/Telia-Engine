@@ -46,7 +46,6 @@ public class VulkanTextureLoader {
 			buffer.writeImage(logicalDevice, pixels);
 			
 			image.init(physicalDevice, logicalDevice, texWidth, texHeight, format);
-			//TODO: use single use command buffer
 			image.transition(logicalDevice, queue, commandPool.getSingleUseBuffer(logicalDevice), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 			image.copyBufferToImage(buffer, logicalDevice, queue, commandPool.getSingleUseBuffer(logicalDevice));
 			image.transition(logicalDevice, queue, commandPool.getSingleUseBuffer(logicalDevice), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);

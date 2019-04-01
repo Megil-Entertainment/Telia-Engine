@@ -116,15 +116,28 @@ public class GameMain {
 			//start texture test block
 			var pool = new VulkanCommandPool();
 			pool.init(logicalDevice, queue);
-			var image = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, pool, "player", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
-//			pool.cleanUp(logicalDevice);
+			var image0 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, pool, "player", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
+			var image1 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, pool, "green", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
+			var image2 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, pool, "red", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
+			var image3 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, pool, "blue", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
+			pool.cleanUp(logicalDevice);
 			var descImageInfo = VkDescriptorImageInfo.calloc(VulkanDescriptor.IMAGE_COUNT);
-			for (int i = 0; i < VulkanDescriptor.IMAGE_COUNT; i++) {
-				descImageInfo.get(i)
-					.sampler(VK_NULL_HANDLE)
-					.imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-					.imageView(image.getImageView());
-			}
+			descImageInfo.get(0)
+				.sampler(VK_NULL_HANDLE)
+				.imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+				.imageView(image0.getImageView());
+			descImageInfo.get(1)
+				.sampler(VK_NULL_HANDLE)
+				.imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+				.imageView(image1.getImageView());
+			descImageInfo.get(2)
+				.sampler(VK_NULL_HANDLE)
+				.imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+				.imageView(image2.getImageView());
+			descImageInfo.get(3)
+				.sampler(VK_NULL_HANDLE)
+				.imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+				.imageView(image3.getImageView());
 			
 			var setWrites = VkWriteDescriptorSet.calloc(2);
 			var descSamplerInfo = VkDescriptorImageInfo.calloc(1);
@@ -146,7 +159,7 @@ public class GameMain {
 				.dstSet(descriptor.getSet())
 				//check buffer info
 				.pImageInfo(descImageInfo);
-			VkWriteDescriptorSet.ndescriptorCount(setWrites.get(1).address(), 1);
+			VkWriteDescriptorSet.ndescriptorCount(setWrites.get(1).address(), 4);
 			vkUpdateDescriptorSets(logicalDevice.get(), setWrites, null);
 			//end texture test block
 			
