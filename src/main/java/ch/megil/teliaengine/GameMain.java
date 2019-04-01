@@ -3,7 +3,11 @@ package ch.megil.teliaengine;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
 import static org.lwjgl.glfw.GLFWVulkan.glfwVulkanSupported;
-import static org.lwjgl.system.MemoryUtil.*;
+import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.system.MemoryUtil.memAllocInt;
+import static org.lwjgl.system.MemoryUtil.memAllocLong;
+import static org.lwjgl.system.MemoryUtil.memAllocPointer;
+import static org.lwjgl.system.MemoryUtil.memFree;
 import static org.lwjgl.vulkan.KHRSwapchain.VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 import static org.lwjgl.vulkan.KHRSwapchain.vkAcquireNextImageKHR;
 import static org.lwjgl.vulkan.KHRSwapchain.vkQueuePresentKHR;
@@ -27,8 +31,7 @@ import ch.megil.teliaengine.gamelogic.GameState;
 import ch.megil.teliaengine.vulkan.*;
 import ch.megil.teliaengine.vulkan.buffer.VulkanIndexBuffer;
 import ch.megil.teliaengine.vulkan.buffer.VulkanVertexBuffer;
-import ch.megil.teliaengine.vulkan.command.VulkanRenderCommandPool;
-import ch.megil.teliaengine.vulkan.command.VulkanSingleCommandPool;
+import ch.megil.teliaengine.vulkan.command.VulkanCommandPool;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 import ch.megil.teliaengine.vulkanui.VulkanMap;
 import ch.megil.teliaengine.vulkanui.VulkanPlayer;
@@ -63,7 +66,7 @@ public class GameMain {
 	private VulkanShader shader;
 	private VulkanPipeline pipeline;
 	private VulkanFramebuffers framebuffers;
-	private VulkanRenderCommandPool renderCommandPool;
+	private VulkanCommandPool renderCommandPool;
 	private VulkanVertexBuffer vertexBuffer;
 	private VulkanIndexBuffer indexBuffer;
 	private VulkanSemaphore semaphore;
@@ -86,7 +89,7 @@ public class GameMain {
 		shader = new VulkanShader();
 		pipeline = new VulkanPipeline();
 		framebuffers = new VulkanFramebuffers();
-		renderCommandPool = new VulkanRenderCommandPool();
+		renderCommandPool = new VulkanCommandPool();
 		vertexBuffer = new VulkanVertexBuffer();
 		indexBuffer = new VulkanIndexBuffer();
 		semaphore = new VulkanSemaphore();
@@ -111,9 +114,9 @@ public class GameMain {
 			init();
 			//TODO: remove when finished with texture loader
 			//start texture test block
-			var pool = new VulkanSingleCommandPool();
+			var pool = new VulkanCommandPool();
 			pool.init(logicalDevice, queue);
-			var image = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, pool.getCommandBuffer(logicalDevice), "player", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
+			var image = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, pool, "player", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
 //			pool.cleanUp(logicalDevice);
 			var descImageInfo = VkDescriptorImageInfo.calloc(VulkanDescriptor.IMAGE_COUNT);
 			for (int i = 0; i < VulkanDescriptor.IMAGE_COUNT; i++) {
@@ -185,9 +188,11 @@ public class GameMain {
 		swapchain.init(physicalDevice, windowSurface, queue, logicalDevice, color, BASE_WIDTH, BASE_HEIGHT);
 		renderPass.init(logicalDevice, color);
 		shader.init(logicalDevice);
-		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer);
+		sampler.init(logicalDevice);
+		descriptor.init(logicalDevice);
+		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer, descriptor);
 		framebuffers.init(logicalDevice, swapchain, renderPass);
-		renderCommandPool.init(logicalDevice, queue, swapchain);
+		renderCommandPool.init(logicalDevice, queue, swapchain.getImageCount());
 		vertexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfVertecies() + player.getNumberOfVertecies(), new int[] {queue.getGraphicsFamily()});
 		indexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfIndecies() + player.getNumberOfIndecies(), new int[] {queue.getGraphicsFamily()});
 		
@@ -205,8 +210,6 @@ public class GameMain {
 //		}
 		
 		semaphore.init(logicalDevice, SEM_NUM_OF_SEM);
-		sampler.init(logicalDevice);
-		descriptor.init(logicalDevice);
 		
 		glfwShowWindow(window);
 	}

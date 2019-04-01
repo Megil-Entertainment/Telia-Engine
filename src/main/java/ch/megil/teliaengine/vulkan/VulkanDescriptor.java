@@ -121,6 +121,10 @@ public class VulkanDescriptor {
 		}
 	}
 	
+	public LongBuffer getLayout() {
+		return layout;
+	}
+	
 	public LongBuffer getSetPointer() {
 		return pSet;
 	}

@@ -11,7 +11,7 @@ import ch.megil.teliaengine.vulkan.VulkanMemory;
 import ch.megil.teliaengine.vulkan.VulkanPhysicalDevice;
 import ch.megil.teliaengine.vulkan.VulkanQueue;
 import ch.megil.teliaengine.vulkan.buffer.VulkanImageSrcBuffer;
-import ch.megil.teliaengine.vulkan.command.VulkanSingleCommandBuffer;
+import ch.megil.teliaengine.vulkan.command.VulkanCommandBuffer;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
 /**
@@ -101,11 +101,11 @@ public abstract class VulkanImage {
 	
 	/**
 	 * @param queue An initialized {@link VulkanQueue} to submit the commands to
-	 * @param cmdBuffer An initialized {@link VulkanSingleCommandBuffer}
+	 * @param cmdBuffer An initialized {@link VulkanCommandBuffer}
 	 * @param oldLayout current layout of the image (see {@link VK10#VK_IMAGE_LAYOUT_UNDEFINED})
 	 * @param newLayout layout to transition to (see {@link VK10#VK_IMAGE_LAYOUT_UNDEFINED})
 	 */
-	public void transition(VulkanQueue queue, VulkanSingleCommandBuffer cmdBuffer, int oldLayout, int newLayout) throws VulkanException {
+	public void transition(VulkanLogicalDevice logicalDevice, VulkanQueue queue, VulkanCommandBuffer cmdBuffer, int oldLayout, int newLayout) throws VulkanException {
 		var barrier = VkImageMemoryBarrier.calloc(1);
 		
 		try {
@@ -147,13 +147,13 @@ public abstract class VulkanImage {
 			
 			vkCmdPipelineBarrier(cmdBuffer.get(), srcStage, dstStage, 0, null, null, barrier);
 			
-			cmdBuffer.submit(queue);
+			cmdBuffer.submit(logicalDevice, queue);
 		} finally {
 			barrier.free();
 		}
 	}
 	
-	public void copyBufferToImage(VulkanImageSrcBuffer imgSrc, VulkanQueue queue, VulkanSingleCommandBuffer cmdBuffer) throws VulkanException {
+	public void copyBufferToImage(VulkanImageSrcBuffer imgSrc, VulkanLogicalDevice logicalDevice, VulkanQueue queue, VulkanCommandBuffer cmdBuffer) throws VulkanException {
 		var region = VkBufferImageCopy.calloc(1);
 		
 		try {
@@ -173,7 +173,7 @@ public abstract class VulkanImage {
 			
 			vkCmdCopyBufferToImage(cmdBuffer.get(), imgSrc.get(), image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, region);
 			
-			cmdBuffer.submit(queue);
+			cmdBuffer.submit(logicalDevice, queue);
 		} finally {
 			
 		}
