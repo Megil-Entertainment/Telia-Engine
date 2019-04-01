@@ -98,7 +98,7 @@ public class GameMain {
 		}
 		
 		map = new VulkanMap(GameState.get().getMap());
-		player = new VulkanPlayer(Player.get(), GameState.get().getMap(), map.getNumberOfVertecies());
+		player = new VulkanPlayer(Player.get(), map.getNumberOfVertecies());
 		
 		try {
 			init();
@@ -198,7 +198,7 @@ public class GameMain {
 			while(!glfwWindowShouldClose(window)) {
 				glfwPollEvents();
 				
-				player = new VulkanPlayer(Player.get(), GameState.get().getMap());
+				player = new VulkanPlayer(Player.get());
 				vertexBuffer.writeVertecies(logicalDevice, player, map.getNumberOfVertecies());
 				player.free();
 				
