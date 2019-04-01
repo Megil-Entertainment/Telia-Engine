@@ -140,16 +140,16 @@ public class MapEditor extends Pane {
 		var offsetX = rectangle.getWidth() - map.getWidth();
 		var offsetY = rectangle.getHeight() - map.getHeight();
 		
-		if(getTranslateX() < offsetX) {
-			setTranslateX(offsetX);
-		} else if (getTranslateX() > 0) {
+		if (offsetX >= 0 || getTranslateX() > 0) {
 			setTranslateX(0);
+		} else if(getTranslateX() < offsetX) {
+			setTranslateX(offsetX);
 		}
 		
-		if(getTranslateY() < offsetY) {
-			setTranslateY(offsetY);
-		} else if (getTranslateY() > 0) {
+		if(offsetY >= 0 || getTranslateY() > 0) {
 			setTranslateY(0);
+		} else if(getTranslateY() < offsetY) {
+			setTranslateY(offsetY);
 		}
 	}
 	
