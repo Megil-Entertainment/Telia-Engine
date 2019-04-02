@@ -10,6 +10,9 @@ import static org.lwjgl.vulkan.VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 import static org.lwjgl.vulkan.VK10.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 import static org.lwjgl.vulkan.VK10.VK_IMAGE_LAYOUT_UNDEFINED;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
@@ -22,7 +25,17 @@ import ch.megil.teliaengine.vulkan.image.VulkanImage;
 import ch.megil.teliaengine.vulkan.image.VulkanTexture;
 
 public class VulkanTextureLoader {
-	public VulkanImage load(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, VulkanQueue queue, VulkanCommandPool commandPool, String name, double width, double height) throws AssetNotFoundException, VulkanException {
+	private Map<String, VulkanImage> cache;
+	
+	public VulkanTextureLoader() {
+		cache = new HashMap<String, VulkanImage>();
+	}
+	
+	public VulkanImage load(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, VulkanQueue queue, VulkanCommandPool commandPool, String name) throws AssetNotFoundException, VulkanException {
+		if (cache.containsKey(name)) {
+			return cache.get(name);
+		}
+		
 		var fileName = GameConfiguration.ASSETS_TEXTURES.getConfiguration() + "/" + name + GameConfiguration.FILE_EXT_TEXTURE.getConfiguration();
 		
 		var pTexWidth = memAllocInt(1);
@@ -34,7 +47,6 @@ public class VulkanTextureLoader {
 		var texHeight = pTexHeight.get(0);
 		
 		var size = texWidth * texHeight * STBI_rgb_alpha;
-		//TODO: add resizing
 		
 		var format = VK_FORMAT_R8G8B8A8_UNORM;
 
@@ -51,6 +63,8 @@ public class VulkanTextureLoader {
 			image.transition(logicalDevice, queue, commandPool.getSingleUseBuffer(logicalDevice), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 			
 			image.createView(logicalDevice);
+			
+			cache.put(name, image);
 			
 			return image;
 		} catch (Exception e) {

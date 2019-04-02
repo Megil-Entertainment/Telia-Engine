@@ -33,6 +33,7 @@ import ch.megil.teliaengine.vulkan.buffer.VulkanIndexBuffer;
 import ch.megil.teliaengine.vulkan.buffer.VulkanVertexBuffer;
 import ch.megil.teliaengine.vulkan.command.VulkanCommandPool;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
+import ch.megil.teliaengine.vulkan.image.VulkanImage;
 import ch.megil.teliaengine.vulkanui.VulkanMap;
 import ch.megil.teliaengine.vulkanui.VulkanPlayer;
 
@@ -117,28 +118,20 @@ public class GameMain {
 			init();
 			//TODO: remove when finished with texture loader
 			//start texture test block
-			var image0 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, singleCommandPool, "player", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
-			var image1 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, singleCommandPool, "green", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
-			var image2 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, singleCommandPool, "red", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
-			var image3 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, singleCommandPool, "blue", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
+			var image0 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, singleCommandPool, "player");
+			var image1 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, singleCommandPool, "green");
+			var image2 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, singleCommandPool, "red");
+			var image3 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, singleCommandPool, "blue");
+			
+			var images = new VulkanImage[] {image0, image1, image2, image3};
 
 			var descImageInfo = VkDescriptorImageInfo.calloc(VulkanDescriptor.IMAGE_COUNT);
-			descImageInfo.get(0)
-				.sampler(VK_NULL_HANDLE)
-				.imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-				.imageView(image0.getImageView());
-			descImageInfo.get(1)
-				.sampler(VK_NULL_HANDLE)
-				.imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-				.imageView(image1.getImageView());
-			descImageInfo.get(2)
-				.sampler(VK_NULL_HANDLE)
-				.imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-				.imageView(image2.getImageView());
-			descImageInfo.get(3)
-				.sampler(VK_NULL_HANDLE)
-				.imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-				.imageView(image3.getImageView());
+			for(int i = 0; i < images.length; i++) {
+				descImageInfo.get(i)
+					.sampler(VK_NULL_HANDLE)
+					.imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+					.imageView(images[i].getImageView());
+			}
 			
 			var setWrites = VkWriteDescriptorSet.calloc(2);
 			var descSamplerInfo = VkDescriptorImageInfo.calloc(1);
