@@ -42,10 +42,10 @@ public abstract class VulkanElement extends VulkanObject {
 				.add(VULKAN_OFFSET);
 		
 		var color = element.getColor();
-		vertexBuffer.put((float) topLeft.getX())   .put((float) topLeft.getY())   .put((float) color.getRed()).put((float) color.getGreen()).put((float) color.getBlue()).put(0.0f).put(0.0f);
-		vertexBuffer.put((float) bottomRigh.getX()).put((float) topLeft.getY())   .put((float) color.getRed()).put((float) color.getGreen()).put((float) color.getBlue()).put(1.0f).put(0.0f);
-		vertexBuffer.put((float) bottomRigh.getX()).put((float) bottomRigh.getY()).put((float) color.getRed()).put((float) color.getGreen()).put((float) color.getBlue()).put(1.0f).put(1.0f);
-		vertexBuffer.put((float) topLeft.getX())   .put((float) bottomRigh.getY()).put((float) color.getRed()).put((float) color.getGreen()).put((float) color.getBlue()).put(0.0f).put(1.0f);
+		vertexBuffer.put((float) topLeft.getX())   .put((float) topLeft.getY())   .put((float) color.getRed()).put((float) color.getGreen()).put((float) color.getBlue()).put(0.0f).put(0.0f).put(Float.intBitsToFloat(0));
+		vertexBuffer.put((float) bottomRigh.getX()).put((float) topLeft.getY())   .put((float) color.getRed()).put((float) color.getGreen()).put((float) color.getBlue()).put(1.0f).put(0.0f).put(Float.intBitsToFloat(0));
+		vertexBuffer.put((float) bottomRigh.getX()).put((float) bottomRigh.getY()).put((float) color.getRed()).put((float) color.getGreen()).put((float) color.getBlue()).put(1.0f).put(1.0f).put(Float.intBitsToFloat(0));
+		vertexBuffer.put((float) topLeft.getX())   .put((float) bottomRigh.getY()).put((float) color.getRed()).put((float) color.getGreen()).put((float) color.getBlue()).put(0.0f).put(1.0f).put(Float.intBitsToFloat(0));
 		
 		indexBuffer.put((short) (indexOffset+INDEX_TL))
 			.put((short) (indexOffset+INDEX_BL))

@@ -6,9 +6,10 @@ layout(set = 0, binding = 1) uniform texture2D textures[8];
 
 layout(location=0) in vec3 outColor;
 layout(location=1) in vec2 texCord;
+layout(location=2) flat in uint texIndex;
 
 layout(location=0) out vec4 color;
 
 void main(void) {
-  color = texture(sampler2D(textures[0], samp), texCord);
+  color = texture(sampler2D(textures[texIndex], samp), texCord);
 }

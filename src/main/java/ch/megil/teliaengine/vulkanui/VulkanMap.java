@@ -12,7 +12,6 @@ public class VulkanMap extends VulkanElement {
 		
 		var vertexBuffer = vertecies.asFloatBuffer();
 		var indexBuffer = indicies.asShortBuffer();
-		
 		for (var i = 0; i < map.getMapObjects().size(); i++) {
 			convertElement(vertexBuffer, indexBuffer, map.getMapObjects().get(i), indexOffset + i*VERTECIES_PER_OBJECT);
 		}

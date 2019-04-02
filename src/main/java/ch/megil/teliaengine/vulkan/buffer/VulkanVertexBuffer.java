@@ -21,10 +21,11 @@ import ch.megil.teliaengine.vulkan.obj.VulkanObject;
  */
 public class VulkanVertexBuffer extends VulkanBuffer {
 	private static final int VALUE_SIZE = 4;
-	private static final int VERTEX_VALUES = 2+3+2; //2 cords + 3 colors + 2 tex cords
+	private static final int VERTEX_VALUES = 2+3+2+1; //2 cords + 3 colors + 2 tex cords + 1 index
 	public static final int VERTEX_SIZE = VERTEX_VALUES*VALUE_SIZE;
 	private static final int COLOR_OFFSET = 2*VALUE_SIZE;
 	private static final int TEXTURE_OFFSET = (2+3)*VALUE_SIZE;
+	private static final int TEXTURE_INDEX_OFFSET = (2+3+2)*VALUE_SIZE;
 	
 	private static final float CLEAR_VALUE = 0.0f;
 	
@@ -85,7 +86,7 @@ public class VulkanVertexBuffer extends VulkanBuffer {
 	 * Needs to be freed outside to prevent memory leakes.
 	 */
 	public VkVertexInputAttributeDescription.Buffer callocAttribute() {
-		var vertexAttribute = VkVertexInputAttributeDescription.calloc(3);
+		var vertexAttribute = VkVertexInputAttributeDescription.calloc(4);
 		vertexAttribute.get(0)
 			.binding(0)
 			.location(0)
@@ -101,6 +102,11 @@ public class VulkanVertexBuffer extends VulkanBuffer {
 			.location(2)
 			.format(VK_FORMAT_R32G32_SFLOAT) //2 32 bit float values
 			.offset(TEXTURE_OFFSET);
+		vertexAttribute.get(3)
+			.binding(0)
+			.location(3)
+			.format(VK_FORMAT_R32_UINT) //1 32 bit uint value
+			.offset(TEXTURE_INDEX_OFFSET);
 		
 		return vertexAttribute;
 	}

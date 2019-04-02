@@ -87,14 +87,15 @@ public class GameMain {
 		swapchain = new VulkanSwapchain();
 		renderPass = new VulkanRenderPass();
 		shader = new VulkanShader();
-		pipeline = new VulkanPipeline();
+		sampler = new VulkanSampler();
 		framebuffers = new VulkanFramebuffers();
 		renderCommandPool = new VulkanCommandPool();
+		semaphore = new VulkanSemaphore();
+		
+		descriptor = new VulkanDescriptor();
+		pipeline = new VulkanPipeline();
 		vertexBuffer = new VulkanVertexBuffer();
 		indexBuffer = new VulkanIndexBuffer();
-		semaphore = new VulkanSemaphore();
-		sampler = new VulkanSampler();
-		descriptor = new VulkanDescriptor();
 	}
 	
 	public GameMain(String mapName) throws AssetNotFoundException, AssetFormatException {
@@ -202,27 +203,15 @@ public class GameMain {
 		renderPass.init(logicalDevice, color);
 		shader.init(logicalDevice);
 		sampler.init(logicalDevice);
-		descriptor.init(logicalDevice);
-		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer, descriptor);
 		framebuffers.init(logicalDevice, swapchain, renderPass);
 		renderCommandPool.init(logicalDevice, queue, swapchain.getImageCount());
+		semaphore.init(logicalDevice, SEM_NUM_OF_SEM);
+		
+		//map specific
+		descriptor.init(logicalDevice);
+		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer, descriptor);
 		vertexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfVertecies() + player.getNumberOfVertecies(), new int[] {queue.getGraphicsFamily()});
 		indexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfIndecies() + player.getNumberOfIndecies(), new int[] {queue.getGraphicsFamily()});
-		
-//		var clearColor = VkClearValue.calloc(1);
-//		clearColor.color()
-//				.float32(0, CLEAR_R)
-//				.float32(1, CLEAR_G)
-//				.float32(2, CLEAR_B)
-//				.float32(3, CLEAR_A);
-//		
-//		try {
-//			renderPass.linkRender(swapchain, pipeline, framebuffers, renderCommandPool, vertexBuffer, indexBuffer, descriptor, clearColor, BASE_WIDTH, BASE_HEIGHT);
-//		} finally {
-//			clearColor.free();
-//		}
-		
-		semaphore.init(logicalDevice, SEM_NUM_OF_SEM);
 		
 		glfwShowWindow(window);
 	}
@@ -313,13 +302,15 @@ public class GameMain {
 	
 	public void cleanUp() {
 		// Destroy bottom up
-		descriptor.cleanUp(logicalDevice);
-		sampler.cleanUp(logicalDevice);
-		semaphore.cleanUp(logicalDevice);
+		indexBuffer.cleanUp(logicalDevice);
 		vertexBuffer.cleanUp(logicalDevice);
+		pipeline.cleanUp(logicalDevice);
+		descriptor.cleanUp(logicalDevice);
+		
+		semaphore.cleanUp(logicalDevice);
 		renderCommandPool.cleanUp(logicalDevice);
 		framebuffers.cleanUp(logicalDevice);
-		pipeline.cleanUp(logicalDevice);
+		sampler.cleanUp(logicalDevice);
 		shader.cleanUp(logicalDevice);
 		renderPass.cleanUp(logicalDevice);
 		swapchain.cleanUp(logicalDevice);
