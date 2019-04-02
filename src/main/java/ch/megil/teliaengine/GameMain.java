@@ -64,14 +64,15 @@ public class GameMain {
 	private VulkanSwapchain swapchain;
 	private VulkanRenderPass renderPass;
 	private VulkanShader shader;
-	private VulkanPipeline pipeline;
+	private VulkanSampler sampler;
 	private VulkanFramebuffers framebuffers;
 	private VulkanCommandPool renderCommandPool;
+	private VulkanCommandPool singleCommandPool;
+	private VulkanSemaphore semaphore;
+	private VulkanDescriptor descriptor;
+	private VulkanPipeline pipeline;
 	private VulkanVertexBuffer vertexBuffer;
 	private VulkanIndexBuffer indexBuffer;
-	private VulkanSemaphore semaphore;
-	private VulkanSampler sampler;
-	private VulkanDescriptor descriptor;
 	
 	private VulkanMap map;
 	private VulkanPlayer player;
@@ -90,6 +91,7 @@ public class GameMain {
 		sampler = new VulkanSampler();
 		framebuffers = new VulkanFramebuffers();
 		renderCommandPool = new VulkanCommandPool();
+		singleCommandPool = new VulkanCommandPool();
 		semaphore = new VulkanSemaphore();
 		
 		descriptor = new VulkanDescriptor();
@@ -115,13 +117,11 @@ public class GameMain {
 			init();
 			//TODO: remove when finished with texture loader
 			//start texture test block
-			var pool = new VulkanCommandPool();
-			pool.init(logicalDevice, queue);
-			var image0 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, pool, "player", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
-			var image1 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, pool, "green", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
-			var image2 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, pool, "red", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
-			var image3 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, pool, "blue", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
-			pool.cleanUp(logicalDevice);
+			var image0 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, singleCommandPool, "player", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
+			var image1 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, singleCommandPool, "green", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
+			var image2 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, singleCommandPool, "red", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
+			var image3 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, singleCommandPool, "blue", Player.get().getDepiction().getWidth(), Player.get().getDepiction().getHeight());
+
 			var descImageInfo = VkDescriptorImageInfo.calloc(VulkanDescriptor.IMAGE_COUNT);
 			descImageInfo.get(0)
 				.sampler(VK_NULL_HANDLE)
@@ -205,6 +205,7 @@ public class GameMain {
 		sampler.init(logicalDevice);
 		framebuffers.init(logicalDevice, swapchain, renderPass);
 		renderCommandPool.init(logicalDevice, queue, swapchain.getImageCount());
+		singleCommandPool.init(logicalDevice, queue);
 		semaphore.init(logicalDevice, SEM_NUM_OF_SEM);
 		
 		//map specific
@@ -308,6 +309,7 @@ public class GameMain {
 		descriptor.cleanUp(logicalDevice);
 		
 		semaphore.cleanUp(logicalDevice);
+		singleCommandPool.cleanUp(logicalDevice);
 		renderCommandPool.cleanUp(logicalDevice);
 		framebuffers.cleanUp(logicalDevice);
 		sampler.cleanUp(logicalDevice);
