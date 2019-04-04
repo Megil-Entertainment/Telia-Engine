@@ -14,10 +14,8 @@ import static org.lwjgl.vulkan.KHRSwapchain.vkQueuePresentKHR;
 import static org.lwjgl.vulkan.VK10.*;
 
 import org.lwjgl.vulkan.VkClearValue;
-import org.lwjgl.vulkan.VkDescriptorImageInfo;
 import org.lwjgl.vulkan.VkPresentInfoKHR;
 import org.lwjgl.vulkan.VkSubmitInfo;
-import org.lwjgl.vulkan.VkWriteDescriptorSet;
 
 import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.file.MapSaveLoad;
@@ -71,6 +69,7 @@ public class GameMain {
 	private VulkanCommandPool singleCommandPool;
 	private VulkanSemaphore semaphore;
 	private VulkanDescriptor descriptor;
+	private VulkanDescriptorUpdater descriptorUpdater;
 	private VulkanPipeline pipeline;
 	private VulkanVertexBuffer vertexBuffer;
 	private VulkanIndexBuffer indexBuffer;
@@ -96,6 +95,7 @@ public class GameMain {
 		semaphore = new VulkanSemaphore();
 		
 		descriptor = new VulkanDescriptor();
+		descriptorUpdater = new VulkanDescriptorUpdater();
 		pipeline = new VulkanPipeline();
 		vertexBuffer = new VulkanVertexBuffer();
 		indexBuffer = new VulkanIndexBuffer();
@@ -124,37 +124,8 @@ public class GameMain {
 			var image3 = VulkanTextureLoader.get().load(physicalDevice, logicalDevice, queue, singleCommandPool, "blue");
 			
 			var images = new VulkanImage[] {image0, image1, image2, image3};
-
-			var descImageInfo = VkDescriptorImageInfo.calloc(VulkanDescriptor.IMAGE_COUNT);
-			for(int i = 0; i < images.length; i++) {
-				descImageInfo.get(i)
-					.sampler(VK_NULL_HANDLE)
-					.imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-					.imageView(images[i].getImageView());
-			}
+			descriptorUpdater.updateDescriptor(logicalDevice, images);
 			
-			var setWrites = VkWriteDescriptorSet.calloc(2);
-			var descSamplerInfo = VkDescriptorImageInfo.calloc(1);
-			descSamplerInfo.sampler(sampler.get());
-			setWrites.get(0)
-				.sType(VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET)
-				.dstBinding(0)
-				.dstArrayElement(0)
-				.descriptorType(VK_DESCRIPTOR_TYPE_SAMPLER)
-				.dstSet(descriptor.getSet())
-				//check buffer info
-				.pImageInfo(descSamplerInfo);
-			VkWriteDescriptorSet.ndescriptorCount(setWrites.get(0).address(), 1);
-			setWrites.get(1)
-				.sType(VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET)
-				.dstBinding(1)
-				.dstArrayElement(0)
-				.descriptorType(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE)
-				.dstSet(descriptor.getSet())
-				//check buffer info
-				.pImageInfo(descImageInfo);
-			VkWriteDescriptorSet.ndescriptorCount(setWrites.get(1).address(), 4);
-			vkUpdateDescriptorSets(logicalDevice.get(), setWrites, null);
 			//end texture test block
 			
 			vertexBuffer.writeVertecies(logicalDevice, map);
@@ -203,6 +174,7 @@ public class GameMain {
 		
 		//map specific
 		descriptor.init(logicalDevice);
+		descriptorUpdater.init(sampler, descriptor);
 		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer, descriptor);
 		vertexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfVertecies() + player.getNumberOfVertecies(), new int[] {queue.getGraphicsFamily()});
 		indexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfIndecies() + player.getNumberOfIndecies(), new int[] {queue.getGraphicsFamily()});
@@ -299,6 +271,7 @@ public class GameMain {
 		indexBuffer.cleanUp(logicalDevice);
 		vertexBuffer.cleanUp(logicalDevice);
 		pipeline.cleanUp(logicalDevice);
+		descriptorUpdater.cleanUp();
 		descriptor.cleanUp(logicalDevice);
 		
 		semaphore.cleanUp(logicalDevice);

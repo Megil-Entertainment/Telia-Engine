@@ -18,6 +18,9 @@ public class VulkanDescriptor {
 	public static final int SAMPLER_COUNT = 1;
 	public static final int IMAGE_COUNT = 8;
 	public static final int BINDING_COUNT = 2;
+
+	public static final int SAMPLER_BINDING = 0;
+	public static final int IMAGE_BINDING = 1;
 	
 	private long pool;
 	private LongBuffer layout;
@@ -35,11 +38,11 @@ public class VulkanDescriptor {
 		var pPool = memAllocLong(1);
 
 		var poolSizes = VkDescriptorPoolSize.calloc(BINDING_COUNT);
-		poolSizes.get(0)
+		poolSizes.get(SAMPLER_BINDING)
 			.type(VK_DESCRIPTOR_TYPE_SAMPLER)
 			.descriptorCount(SAMPLER_COUNT);
 		
-		poolSizes.get(1)
+		poolSizes.get(IMAGE_BINDING)
 			.type(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE)
 			.descriptorCount(IMAGE_COUNT);
 		
@@ -67,14 +70,14 @@ public class VulkanDescriptor {
 		var pLayout = memAllocLong(1);
 		
 		var layoutBindings = VkDescriptorSetLayoutBinding.calloc(BINDING_COUNT);
-		layoutBindings.get(0)
-			.binding(0)
+		layoutBindings.get(SAMPLER_BINDING)
+			.binding(SAMPLER_BINDING)
 			.descriptorCount(SAMPLER_COUNT)
 			.stageFlags(VK_SHADER_STAGE_FRAGMENT_BIT)
 			.descriptorType(VK_DESCRIPTOR_TYPE_SAMPLER);
 		
-		layoutBindings.get(1)
-			.binding(1)
+		layoutBindings.get(IMAGE_BINDING)
+			.binding(IMAGE_BINDING)
 			.descriptorCount(IMAGE_COUNT)
 			.stageFlags(VK_SHADER_STAGE_FRAGMENT_BIT)
 			.descriptorType(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE);
@@ -138,6 +141,7 @@ public class VulkanDescriptor {
 			vkFreeDescriptorSets(logicalDevice.get(), pool, set);
 			set = VK_NULL_HANDLE;
 		}
+		
 		if (pSet != null) {
 			memFree(pSet);
 			pSet = null;
