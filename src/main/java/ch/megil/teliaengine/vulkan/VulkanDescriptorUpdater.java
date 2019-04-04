@@ -41,15 +41,20 @@ public class VulkanDescriptorUpdater {
 		VkWriteDescriptorSet.ndescriptorCount(setWrites.get(VulkanDescriptor.IMAGE_BINDING).address(), nextImageIndex);
 	}
 	
-	public void updateDescriptor(VulkanLogicalDevice logicalDevice, VulkanImage... images) {
-		for(int i = 0; i < images.length; i++) {
-			imageInfo.get(i)
-				.sampler(VK_NULL_HANDLE)
-				.imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-				.imageView(images[i].getImageView());
-		}
-		VkWriteDescriptorSet.ndescriptorCount(setWrites.get(VulkanDescriptor.IMAGE_BINDING).address(), images.length);
+	public int addImage(VulkanImage image) {
+		var currentIndex = nextImageIndex;
+		nextImageIndex++;
 		
+		imageInfo.get(currentIndex)
+			.sampler(VK_NULL_HANDLE)
+			.imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+			.imageView(image.getImageView());
+		VkWriteDescriptorSet.ndescriptorCount(setWrites.get(VulkanDescriptor.IMAGE_BINDING).address(), nextImageIndex);
+		
+		return currentIndex;
+	}
+	
+	public void updateDescriptor(VulkanLogicalDevice logicalDevice) {
 		vkUpdateDescriptorSets(logicalDevice.get(), setWrites, null);
 	}
 	

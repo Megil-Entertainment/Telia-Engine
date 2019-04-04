@@ -31,7 +31,6 @@ import ch.megil.teliaengine.vulkan.buffer.VulkanIndexBuffer;
 import ch.megil.teliaengine.vulkan.buffer.VulkanVertexBuffer;
 import ch.megil.teliaengine.vulkan.command.VulkanCommandPool;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
-import ch.megil.teliaengine.vulkan.image.VulkanImage;
 import ch.megil.teliaengine.vulkanui.VulkanMap;
 import ch.megil.teliaengine.vulkanui.VulkanPlayer;
 
@@ -119,12 +118,15 @@ public class GameMain {
 			//TODO: remove when finished with texture loader
 			//start texture test block
 			var image0 = VulkanTextureLoader.get().load(physicalDevice, logicalDevice, queue, singleCommandPool, "player");
+			descriptorUpdater.addImage(image0);
 			var image1 = VulkanTextureLoader.get().load(physicalDevice, logicalDevice, queue, singleCommandPool, "green");
+			descriptorUpdater.addImage(image1);
 			var image2 = VulkanTextureLoader.get().load(physicalDevice, logicalDevice, queue, singleCommandPool, "red");
+			descriptorUpdater.addImage(image2);
 			var image3 = VulkanTextureLoader.get().load(physicalDevice, logicalDevice, queue, singleCommandPool, "blue");
+			descriptorUpdater.addImage(image3);
 			
-			var images = new VulkanImage[] {image0, image1, image2, image3};
-			descriptorUpdater.updateDescriptor(logicalDevice, images);
+			descriptorUpdater.updateDescriptor(logicalDevice);
 			
 			//end texture test block
 			
