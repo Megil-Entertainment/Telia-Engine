@@ -25,9 +25,18 @@ import ch.megil.teliaengine.vulkan.image.VulkanImage;
 import ch.megil.teliaengine.vulkan.image.VulkanTexture;
 
 public class VulkanTextureLoader {
+	private static VulkanTextureLoader instance;
+	
 	private Map<String, VulkanImage> cache;
 	
-	public VulkanTextureLoader() {
+	public static VulkanTextureLoader get() {
+		if (instance == null) {
+			instance = new VulkanTextureLoader();
+		}
+		return instance;
+	}
+	
+	private VulkanTextureLoader() {
 		cache = new HashMap<String, VulkanImage>();
 	}
 	

@@ -118,10 +118,10 @@ public class GameMain {
 			init();
 			//TODO: remove when finished with texture loader
 			//start texture test block
-			var image0 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, singleCommandPool, "player");
-			var image1 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, singleCommandPool, "green");
-			var image2 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, singleCommandPool, "red");
-			var image3 = new VulkanTextureLoader().load(physicalDevice, logicalDevice, queue, singleCommandPool, "blue");
+			var image0 = VulkanTextureLoader.get().load(physicalDevice, logicalDevice, queue, singleCommandPool, "player");
+			var image1 = VulkanTextureLoader.get().load(physicalDevice, logicalDevice, queue, singleCommandPool, "green");
+			var image2 = VulkanTextureLoader.get().load(physicalDevice, logicalDevice, queue, singleCommandPool, "red");
+			var image3 = VulkanTextureLoader.get().load(physicalDevice, logicalDevice, queue, singleCommandPool, "blue");
 			
 			var images = new VulkanImage[] {image0, image1, image2, image3};
 
