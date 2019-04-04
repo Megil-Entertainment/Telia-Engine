@@ -3,6 +3,7 @@ import org.gradle.internal.os.OperatingSystem
 plugins {
     id 'java'
     id 'distribution'
+    id 'org.openjfx.javafxplugin' version '0.0.7'
 }
 
 version = 'v1.1.0'
@@ -72,6 +73,10 @@ dependencies {
 
 repositories {
     jcenter()
+}
+
+javafx {
+	modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
 sourceSets.main.resources.srcDir 'src/main/java'
