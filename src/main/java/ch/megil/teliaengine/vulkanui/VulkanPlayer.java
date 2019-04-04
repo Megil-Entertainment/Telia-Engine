@@ -1,7 +1,6 @@
 package ch.megil.teliaengine.vulkanui;
 
 import ch.megil.teliaengine.configuration.GameConfiguration;
-import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
 
 public class VulkanPlayer extends VulkanElement {

@@ -97,7 +97,7 @@ public class GameMain {
 			throw new IllegalStateException("Vulkan is already completly or partialy initialized. Use cleanUp first.");
 		}
 		
-		map = new VulkanMap(GameState.get().getMap());
+		map = new VulkanMap(GameState.get().getMap(), Player.get().getPosition());
 		player = new VulkanPlayer(Player.get(), map.getNumberOfVertecies());
 		
 		try {
