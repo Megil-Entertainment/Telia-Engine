@@ -6,12 +6,14 @@ import java.io.IOException;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.GameConfiguration;
+import ch.megil.teliaengine.configuration.IconConfiguration;
+import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import javafx.scene.image.Image;
 
-public class TextureLoader {
+public class IconLoader {
 	public Image load(String name, double width, double height) throws AssetNotFoundException {
-		var fileName = GameConfiguration.ASSETS_TEXTURES.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration();
+		var fileName = IconConfiguration.ICONS.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration();
 		var file = new File(fileName);
 		
 		try (var is = new FileInputStream(file)) {
@@ -19,7 +21,7 @@ public class TextureLoader {
 			
 			return obj;
 		} catch (IOException e) {
-			throw new AssetNotFoundException("Texture not found: " + name, e);
+			throw new AssetNotFoundException("Icon not found: " + name, e);
 		}
 	}
 }

@@ -5,7 +5,8 @@ import java.util.stream.Collectors;
 import ch.megil.teliaengine.configuration.PhysicsConstants;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.player.Player;
-import ch.megil.teliaengine.input.KeyHandler;
+import ch.megil.teliaengine.input.InputHandler;
+import ch.megil.teliaengine.input.converter.GameKeyConverter;
 import javafx.animation.AnimationTimer;
 
 public class GameLoop extends AnimationTimer {
@@ -14,10 +15,10 @@ public class GameLoop extends AnimationTimer {
 	private static GameLoop instance;
 	
 	private long lastRun;
-	private KeyHandler keyHandler;
+	private InputHandler inputHandler;
 	
 	protected GameLoop() {
-		keyHandler = new KeyHandler();
+		this.inputHandler = new InputHandler(new GameKeyConverter());
 	}
 	
 	public static GameLoop get() {
@@ -28,7 +29,7 @@ public class GameLoop extends AnimationTimer {
 	}
 	
 	public void runInputs() {
-		var strokes = keyHandler.getKeyStrokes();
+		var strokes = inputHandler.getInputs();
 		var pressed = strokes.get(0);
 		var released = strokes.get(1);
 		
@@ -68,6 +69,7 @@ public class GameLoop extends AnimationTimer {
 	@Override
 	public void handle(long now) {
 		var delta = now - lastRun;
+		inputHandler.updateGamepad();
 		if (delta >= TICK_SPEED) {
 			lastRun = now;
 			runInputs();
@@ -77,7 +79,7 @@ public class GameLoop extends AnimationTimer {
 		}
 	}
 	
-	public KeyHandler getKeyHandler() {
-		return keyHandler;
+	public InputHandler getInputHandler() {
+		return inputHandler;
 	}
 }

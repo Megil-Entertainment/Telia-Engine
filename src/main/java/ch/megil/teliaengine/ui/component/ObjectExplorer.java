@@ -2,7 +2,7 @@ package ch.megil.teliaengine.ui.component;
 
 import java.util.logging.Level;
 
-import ch.megil.teliaengine.configuration.SystemConfiguration;
+import ch.megil.teliaengine.configuration.ObjectListConfiguration;
 import ch.megil.teliaengine.file.GameObjectSaveLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
@@ -31,8 +31,8 @@ public class ObjectExplorer extends ScrollPane{
 	public void loadGameObject(GameObject obj) {
 		var listItem = new GameObjectListItem();
 		listItem.setGameObject(obj);
-		listItem.setBgColor(Color.web(SystemConfiguration.OBJECT_LIST_BG.getConfiguration()));
-		listItem.setHoverColor(Color.web(SystemConfiguration.OBJECT_LIST_HOVER.getConfiguration()));
+		listItem.setBgColor(Color.web(ObjectListConfiguration.OBJECT_LIST_BG.getConfiguration()));
+		listItem.setHoverColor(Color.web(ObjectListConfiguration.OBJECT_LIST_HOVER.getConfiguration()));
 		listItem.setOnAction(this::createNewObject);
 		container.getChildren().add(listItem);
 	}

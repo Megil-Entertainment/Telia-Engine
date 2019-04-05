@@ -1,4 +1,4 @@
-package ch.megil.teliaengine.view;
+package ch.megil.teliaengine.ui;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
