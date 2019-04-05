@@ -34,7 +34,7 @@ public class PlayerTest {
 
 	@Test
 	public void testUpdate() {
-		var player = new Player(depiction, playerHitbox, Color.BLACK);
+		var player = new Player("depiction", depiction, playerHitbox, Color.BLACK);
 		
 		assertEquals(0, player.getPosition().getX(), 0);
 		assertEquals(0, player.getPosition().getY(), 0);

@@ -16,7 +16,6 @@ import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.logging.LogHandler;
-import ch.megil.teliaengine.project.ProjectController;
 import javafx.scene.paint.Color;
 
 public class GameObjectSaveLoad {
@@ -26,11 +25,12 @@ public class GameObjectSaveLoad {
 		
 		try (var reader = new BufferedReader(new FileReader(file))) {
 			var spec = reader.readLine().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
-			var depiction = new TextureLoader().load(spec[2], Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
+			var depictionName = spec[2];
+			var depiction = new TextureLoader().load(depictionName, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			var hitbox = new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			var color = Color.web(spec[3]);
 			
-			var obj = new GameObject(name, depiction, hitbox, color);
+			var obj = new GameObject(depictionName, name, depiction, hitbox, color);
 			
 			return obj;
 		} catch (IOException e) {

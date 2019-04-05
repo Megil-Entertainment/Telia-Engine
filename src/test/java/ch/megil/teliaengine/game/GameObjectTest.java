@@ -25,7 +25,7 @@ public class GameObjectTest {
 
 	@Test
 	public void testGameObjectStringNode() {
-		var obj = new GameObject("testObject", depiction, hitbox, color);
+		var obj = new GameObject("testObject", "depiction", depiction, hitbox, color);
 
 		assertEquals(depiction, obj.getDepiction());
 		assertEquals(0, obj.getPosition().getX(), 0);
@@ -34,7 +34,7 @@ public class GameObjectTest {
 
 	@Test
 	public void testGameObjectStringNodeDoubleDouble() {
-		var obj = new GameObject("testObject", depiction, hitbox, color, 30, 40);
+		var obj = new GameObject("testObject", "depiction", depiction, hitbox, color, 30, 40);
 
 		assertEquals(depiction, obj.getDepiction());
 		assertEquals(30, obj.getPosition().getX(), 0);

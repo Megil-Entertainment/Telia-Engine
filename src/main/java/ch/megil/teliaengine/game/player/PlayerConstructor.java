@@ -5,5 +5,5 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public interface PlayerConstructor {
-	Player invoke(Image depiction, Hitbox hitbox, Color color);
+	Player invoke(String depictionName, Image depiction, Hitbox hitbox, Color color);
 }

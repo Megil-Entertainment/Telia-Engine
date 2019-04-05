@@ -13,6 +13,7 @@ import static org.lwjgl.vulkan.VK10.VK_IMAGE_LAYOUT_UNDEFINED;
 import java.util.HashMap;
 import java.util.Map;
 
+import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
@@ -45,7 +46,7 @@ public class VulkanTextureLoader {
 			return cache.get(name);
 		}
 		
-		var fileName = GameConfiguration.ASSETS_TEXTURES.getConfiguration() + "/" + name + GameConfiguration.FILE_EXT_TEXTURE.getConfiguration();
+		var fileName = GameConfiguration.ASSETS_TEXTURES.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration();
 		
 		var pTexWidth = memAllocInt(1);
 		var pTexHeight = memAllocInt(1);

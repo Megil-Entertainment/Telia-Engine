@@ -19,8 +19,8 @@ public class Player extends GameElement{
 	private Vector velocity;
 
 	
-	protected Player(Image depiction, Hitbox hitbox, Color color) {
-		super(depiction, hitbox, color);
+	protected Player(String depictionName, Image depiction, Hitbox hitbox, Color color) {
+		super(depictionName, depiction, hitbox, color);
 		jumpUsed = false;
 		
 		acceleration = Vector.ZERO;
@@ -41,7 +41,7 @@ public class Player extends GameElement{
 		var player = get();
 		var hitboxSize = player.getHitbox().getVectorSize();
 		
-		var enginePlayer = new Player(player.getDepiction(), new Hitbox(player.getPosition(), hitboxSize.getX(), hitboxSize.getY()), player.getColor());
+		var enginePlayer = new Player(player.getDepictionName(), player.getDepiction(), new Hitbox(player.getPosition(), hitboxSize.getX(), hitboxSize.getY()), player.getColor());
 		enginePlayer.setPosition(player.getPosition());
 		
 		return enginePlayer;

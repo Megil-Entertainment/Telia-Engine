@@ -5,9 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
-import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.configuration.IconConfiguration;
-import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import javafx.scene.image.Image;
 
