@@ -13,9 +13,9 @@ project.ext.lwjglNativesWin = "natives-windows"
 project.ext.lwjglNativesLinux = "natives-linux"
 project.ext.lwjglNativesMacOS = "natives-macos"
 project.ext.jfxVersion = "11.0.2"
-project.ext.platformWin = "win"
-project.ext.platformMacos = "mac"
-project.ext.platformLinux = "linux"
+project.ext.jfxWin = "win"
+project.ext.jfxMacos = "mac"
+project.ext.jfxLinux = "linux"
 
 configurations {
 	allSystem
@@ -70,23 +70,23 @@ dependencies {
 	macos "org.lwjgl:lwjgl-vma:$lwjglVersion:$lwjglNativesMacOS"
 	macos "org.lwjgl:lwjgl-vulkan:$lwjglVersion:$lwjglNativesMacOS"
 	
-	windows "org.openjfx:javafx-base:$jfxVersion:$platformWin"
-	windows "org.openjfx:javafx-fxml:$jfxVersion:$platformWin"
-	windows "org.openjfx:javafx-graphics:$jfxVersion:$platformWin"
-	windows "org.openjfx:javafx-controls:$jfxVersion:$platformWin"
-	windows "org.openjfx:javafx-swing:$jfxVersion:$platformWin"
+	windows "org.openjfx:javafx-base:$jfxVersion:$jfxWin"
+	windows "org.openjfx:javafx-fxml:$jfxVersion:$jfxWin"
+	windows "org.openjfx:javafx-graphics:$jfxVersion:$jfxWin"
+	windows "org.openjfx:javafx-controls:$jfxVersion:$jfxWin"
+	windows "org.openjfx:javafx-swing:$jfxVersion:$jfxWin"
 	
-	linux "org.openjfx:javafx-base:$jfxVersion:$platformWin"
-	linux "org.openjfx:javafx-fxml:$jfxVersion:$platformWin"
-	linux "org.openjfx:javafx-graphics:$jfxVersion:$platformWin"
-	linux "org.openjfx:javafx-controls:$jfxVersion:$platformWin"
-	linux "org.openjfx:javafx-swing:$jfxVersion:$platformWin"
+	linux "org.openjfx:javafx-base:$jfxVersion:$jfxLinux"
+	linux "org.openjfx:javafx-fxml:$jfxVersion:$jfxLinux"
+	linux "org.openjfx:javafx-graphics:$jfxVersion:$jfxLinux"
+	linux "org.openjfx:javafx-controls:$jfxVersion:$jfxLinux"
+	linux "org.openjfx:javafx-swing:$jfxVersion:$jfxLinux"
 	
-	macos "org.openjfx:javafx-base:$jfxVersion:$platformWin"
-	macos "org.openjfx:javafx-fxml:$jfxVersion:$platformWin"
-	macos "org.openjfx:javafx-graphics:$jfxVersion:$platformWin"
-	macos "org.openjfx:javafx-controls:$jfxVersion:$platformWin"
-	macos "org.openjfx:javafx-swing:$jfxVersion:$platformWin"
+	macos "org.openjfx:javafx-base:$jfxVersion:$jfxMacos"
+	macos "org.openjfx:javafx-fxml:$jfxVersion:$jfxMacos"
+	macos "org.openjfx:javafx-graphics:$jfxVersion:$jfxMacos"
+	macos "org.openjfx:javafx-controls:$jfxVersion:$jfxMacos"
+	macos "org.openjfx:javafx-swing:$jfxVersion:$jfxMacos"
 
     testImplementation 'junit:junit:4.12'
 	testImplementation 'org.mockito:mockito-core:2.23.0'
