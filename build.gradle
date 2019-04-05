@@ -6,7 +6,7 @@ plugins {
 }
 
 version = 'v2.0.0'
-project.ext.mainClassName = 'ch.megil.teliaengine.Main'
+project.ext.mainClassName = 'ch.megil.teliaengine.MainStarter'
 
 project.ext.lwjglVersion = "3.2.0"
 project.ext.lwjglNativesWin = "natives-windows"
@@ -170,13 +170,4 @@ distributions {
 			}
 		}
 	}
-}
-
-test {
-	doFirst {
-        jvmArgs = [
-                '--module-path', classpath.asPath,
-                '--add-modules', 'javafx.controls,javafx.fxml'
-        ]
-    }
 }
