@@ -133,6 +133,7 @@ task createBundle {
 		include "assets/**"
 		include "config/**"
 		include "const/**"
+		include "icons/**"
 		include "shader/*.spv"
 	}
 	ant.propertyfile(file: "$bundle/config/system.properties") {
