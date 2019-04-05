@@ -1,6 +1,6 @@
 pipeline:
   build:
-    image: nightsir/megil-testenv:0.1
+    image: openjdk:11
     commands:
       - chmod +x gradlew
       - ./gradlew test --stacktrace --info
