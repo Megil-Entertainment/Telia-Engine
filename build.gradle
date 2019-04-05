@@ -3,7 +3,6 @@ import org.gradle.internal.os.OperatingSystem
 plugins {
     id 'java'
     id 'distribution'
-    id 'org.openjfx.javafxplugin' version '0.0.7'
 }
 
 version = 'v2.0.0'
@@ -13,6 +12,10 @@ project.ext.lwjglVersion = "3.2.0"
 project.ext.lwjglNativesWin = "natives-windows"
 project.ext.lwjglNativesLinux = "natives-linux"
 project.ext.lwjglNativesMacOS = "natives-macos"
+project.ext.jfxVersion = "11.0.2"
+project.ext.platformWin = "win"
+project.ext.platformMacos = "mac"
+project.ext.platformLinux = "linux"
 
 configurations {
 	allSystem
@@ -66,6 +69,24 @@ dependencies {
 	macos "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNativesMacOS"
 	macos "org.lwjgl:lwjgl-vma:$lwjglVersion:$lwjglNativesMacOS"
 	macos "org.lwjgl:lwjgl-vulkan:$lwjglVersion:$lwjglNativesMacOS"
+	
+	windows "org.openjfx:javafx-base:$jfxVersion:$platformWin"
+	windows "org.openjfx:javafx-fxml:$jfxVersion:$platformWin"
+	windows "org.openjfx:javafx-graphics:$jfxVersion:$platformWin"
+	windows "org.openjfx:javafx-controls:$jfxVersion:$platformWin"
+	windows "org.openjfx:javafx-swing:$jfxVersion:$platformWin"
+	
+	linux "org.openjfx:javafx-base:$jfxVersion:$platformWin"
+	linux "org.openjfx:javafx-fxml:$jfxVersion:$platformWin"
+	linux "org.openjfx:javafx-graphics:$jfxVersion:$platformWin"
+	linux "org.openjfx:javafx-controls:$jfxVersion:$platformWin"
+	linux "org.openjfx:javafx-swing:$jfxVersion:$platformWin"
+	
+	macos "org.openjfx:javafx-base:$jfxVersion:$platformWin"
+	macos "org.openjfx:javafx-fxml:$jfxVersion:$platformWin"
+	macos "org.openjfx:javafx-graphics:$jfxVersion:$platformWin"
+	macos "org.openjfx:javafx-controls:$jfxVersion:$platformWin"
+	macos "org.openjfx:javafx-swing:$jfxVersion:$platformWin"
 
     testImplementation 'junit:junit:4.12'
 	testImplementation 'org.mockito:mockito-core:2.23.0'
@@ -73,10 +94,6 @@ dependencies {
 
 repositories {
     jcenter()
-}
-
-javafx {
-	modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
 sourceSets.main.resources.srcDir 'src/main/java'
