@@ -65,6 +65,12 @@ public class EngineUIController {
 		}
 		
 		mapSaveLoad.save(map, mapEditor.getPlayer());
+		try {
+			assetExplorer.initialize(GameConfiguration.ASSETS.getConfiguration(), mapEditor);
+			assetExplorer.setMaxWidth(300);
+		} catch(AssetNotFoundException e) {
+			LogHandler.log(e, Level.SEVERE);
+		}
 	}
 	
 	@FXML
