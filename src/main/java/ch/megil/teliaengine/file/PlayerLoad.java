@@ -34,7 +34,7 @@ public class PlayerLoad {
 			scanner.useDelimiter(FileConfiguration.SEPARATOR_ENTRY.getConfiguration());
 			
 			var spec = scanner.next().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
-			depiction = new TextureLoader().load(spec[2], Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
+			depiction = TextureLoader.get().load(spec[2], Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			hitbox =  new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			color = Color.web(spec[3]);
 		} catch (IOException e) {

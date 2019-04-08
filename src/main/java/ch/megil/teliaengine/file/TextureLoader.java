@@ -12,10 +12,19 @@ import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import javafx.scene.image.Image;
 
 public class TextureLoader {
+	private static TextureLoader instance;
+	
 	private Map<String, Image> cache;
 	
-	public TextureLoader() {
+	private TextureLoader() {
 		cache = new HashMap<String, Image>();
+	}
+	
+	public static TextureLoader get() {
+		if (instance == null) {
+			instance = new TextureLoader();
+		}
+		return instance;
 	}
 	
 	public Image load(String name, double width, double height) throws AssetNotFoundException {
