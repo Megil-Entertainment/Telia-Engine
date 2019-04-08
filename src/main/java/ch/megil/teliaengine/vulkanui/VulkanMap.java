@@ -5,13 +5,13 @@ import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.Vector;
 
 public class VulkanMap extends VulkanElement {
-	public VulkanMap(Map map, Vector cameraOffset) {
-		this(map, 0, cameraOffset);
+	public VulkanMap(Map map, Vector cameraPosition) {
+		this(map, 0, cameraPosition);
 	}
 	
-	public VulkanMap(Map map, int indexOffset, Vector cameraOffset) {
+	public VulkanMap(Map map, int indexOffset, Vector cameraPosition) {
 		super(map.getMapObjects().size(), Double.parseDouble(GameConfiguration.MAP_WIDTH.getConfiguration()), 
-				Double.parseDouble(GameConfiguration.MAP_HEIGHT.getConfiguration()), cameraOffset);
+				Double.parseDouble(GameConfiguration.MAP_HEIGHT.getConfiguration()), cameraPosition);
 		
 		var vertexBuffer = vertecies.asFloatBuffer();
 		var indexBuffer = indicies.asShortBuffer();

@@ -22,25 +22,25 @@ public abstract class VulkanElement extends VulkanObject {
 	private static final int INDEX_BL = 3;
 	
 	private Vector scaleVector;
-	private Vector cameraOffset;
+	private Vector cameraPosition;
 	private int numberOfVertecies;
 	private int numberOfIndecies;
 	
-	public VulkanElement(int numberOfObjects, double spreadWidth, double spreadHeight, Vector cameraOffset) {
+	public VulkanElement(int numberOfObjects, double spreadWidth, double spreadHeight, Vector cameraPosition) {
 		super(VulkanVertexBuffer.VERTEX_SIZE * numberOfObjects * VERTECIES_PER_OBJECT,
 				VulkanIndexBuffer.INDEX_SIZE * numberOfObjects * INDICIES_PER_OBJECT);
 		scaleVector = new Vector(SCALE_MODIFIER/spreadWidth, SCALE_MODIFIER/spreadHeight);
 		numberOfVertecies = numberOfObjects * VERTECIES_PER_OBJECT;
 		numberOfIndecies = numberOfObjects * INDICIES_PER_OBJECT;
-		this.cameraOffset = cameraOffset.multiplyByComponent(scaleVector);
+		this.cameraPosition = cameraPosition.multiplyByComponent(scaleVector);
 	}
 	
 	protected void convertElement(FloatBuffer vertexBuffer, ShortBuffer indexBuffer, GameElement element, int indexOffset) {
-		var topLeft = element.getPosition().multiplyByComponent(scaleVector).subtract(cameraOffset);
+		var topLeft = element.getPosition().multiplyByComponent(scaleVector).subtract(cameraPosition);
 		var bottomRigh = element.getPosition()
 				.add(new Vector(element.getDepiction().getWidth(), element.getDepiction().getHeight()))
 				.multiplyByComponent(scaleVector)
-				.subtract(cameraOffset);
+				.subtract(cameraPosition);
 		
 		var color = element.getColor();
 		vertexBuffer.put((float) topLeft.getX())   .put((float) topLeft.getY())   .put((float) color.getRed()).put((float) color.getGreen()).put((float) color.getBlue());
