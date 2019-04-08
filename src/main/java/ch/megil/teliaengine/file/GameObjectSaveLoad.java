@@ -16,7 +16,6 @@ import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.logging.LogHandler;
-import ch.megil.teliaengine.project.ProjectController;
 import javafx.scene.paint.Color;
 
 public class GameObjectSaveLoad {
