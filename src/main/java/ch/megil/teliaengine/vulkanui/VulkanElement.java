@@ -3,6 +3,7 @@ package ch.megil.teliaengine.vulkanui;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
+import ch.megil.teliaengine.file.VulkanTextureLoader;
 import ch.megil.teliaengine.game.GameElement;
 import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.vulkan.buffer.VulkanIndexBuffer;
@@ -41,7 +42,8 @@ public abstract class VulkanElement extends VulkanObject {
 				.multiplyByComponent(scaleVector)
 				.add(VULKAN_OFFSET);
 		
-		var texIndex = 0;
+		var texData = VulkanTextureLoader.get().getCachedImage(element.getDepictionName());
+		var texIndex = texData.getA();
 		
 		var color = element.getColor();
 		vertexBuffer.put((float) topLeft.getX())   .put((float) topLeft.getY())   .put((float) color.getRed()).put((float) color.getGreen()).put((float) color.getBlue()).put(0.0f).put(0.0f).put(Float.intBitsToFloat(texIndex));

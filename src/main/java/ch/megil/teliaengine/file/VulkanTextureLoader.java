@@ -92,4 +92,11 @@ public class VulkanTextureLoader {
 			memFree(pTexWidth);
 		}
 	}
+	
+	public ValuePair<Integer, VulkanImage> getCachedImage(String name) {
+		if (cache.containsKey(name)) {
+			return cache.get(name);
+		}
+		return null;
+	}
 }
