@@ -26,7 +26,7 @@ public class GameObjectSaveLoad {
 		try (var reader = new BufferedReader(new FileReader(file))) {
 			var spec = reader.readLine().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			var depictionName = spec[2];
-			var depiction = new TextureLoader().load(depictionName, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
+			var depiction = TextureLoader.get().load(depictionName, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			var hitbox = new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			var color = Color.web(spec[3]);
 			

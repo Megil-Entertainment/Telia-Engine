@@ -110,8 +110,8 @@ public class GameMain {
 			throw new IllegalStateException("Vulkan is already completly or partialy initialized. Use cleanUp first.");
 		}
 		
-		map = new VulkanMap(GameState.get().getMap());
-		player = new VulkanPlayer(Player.get(), GameState.get().getMap(), map.getNumberOfVertecies());
+		map = new VulkanMap(GameState.get().getMap(), Player.get().getPosition());
+		player = new VulkanPlayer(Player.get(), map.getNumberOfVertecies(), Player.get().getPosition());
 		
 		try {
 			init();
@@ -131,6 +131,7 @@ public class GameMain {
 			vertexBuffer.writeVertecies(logicalDevice, player, map.getNumberOfVertecies());
 			indexBuffer.writeIndicies(logicalDevice, player, map.getNumberOfIndecies());
 			player.free();
+			map.free();
 			GameLoop.get().start();
 			initKeyhandling();
 			loop();
@@ -139,7 +140,6 @@ public class GameMain {
 			e.printStackTrace();
 		} finally {
 			cleanUp();
-			map.free();
 			GameLoop.get().stop();
 		}
 	}
@@ -230,9 +230,12 @@ public class GameMain {
 			while(!glfwWindowShouldClose(window)) {
 				glfwPollEvents();
 				
-				player = new VulkanPlayer(Player.get(), GameState.get().getMap());
+				map = new VulkanMap(GameState.get().getMap(), Player.get().getPosition());
+				player = new VulkanPlayer(Player.get(), Player.get().getPosition());
+				vertexBuffer.writeVertecies(logicalDevice, map);
 				vertexBuffer.writeVertecies(logicalDevice, player, map.getNumberOfVertecies());
 				player.free();
+				map.free();
 				
 				vkAcquireNextImageKHR(logicalDevice.get(), swapchain.get(), UINT64_MAX, semaphore.get(SEM_IMAGE_AVAILABLE), VK_NULL_HANDLE, pImageIndex);
 				var imageIndex = pImageIndex.get(0);

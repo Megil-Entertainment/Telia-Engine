@@ -14,7 +14,9 @@ public enum GameConfiguration {
 	ASSETS_TEXTURES("assetsTextures"),
 	ASSET_PLAYER("assetPlayer"),
 	PLAYER_WIDTH("playerWidth"),
-	PLAYER_HEIGHT("playerHeight");
+	PLAYER_HEIGHT("playerHeight"),
+	MAP_WIDTH("mapWidth"),
+	MAP_HEIGHT("mapHeight");
 
 	
 	private static Properties gameProp;
