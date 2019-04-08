@@ -5,13 +5,17 @@ plugins {
     id 'distribution'
 }
 
-version = 'v1.1.0'
-project.ext.mainClassName = 'ch.megil.teliaengine.Main'
+version = 'v2.0.0'
+project.ext.mainClassName = 'ch.megil.teliaengine.MainStarter'
 
 project.ext.lwjglVersion = "3.2.0"
 project.ext.lwjglNativesWin = "natives-windows"
 project.ext.lwjglNativesLinux = "natives-linux"
 project.ext.lwjglNativesMacOS = "natives-macos"
+project.ext.jfxVersion = "11.0.2"
+project.ext.jfxWin = "win"
+project.ext.jfxMacos = "mac"
+project.ext.jfxLinux = "linux"
 
 configurations {
 	allSystem
@@ -32,8 +36,8 @@ configurations {
 	}
 }
 
-sourceCompatibility = 10
-targetCompatibility = 10
+sourceCompatibility = 11
+targetCompatibility = 11
 
 dependencies {
     allSystem "org.lwjgl:lwjgl:$lwjglVersion"
@@ -65,6 +69,24 @@ dependencies {
 	macos "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNativesMacOS"
 	macos "org.lwjgl:lwjgl-vma:$lwjglVersion:$lwjglNativesMacOS"
 	macos "org.lwjgl:lwjgl-vulkan:$lwjglVersion:$lwjglNativesMacOS"
+	
+	windows "org.openjfx:javafx-base:$jfxVersion:$jfxWin"
+	windows "org.openjfx:javafx-fxml:$jfxVersion:$jfxWin"
+	windows "org.openjfx:javafx-graphics:$jfxVersion:$jfxWin"
+	windows "org.openjfx:javafx-controls:$jfxVersion:$jfxWin"
+	windows "org.openjfx:javafx-swing:$jfxVersion:$jfxWin"
+	
+	linux "org.openjfx:javafx-base:$jfxVersion:$jfxLinux"
+	linux "org.openjfx:javafx-fxml:$jfxVersion:$jfxLinux"
+	linux "org.openjfx:javafx-graphics:$jfxVersion:$jfxLinux"
+	linux "org.openjfx:javafx-controls:$jfxVersion:$jfxLinux"
+	linux "org.openjfx:javafx-swing:$jfxVersion:$jfxLinux"
+	
+	macos "org.openjfx:javafx-base:$jfxVersion:$jfxMacos"
+	macos "org.openjfx:javafx-fxml:$jfxVersion:$jfxMacos"
+	macos "org.openjfx:javafx-graphics:$jfxVersion:$jfxMacos"
+	macos "org.openjfx:javafx-controls:$jfxVersion:$jfxMacos"
+	macos "org.openjfx:javafx-swing:$jfxVersion:$jfxMacos"
 
     testImplementation 'junit:junit:4.12'
 	testImplementation 'org.mockito:mockito-core:2.23.0'
@@ -111,6 +133,7 @@ task createBundle {
 		include "assets/**"
 		include "config/**"
 		include "const/**"
+		include "icons/**"
 		include "shader/*.spv"
 	}
 	ant.propertyfile(file: "$bundle/config/system.properties") {
