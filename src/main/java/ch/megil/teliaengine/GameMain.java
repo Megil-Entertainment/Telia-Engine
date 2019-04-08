@@ -31,6 +31,7 @@ import ch.megil.teliaengine.vulkan.buffer.VulkanIndexBuffer;
 import ch.megil.teliaengine.vulkan.buffer.VulkanVertexBuffer;
 import ch.megil.teliaengine.vulkan.command.VulkanCommandPool;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
+import ch.megil.teliaengine.vulkanui.VulkanElement;
 import ch.megil.teliaengine.vulkanui.VulkanMap;
 import ch.megil.teliaengine.vulkanui.VulkanPlayer;
 
@@ -110,9 +111,6 @@ public class GameMain {
 			throw new IllegalStateException("Vulkan is already completly or partialy initialized. Use cleanUp first.");
 		}
 		
-		map = new VulkanMap(GameState.get().getMap(), Player.get().getPosition());
-		player = new VulkanPlayer(Player.get(), map.getNumberOfVertecies(), Player.get().getPosition());
-		
 		try {
 			init();
 			//TODO: remove when finished with texture loader
@@ -123,6 +121,9 @@ public class GameMain {
 			var image3 = VulkanTextureLoader.get().load(physicalDevice, logicalDevice, queue, singleCommandPool, descriptorUpdater, "blue");
 			
 			descriptorUpdater.updateDescriptor(logicalDevice);
+			
+			map = new VulkanMap(GameState.get().getMap(), Player.get().getPosition());
+			player = new VulkanPlayer(Player.get(), map.getNumberOfVertecies(), Player.get().getPosition());
 			
 			//end texture test block
 			
@@ -174,8 +175,8 @@ public class GameMain {
 		descriptor.init(logicalDevice);
 		descriptorUpdater.init(sampler, descriptor);
 		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer, descriptor);
-		vertexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfVertecies() + player.getNumberOfVertecies(), new int[] {queue.getGraphicsFamily()});
-		indexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfIndecies() + player.getNumberOfIndecies(), new int[] {queue.getGraphicsFamily()});
+		vertexBuffer.init(physicalDevice, logicalDevice, VulkanElement.calculateNumberOfVertecies(GameState.get().getMap().getMapObjects().size() + 1), new int[] {queue.getGraphicsFamily()});
+		indexBuffer.init(physicalDevice, logicalDevice, VulkanElement.calculateNumberOfIndicies(GameState.get().getMap().getMapObjects().size() + 1), new int[] {queue.getGraphicsFamily()});
 		
 		glfwShowWindow(window);
 	}
