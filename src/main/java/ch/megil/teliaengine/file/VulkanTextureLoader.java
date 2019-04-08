@@ -16,6 +16,8 @@ import java.util.Map;
 import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
+import ch.megil.teliaengine.helper.ValuePair;
+import ch.megil.teliaengine.vulkan.VulkanDescriptorUpdater;
 import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
 import ch.megil.teliaengine.vulkan.VulkanPhysicalDevice;
 import ch.megil.teliaengine.vulkan.VulkanQueue;
@@ -28,7 +30,7 @@ import ch.megil.teliaengine.vulkan.image.VulkanTexture;
 public class VulkanTextureLoader {
 	private static VulkanTextureLoader instance;
 	
-	private Map<String, VulkanImage> cache;
+	private Map<String, ValuePair<Integer, VulkanImage>> cache;
 	
 	public static VulkanTextureLoader get() {
 		if (instance == null) {
@@ -38,10 +40,10 @@ public class VulkanTextureLoader {
 	}
 	
 	private VulkanTextureLoader() {
-		cache = new HashMap<String, VulkanImage>();
+		cache = new HashMap<String, ValuePair<Integer, VulkanImage>>();
 	}
 	
-	public VulkanImage load(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, VulkanQueue queue, VulkanCommandPool commandPool, String name) throws AssetNotFoundException, VulkanException {
+	public ValuePair<Integer, VulkanImage> load(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, VulkanQueue queue, VulkanCommandPool commandPool, VulkanDescriptorUpdater descriptorUpdater, String name) throws AssetNotFoundException, VulkanException {
 		if (cache.containsKey(name)) {
 			return cache.get(name);
 		}
@@ -74,9 +76,11 @@ public class VulkanTextureLoader {
 			
 			image.createView(logicalDevice);
 			
-			cache.put(name, image);
+			var descriptorIndex = descriptorUpdater.addImage(image);
+			var cachePair = new ValuePair<Integer, VulkanImage>(descriptorIndex, image);
+			cache.put(name, cachePair);
 			
-			return image;
+			return cachePair;
 		} catch (Exception e) {
 			image.cleanUp(logicalDevice);
 			throw e;

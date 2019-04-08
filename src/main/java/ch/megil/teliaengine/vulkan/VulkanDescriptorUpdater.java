@@ -2,8 +2,6 @@ package ch.megil.teliaengine.vulkan;
 
 import static org.lwjgl.vulkan.VK10.*;
 
-import java.util.List;
-
 import org.lwjgl.vulkan.VkDescriptorImageInfo;
 import org.lwjgl.vulkan.VkWriteDescriptorSet;
 
@@ -13,8 +11,6 @@ public class VulkanDescriptorUpdater {
 	private VkDescriptorImageInfo.Buffer samplerInfo;
 	private VkDescriptorImageInfo.Buffer imageInfo;
 	private VkWriteDescriptorSet.Buffer setWrites;
-	
-	private List<VulkanImage> writtenImages;
 	
 	private int nextImageIndex;
 	
@@ -46,11 +42,6 @@ public class VulkanDescriptorUpdater {
 	}
 	
 	public int addImage(VulkanImage image) {
-		var index = writtenImages.indexOf(image);
-		if (index != -1) {
-			return index;
-		}
-		
 		var currentIndex = nextImageIndex;
 		nextImageIndex++;
 		
@@ -60,7 +51,6 @@ public class VulkanDescriptorUpdater {
 			.imageView(image.getImageView());
 		VkWriteDescriptorSet.ndescriptorCount(setWrites.get(VulkanDescriptor.IMAGE_BINDING).address(), nextImageIndex);
 		
-		writtenImages.add(image);
 		return currentIndex;
 	}
 	
