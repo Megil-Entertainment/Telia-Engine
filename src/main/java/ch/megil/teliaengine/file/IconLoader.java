@@ -12,10 +12,19 @@ import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import javafx.scene.image.Image;
 
 public class IconLoader {
+	private static IconLoader instance;
+	
 	private Map<String, Image> cache;
 	
-	public IconLoader() {
+	private IconLoader() {
 		cache = new HashMap<String, Image>();
+	}
+	
+	public static IconLoader get() {
+		if (instance == null) {
+			instance = new IconLoader();
+		}
+		return instance;
 	}
 	
 	public Image load(String name, double width, double height) throws AssetNotFoundException {
