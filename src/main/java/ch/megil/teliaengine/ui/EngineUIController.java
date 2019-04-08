@@ -39,7 +39,7 @@ public class EngineUIController {
 		objectExplorer.setMapEditor(mapEditor);
 		objectExplorer.setMaxWidth(300);
 		try {
-			assetExplorer.initialize(GameConfiguration.ASSETS.getConfiguration(), mapEditor);
+			assetExplorer.initialize(GameConfiguration.ASSETS.getConfiguration(), this::loadMap);
 			assetExplorer.setMaxWidth(300);
 		} catch (AssetNotFoundException e) {
 			LogHandler.log(e, Level.SEVERE);
@@ -66,7 +66,7 @@ public class EngineUIController {
 		
 		mapSaveLoad.save(map, mapEditor.getPlayer());
 		try {
-			assetExplorer.initialize(GameConfiguration.ASSETS.getConfiguration(), mapEditor);
+			assetExplorer.initialize(GameConfiguration.ASSETS.getConfiguration(), this::loadMap);
 			assetExplorer.setMaxWidth(300);
 		} catch(AssetNotFoundException e) {
 			LogHandler.log(e, Level.SEVERE);
@@ -94,25 +94,29 @@ public class EngineUIController {
 			var result = dialog.showAndWait();
 
 			if (result.isPresent()) {
+				loadMap(result.get());
+			}
+		}
+	}
+	
+	private void loadMap(String mapName) {
+		try {
+			mapEditor.setMap(mapSaveLoad.load(mapName, false));
+		} catch (AssetNotFoundException | AssetFormatException e) {
+			var alert = new Alert(AlertType.WARNING);
+			alert.setTitle("Map Load Error");
+			alert.setHeaderText(null);
+			alert.setContentText("There was an error while loading the map. Do you wanna try and recover the map?");
+			alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.CANCEL);
+			var res = alert.showAndWait();
+			if (res.isPresent() && res.get().equals(ButtonType.YES)) {
 				try {
-					mapEditor.setMap(mapSaveLoad.load(result.get(), false));
-				} catch (AssetNotFoundException | AssetFormatException e) {
-					var alert = new Alert(AlertType.WARNING);
-					alert.setTitle("Map Load Error");
-					alert.setHeaderText(null);
-					alert.setContentText("There was an error while loading the map. Do you wanna try and recover the map?");
-					alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.CANCEL);
-					var res = alert.showAndWait();
-					if (res.isPresent() && res.get().equals(ButtonType.YES)) {
-						try {
-							mapEditor.setMap(mapSaveLoad.load(result.get(), true));
-						} catch (AssetNotFoundException | AssetFormatException e2) {
-							LogHandler.log(e2, Level.SEVERE);
-						}
-					} else {
-						LogHandler.log(e, Level.SEVERE);
-					}
+					mapEditor.setMap(mapSaveLoad.load(mapName, true));
+				} catch (AssetNotFoundException | AssetFormatException e2) {
+					LogHandler.log(e2, Level.SEVERE);
 				}
+			} else {
+				LogHandler.log(e, Level.SEVERE);
 			}
 		}
 	}
