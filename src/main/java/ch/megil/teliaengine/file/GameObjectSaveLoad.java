@@ -30,7 +30,7 @@ public class GameObjectSaveLoad {
 			var hitbox = new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			var color = Color.web(spec[3]);
 			
-			var obj = new GameObject(depictionName, name, depiction, hitbox, color);
+			var obj = new GameObject(name, depictionName, depiction, hitbox, color);
 			
 			return obj;
 		} catch (IOException e) {
