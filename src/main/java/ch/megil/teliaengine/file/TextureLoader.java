@@ -27,6 +27,10 @@ public class TextureLoader {
 		return instance;
 	}
 	
+	public void clearCache() {
+		cache.clear();
+	}
+	
 	public Image load(String name, double width, double height) throws AssetNotFoundException {
 		if (cache.containsKey(name)) {
 			var tex = cache.get(name);
