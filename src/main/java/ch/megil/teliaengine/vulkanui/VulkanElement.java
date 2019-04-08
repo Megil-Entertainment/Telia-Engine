@@ -11,7 +11,6 @@ import ch.megil.teliaengine.vulkan.obj.VulkanObject;
 
 public abstract class VulkanElement extends VulkanObject {
 	private static final int SCALE_MODIFIER = 2;
-	private static final Vector VULKAN_OFFSET = new Vector(-1, -1);
 	
 	public static final int VERTECIES_PER_OBJECT = 4;
 	public static final int INDICIES_PER_OBJECT = 5;
