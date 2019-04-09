@@ -1,4 +1,4 @@
-package ch.megil.teliaengine.file;
+package ch.megil.teliaengine.vulkan.file;
 
 import static org.lwjgl.stb.STBImage.STBI_rgb_alpha;
 import static org.lwjgl.stb.STBImage.stbi_image_free;
@@ -16,6 +16,7 @@ import java.util.Map;
 import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
+import ch.megil.teliaengine.game.GameElement;
 import ch.megil.teliaengine.helper.ValuePair;
 import ch.megil.teliaengine.vulkan.VulkanDescriptorUpdater;
 import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
@@ -28,18 +29,9 @@ import ch.megil.teliaengine.vulkan.image.VulkanImage;
 import ch.megil.teliaengine.vulkan.image.VulkanTexture;
 
 public class VulkanTextureLoader {
-	private static VulkanTextureLoader instance;
-	
 	private Map<String, ValuePair<Integer, VulkanImage>> cache;
 	
-	public static VulkanTextureLoader get() {
-		if (instance == null) {
-			instance = new VulkanTextureLoader();
-		}
-		return instance;
-	}
-	
-	private VulkanTextureLoader() {
+	public VulkanTextureLoader() {
 		cache = new HashMap<String, ValuePair<Integer, VulkanImage>>();
 	}
 	
@@ -93,10 +85,14 @@ public class VulkanTextureLoader {
 		}
 	}
 	
-	public ValuePair<Integer, VulkanImage> getCachedImage(String name) {
-		if (cache.containsKey(name)) {
-			return cache.get(name);
+	public void loadAndUpdateGameElementTexture(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, VulkanQueue queue, VulkanCommandPool commandPool, VulkanDescriptorUpdater descriptorUpdater, GameElement element) throws AssetNotFoundException, VulkanException {
+		var texInfo = load(physicalDevice, logicalDevice, queue, commandPool, descriptorUpdater, element.getDepictionName());
+		element.setDepictionIndex(texInfo.getA());
+	}
+	
+	public void cleanUp(VulkanLogicalDevice logicalDevice) {
+		for (var entry : cache.entrySet()) {
+			entry.getValue().getB().cleanUp(logicalDevice);
 		}
-		return null;
 	}
 }
