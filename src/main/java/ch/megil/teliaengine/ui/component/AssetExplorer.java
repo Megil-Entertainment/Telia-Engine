@@ -1,14 +1,11 @@
 package ch.megil.teliaengine.ui.component;
 
 import java.io.File;
-import java.util.logging.Level;
+import java.util.function.Consumer;
 
 import ch.megil.teliaengine.configuration.IconConfiguration;
 import ch.megil.teliaengine.file.IconLoader;
-import ch.megil.teliaengine.file.MapSaveLoad;
-import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
-import ch.megil.teliaengine.logging.LogHandler;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
@@ -18,12 +15,11 @@ public class AssetExplorer extends TreeView<String>{
 	private int INDEX_NOT_FOUND = 0;
 	private int DOUBLE_CLICK = 2;
 	
-	private MapSaveLoad mapSaveLoad;
-	private MapEditor mapEditor;
+	private Consumer<String> onMapLoad;
 	
-	public void initialize(String rootPath, MapEditor mapEditor) throws AssetNotFoundException {
+	public void initialize(String rootPath, Consumer<String> onMapLoad) throws AssetNotFoundException {
 		var root = new File(rootPath);
-		this.mapEditor = mapEditor;
+		this.onMapLoad = onMapLoad;
 		
 		var treeRoot = new TreeItem<>(root.getName(), null);
 		treeRoot.setGraphic(new ImageView(IconLoader.get().load(IconConfiguration.FOLDER_ICON.getConfiguration(), 32, 32)));
@@ -38,7 +34,6 @@ public class AssetExplorer extends TreeView<String>{
 		
 		setOnMouseClicked(me -> {if (me.getClickCount() == DOUBLE_CLICK) onEntryOpen();});
 		setOnKeyTyped(ke -> {if (ke.getCode() == KeyCode.ENTER) onEntryOpen();});
-		mapSaveLoad = new MapSaveLoad();
 	}
 	
 	private void addNewTreeEntryFile(TreeItem<String> parent, File file) throws AssetNotFoundException {
@@ -66,11 +61,7 @@ public class AssetExplorer extends TreeView<String>{
 	private void onEntryOpen() {
 		var item = getSelectionModel().getSelectedItem();
 		if (item.isLeaf()) {
-			try {
-				mapEditor.setMap(mapSaveLoad.load(item.getValue().toString(), false));
-			} catch (AssetNotFoundException | AssetFormatException e) {
-				LogHandler.log(e, Level.SEVERE);;
-			}
+			onMapLoad.accept(item.getValue().toString());
 		}
 	}
 }
