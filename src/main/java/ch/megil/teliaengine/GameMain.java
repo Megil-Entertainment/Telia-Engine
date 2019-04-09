@@ -31,7 +31,6 @@ import ch.megil.teliaengine.vulkan.buffer.VulkanVertexBuffer;
 import ch.megil.teliaengine.vulkan.command.VulkanCommandPool;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 import ch.megil.teliaengine.vulkan.file.VulkanTextureLoader;
-import ch.megil.teliaengine.vulkanui.VulkanElement;
 import ch.megil.teliaengine.vulkanui.VulkanMap;
 import ch.megil.teliaengine.vulkanui.VulkanPlayer;
 
@@ -173,8 +172,8 @@ public class GameMain {
 		player = new VulkanPlayer(Player.get(), map.getNumberOfVertecies(), Player.get().getPosition());
 		
 		try {
-			vertexBuffer.init(physicalDevice, logicalDevice, VulkanElement.calculateNumberOfVertecies(GameState.get().getMap().getMapObjects().size() + 1), new int[] {queue.getGraphicsFamily()});
-			indexBuffer.init(physicalDevice, logicalDevice, VulkanElement.calculateNumberOfIndicies(GameState.get().getMap().getMapObjects().size() + 1), new int[] {queue.getGraphicsFamily()});
+			vertexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfVertecies() + player.getNumberOfVertecies(), new int[] {queue.getGraphicsFamily()});
+			indexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfIndecies() + player.getNumberOfIndecies(), new int[] {queue.getGraphicsFamily()});
 			
 			descriptorUpdater.updateDescriptor(logicalDevice);
 			

@@ -30,8 +30,8 @@ public abstract class VulkanElement extends VulkanObject {
 		super(VulkanVertexBuffer.VERTEX_SIZE * numberOfObjects * VERTECIES_PER_OBJECT,
 				VulkanIndexBuffer.INDEX_SIZE * numberOfObjects * INDICIES_PER_OBJECT);
 		scaleVector = new Vector(SCALE_MODIFIER/spreadWidth, SCALE_MODIFIER/spreadHeight);
-		numberOfVertecies = calculateNumberOfVertecies(numberOfObjects);
-		numberOfIndecies = calculateNumberOfIndicies(numberOfObjects);
+		numberOfVertecies = numberOfObjects * VERTECIES_PER_OBJECT;
+		numberOfIndecies = numberOfObjects * INDICIES_PER_OBJECT;
 		this.cameraPosition = cameraPosition.multiplyByComponent(scaleVector);
 	}
 	
@@ -63,13 +63,5 @@ public abstract class VulkanElement extends VulkanObject {
 	
 	public int getNumberOfIndecies() {
 		return numberOfIndecies;
-	}
-	
-	public static int calculateNumberOfVertecies(int numberOfObjects) {
-		return numberOfObjects * VERTECIES_PER_OBJECT;
-	}
-	
-	public static int calculateNumberOfIndicies(int numberOfObjects) {
-		return numberOfObjects * INDICIES_PER_OBJECT;
 	}
 }
