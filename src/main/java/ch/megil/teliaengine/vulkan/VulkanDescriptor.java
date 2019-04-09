@@ -27,6 +27,9 @@ public class VulkanDescriptor {
 	private LongBuffer pSet;
 	private long set;
 	
+	/**
+	 * @param logicalDevice An initialized {@link VulkanLogicalDevice}
+	 */
 	public void init(VulkanLogicalDevice logicalDevice) throws VulkanException {
 		initPool(logicalDevice.get());
 		layout = initLayout(logicalDevice.get());

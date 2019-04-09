@@ -27,6 +27,7 @@ public class VulkanPipeline {
 	 * @param shader An initialized {@link VulkanShader}
 	 * @param renderPass An initialized {@link VulkanRenderPass}
 	 * @param vertexBuffer An {@link VulkanVertexBuffer} (not necessarly initialized)
+	 * @param descriptor An initialized {@link VulkanDescriptor}
 	 */
 	public void init(VulkanLogicalDevice logicalDevice, VulkanSwapchain swapchain, VulkanShader shader, VulkanRenderPass renderPass, VulkanVertexBuffer vertexBuffer, VulkanDescriptor descriptor) throws VulkanException {
 		pipelineLayout = createPipelineLayout(logicalDevice.get(), descriptor);

@@ -7,6 +7,10 @@ import org.lwjgl.vulkan.VkWriteDescriptorSet;
 
 import ch.megil.teliaengine.vulkan.image.VulkanImage;
 
+/**
+ * This class needs setup first with {@link #init} and
+ * needs to be cleaned up before destruction with {@link #cleanUp}.
+ */
 public class VulkanDescriptorUpdater {
 	private VkDescriptorImageInfo.Buffer samplerInfo;
 	private VkDescriptorImageInfo.Buffer imageInfo;
@@ -14,6 +18,10 @@ public class VulkanDescriptorUpdater {
 	
 	private int nextImageIndex;
 	
+	/**
+	 * @param sampler An initialized {@link VulkanSampler}
+	 * @param descriptor An initialized {@link VulkanDescriptor}
+	 */
 	public void init(VulkanSampler sampler, VulkanDescriptor descriptor) {
 		nextImageIndex = 0;
 		

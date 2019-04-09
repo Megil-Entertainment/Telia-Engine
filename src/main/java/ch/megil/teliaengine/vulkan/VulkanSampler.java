@@ -21,17 +21,17 @@ public class VulkanSampler {
 	public void init(VulkanLogicalDevice logicalDevice) throws VulkanException {
 		var createInfo = VkSamplerCreateInfo.calloc()
 				.sType(VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO)
-				.magFilter(VK_FILTER_NEAREST)//LINEAR)
-				.minFilter(VK_FILTER_NEAREST)//LINEAR)
+				.magFilter(VK_FILTER_LINEAR)
+				.minFilter(VK_FILTER_LINEAR)
 				.addressModeU(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE)
 				.addressModeV(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE)
 				.addressModeW(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE)
 				.anisotropyEnable(false)
-				.maxAnisotropy(0)//1)
-				.borderColor(VK_BORDER_COLOR_INT_OPAQUE_BLACK)//
+				.maxAnisotropy(0)
+				.borderColor(VK_BORDER_COLOR_INT_OPAQUE_BLACK)
 				.unnormalizedCoordinates(false)
 				.compareEnable(false)
-				.compareOp(VK_COMPARE_OP_ALWAYS)//
+				.compareOp(VK_COMPARE_OP_ALWAYS)
 				.mipmapMode(VK_SAMPLER_MIPMAP_MODE_LINEAR)
 				.mipLodBias(0)
 				.minLod(0)

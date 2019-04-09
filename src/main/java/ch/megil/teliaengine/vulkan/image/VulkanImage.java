@@ -4,6 +4,8 @@ import static org.lwjgl.system.MemoryUtil.memAllocLong;
 import static org.lwjgl.system.MemoryUtil.memFree;
 import static org.lwjgl.vulkan.VK10.*;
 
+import java.nio.LongBuffer;
+
 import org.lwjgl.vulkan.*;
 
 import ch.megil.teliaengine.vulkan.VulkanLogicalDevice;
@@ -35,6 +37,7 @@ public abstract class VulkanImage {
 	protected long image;
 	protected long imageView;
 	protected long memory;
+	private LongBuffer pMemory;
 	
 	/**
 	 * @param physicalDevice An initialized {@link VulkanPhysicalDevice}
@@ -47,7 +50,6 @@ public abstract class VulkanImage {
 	 * @param sharingMode of the image (see {@link VK10#VK_SHARING_MODE_EXCLUSIVE})
 	 * @param memProperties memory properties of the image (see {@link VK10#VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT})
 	 */
-	//super.init(physicalDevice, logicalDevice, width, height, imageFormat, VK_IMAGE_TILING_OPTIMAL, (VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT), VK_SHARING_MODE_EXCLUSIVE, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	public void init(VulkanPhysicalDevice physicalDevice, VulkanLogicalDevice logicalDevice, int width, int height, int format, int tiling, int usage, int sharingMode, int memProperties) throws VulkanException {
 		this.width = width;
 		this.height = height;
@@ -85,6 +87,7 @@ public abstract class VulkanImage {
 			
 			vkGetImageMemoryRequirements(logicalDevice.get(), image, memoryRequirements);
 			new VulkanMemory().allocateMemory(physicalDevice, logicalDevice, memoryRequirements, memProperties, pMemory);
+			this.pMemory = pMemory;
 			memory = pMemory.get(0);
 			
 			res = vkBindImageMemory(logicalDevice.get(), image, memory, MEMORY_OFFSET);
@@ -92,7 +95,6 @@ public abstract class VulkanImage {
 				throw new VulkanException(res);
 			}
 		} finally {
-//			memFree(pMemory);
 			memFree(pImage);
 			memoryRequirements.free();
 			imgCreateInfo.free();
@@ -124,8 +126,6 @@ public abstract class VulkanImage {
 						.levelCount(NO_MIPMAP)
 						.baseArrayLayer(0)
 						.layerCount(NO_ARRAY));
-				//.srcAccessMask(0)
-				//.dstAccessMask(0);
 			
 			int srcStage, dstStage;
 			
@@ -215,7 +215,6 @@ public abstract class VulkanImage {
 		return imageView;
 	}
 	
-	//TODO: call
 	public void cleanUp(VulkanLogicalDevice logicalDevice) {
 		if (imageView != VK_NULL_HANDLE) {
 			vkDestroyImageView(logicalDevice.get(), imageView, null);
@@ -231,5 +230,8 @@ public abstract class VulkanImage {
 			vkFreeMemory(logicalDevice.get(), memory, null);
 			memory = VK_NULL_HANDLE;
 		}
+		
+		memFree(pMemory);
+		pMemory = null;
 	}
 }
