@@ -22,7 +22,7 @@ public class GameElementImageViewTest {
 	@Before
 	public void setUp() {
 		depiction = mock(Image.class);
-		gameElement = new GameElement(depiction, null, null);
+		gameElement = new GameElement(null, depiction, null, null);
 		imageView = new GameElementImageView(gameElement);
 	}
 	

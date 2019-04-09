@@ -10,6 +10,7 @@ import java.nio.LongBuffer;
 
 import org.lwjgl.vulkan.*;
 
+import ch.megil.teliaengine.vulkan.buffer.VulkanVertexBuffer;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
 
 /**
@@ -26,9 +27,10 @@ public class VulkanPipeline {
 	 * @param shader An initialized {@link VulkanShader}
 	 * @param renderPass An initialized {@link VulkanRenderPass}
 	 * @param vertexBuffer An {@link VulkanVertexBuffer} (not necessarly initialized)
+	 * @param descriptor An initialized {@link VulkanDescriptor}
 	 */
-	public void init(VulkanLogicalDevice logicalDevice, VulkanSwapchain swapchain, VulkanShader shader, VulkanRenderPass renderPass, VulkanVertexBuffer vertexBuffer) throws VulkanException {
-		pipelineLayout = createPipelineLayout(logicalDevice.get());
+	public void init(VulkanLogicalDevice logicalDevice, VulkanSwapchain swapchain, VulkanShader shader, VulkanRenderPass renderPass, VulkanVertexBuffer vertexBuffer, VulkanDescriptor descriptor) throws VulkanException {
+		pipelineLayout = createPipelineLayout(logicalDevice.get(), descriptor);
 		
 		var vertexShader = callocShaderStage(shader.getVertShader(), VK_SHADER_STAGE_VERTEX_BIT);
 		var fragShader = callocShaderStage(shader.getFragShader(), VK_SHADER_STAGE_FRAGMENT_BIT);
@@ -148,10 +150,11 @@ public class VulkanPipeline {
 		}
 	}
 	
-	private long createPipelineLayout(VkDevice device) throws VulkanException {
+	private long createPipelineLayout(VkDevice device, VulkanDescriptor descriptor) throws VulkanException {
 		var pipelineLayoutInfo = VkPipelineLayoutCreateInfo.calloc()
-				.sType(VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO);
-		VkPipelineLayoutCreateInfo.nsetLayoutCount(pipelineLayoutInfo.address(), 0);
+				.sType(VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO)
+				.pSetLayouts(descriptor.getLayout());
+		VkPipelineLayoutCreateInfo.nsetLayoutCount(pipelineLayoutInfo.address(), 1);
 		VkPipelineLayoutCreateInfo.npushConstantRangeCount(pipelineLayoutInfo.address(), 0);
 		
 		LongBuffer pPipelineLayout = memAllocLong(1);
@@ -210,6 +213,10 @@ public class VulkanPipeline {
 			vkDestroyPipelineLayout(logicalDevice.get(), pipelineLayout, null);
 			pipelineLayout = VK_NULL_HANDLE;
 		}
+	}
+	
+	public long getLayout() {
+		return pipelineLayout;
 	}
 	
 	public long getGraphicsPipeline() {

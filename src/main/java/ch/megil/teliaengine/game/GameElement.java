@@ -9,12 +9,15 @@ public class GameElement {
 	private Vector position;
 	private Hitbox hitbox;
 	private Image depiction;
+	private String depictionName;
+	private Integer depictionIndex;
 	private Color color;
 	private Consumer<Vector> onPositionUpdate;
 	
-	public GameElement(Image image, Hitbox hitbox, Color color) {
+	public GameElement(String depictionName, Image image, Hitbox hitbox, Color color) {
 		this.position = Vector.ZERO;
 		this.depiction = image;
+		this.depictionName = depictionName;
 		this.hitbox = hitbox;
 		this.color = color;
 		this.onPositionUpdate = v -> {};
@@ -43,6 +46,18 @@ public class GameElement {
 	
 	public Image getDepiction() {
 		return depiction;
+	}
+	
+	public String getDepictionName() {
+		return depictionName;
+	}
+	
+	public Integer getDepictionIndex() {
+		return depictionIndex;
+	}
+	
+	public void setDepictionIndex(Integer depictionIndex) {
+		this.depictionIndex = depictionIndex;
 	}
 	
 	public Hitbox getHitbox() {

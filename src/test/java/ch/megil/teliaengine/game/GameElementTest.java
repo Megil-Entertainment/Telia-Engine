@@ -24,7 +24,7 @@ public class GameElementTest {
 		image = mock(Image.class);
 		hitbox = new Hitbox(Vector.ZERO, 5, 5);
 		
-		gameElement = new GameElement(image,hitbox,Color.BLACK);
+		gameElement = new GameElement("image",image,hitbox,Color.BLACK);
 		vector = new Vector(2, 2);
 	}
 	

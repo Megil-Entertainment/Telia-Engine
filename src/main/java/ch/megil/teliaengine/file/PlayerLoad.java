@@ -22,6 +22,8 @@ public class PlayerLoad {
 		var fileName = GameConfiguration.ASSET_PLAYER.getConfiguration() + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
 		var file = new File(fileName);
 		
+		String depictionName = null;
+		
 		Image depiction = new WritableImage(Integer.parseInt(GameConfiguration.PLAYER_WIDTH.getConfiguration()),
 				Integer.parseInt(GameConfiguration.PLAYER_HEIGHT.getConfiguration()));
 		
@@ -34,7 +36,9 @@ public class PlayerLoad {
 			scanner.useDelimiter(FileConfiguration.SEPARATOR_ENTRY.getConfiguration());
 			
 			var spec = scanner.next().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
-			depiction = TextureLoader.get().load(spec[2], Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
+
+			depictionName = spec[2];
+			depiction = TextureLoader.get().load(depictionName, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			hitbox =  new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			color = Color.web(spec[3]);
 		} catch (IOException e) {
@@ -47,6 +51,6 @@ public class PlayerLoad {
 			LogHandler.log(e, Level.SEVERE);
 		}
 		
-		return constructor.invoke(depiction, hitbox, color);
+		return constructor.invoke(depictionName, depiction, hitbox, color);
 	}
 }
