@@ -1,5 +1,7 @@
 package ch.megil.teliaengine.ui.dialog;
 
+import java.io.File;
+
 import ch.megil.teliaengine.project.Project;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -53,8 +55,19 @@ public class ProjectCreateDialog extends Dialog<Project> {
 //				: null);
 	}
 	
+	private File getLowestExistingDir(File dir) {
+		if (dir.exists()) {
+			return dir;
+		} else {
+			return getLowestExistingDir(dir.getParentFile());
+		}
+	}
+	
 	private void searchDirectory(ActionEvent ae) {
 		var chooser = new DirectoryChooser();
+		if (!location.getText().equals("")) {
+			chooser.setInitialDirectory(getLowestExistingDir(new File(location.getText())));
+		}
 		
 		var dir = chooser.showDialog(location.getScene().getWindow());
 		if (dir != null) {
