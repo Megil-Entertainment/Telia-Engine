@@ -10,10 +10,10 @@ public class ProjectController {
 	private final String DOT_DIRECTORY = ".";
 	private static ProjectController instance;
 	
-	private File project;
+	private Project project;
 	
 	private ProjectController() {
-		project = new File(DOT_DIRECTORY);
+		project = new Project("", new File(DOT_DIRECTORY));
 	}
 	
 	public static ProjectController get() {
@@ -23,8 +23,8 @@ public class ProjectController {
 		return instance;
 	}
 	
-	public void openProject(File projectFolder) {
-		project = projectFolder;
+	public void openProject(Project project) {
+		this.project = project;
 		refresh();
 	}
 	
@@ -35,6 +35,6 @@ public class ProjectController {
 	}
 	
 	public String getProjectPath() {
-		return project.getAbsolutePath();
+		return project.getLocationPath();
 	}
 }

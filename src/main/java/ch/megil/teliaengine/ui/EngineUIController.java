@@ -9,9 +9,11 @@ import ch.megil.teliaengine.GameMain;
 import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.file.MapSaveLoad;
+import ch.megil.teliaengine.file.ProjecCreateLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.logging.LogHandler;
+import ch.megil.teliaengine.project.ProjectController;
 import ch.megil.teliaengine.ui.component.AssetExplorer;
 import ch.megil.teliaengine.ui.component.MapEditor;
 import ch.megil.teliaengine.ui.component.ObjectExplorer;
@@ -35,10 +37,13 @@ public class EngineUIController {
 	private AssetExplorer assetExplorer;
 	
 	private MapSaveLoad mapSaveLoad;
+	private ProjecCreateLoad projecCreateLoad;
 
 	@FXML
 	private void initialize() {
 		mapSaveLoad = new MapSaveLoad();
+		projecCreateLoad = new ProjecCreateLoad();
+		
 		objectExplorer.setMapEditor(mapEditor);
 		objectExplorer.setMaxWidth(300);
 		try {
@@ -51,12 +56,17 @@ public class EngineUIController {
 	
 	@FXML
 	private void fileNewProject() {
-		new ProjectCreateDialog().showAndWait();
+		new ProjectCreateDialog().showAndWait().ifPresent(proj -> {
+			projecCreateLoad.initProject(proj);
+			ProjectController.get().openProject(proj);
+		});
 	}
 	
 	@FXML
 	private void fileOpenProject() {
-		
+		var location = new File("."); //TODO: chooser
+		var project = projecCreateLoad.loadProject(location);
+		ProjectController.get().openProject(project);
 	}
 	
 	@FXML
