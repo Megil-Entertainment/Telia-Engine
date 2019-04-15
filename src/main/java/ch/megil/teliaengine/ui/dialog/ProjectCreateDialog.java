@@ -4,6 +4,7 @@ import java.io.File;
 
 import ch.megil.teliaengine.project.Project;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -36,13 +37,13 @@ public class ProjectCreateDialog extends Dialog<Project> {
 		
 		grid.add(new Label("Project Name"), 0, 0);
 		projectName = new TextField();
-		//projectName.textProperty().addListener(this::enableCreate);
+		projectName.textProperty().addListener(this::enableCreate);
 		Platform.runLater(() -> projectName.requestFocus());
 		grid.add(projectName, 1, 0, 2, 1);
 		
 		grid.add(new Label("Location"), 0, 1);
 		location = new TextField();
-//		width.textProperty().addListener(this::enableCreate);
+		location.textProperty().addListener(this::enableCreate);
 		grid.add(location, 1, 1);
 		var searchBtn = new Button("...");
 		searchBtn.setOnAction(this::searchDirectory);
@@ -73,5 +74,9 @@ public class ProjectCreateDialog extends Dialog<Project> {
 		if (dir != null) {
 			location.setText(dir.getAbsolutePath());
 		}
+	}
+	
+	private <T> void enableCreate(ObservableValue<? extends T> obs, T oldVal, T newVal) {
+		createBtn.setDisable(projectName.getText().trim().isEmpty() || location.getText().trim().isEmpty());
 	}
 }
