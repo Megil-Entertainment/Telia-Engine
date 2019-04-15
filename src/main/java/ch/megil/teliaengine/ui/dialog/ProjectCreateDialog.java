@@ -51,9 +51,14 @@ public class ProjectCreateDialog extends Dialog<Project> {
 		
 		getDialogPane().setContent(grid);
 		
-//		setResultConverter(b -> b.equals(createType)
-//				? new Map(mapName.getText(), Integer.parseInt(width.getText()), Integer.parseInt(height.getText()))
-//				: null);
+		setResultConverter(b -> b.equals(createType)
+				? createProject(projectName.getText(), location.getText())
+				: null);
+	}
+	
+	private Project createProject(String projectName, String location) {
+		var projectDir = location + "/" + projectName.replaceAll("\\s", "");
+		return new Project(projectName, new File(projectDir));
 	}
 	
 	private File getLowestExistingDir(File dir) {
