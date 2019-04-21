@@ -1,10 +1,15 @@
 package ch.megil.teliaengine.file;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 import ch.megil.teliaengine.project.Project;
 
 public class ProjecCreateLoad {
+	private static final String KEY_PROJECT_NAME = "pName";
+	
 	public void initProject(Project project) {
 		var root = project.getLocationPath();
 		if (!new File(root).mkdirs()) {
@@ -16,6 +21,17 @@ public class ProjecCreateLoad {
 		new File(root + "/assets/texture").mkdirs();
 		new File(root + "/config").mkdirs();
 		new File(root + "/const").mkdirs();
+		
+		var projectProps = new Properties();
+		
+		projectProps.setProperty(KEY_PROJECT_NAME, project.getName());
+		
+		try (var outStream = new FileOutputStream(root + "/" + project.getName().replaceAll("\\s", "") + ".teliaproject")) {
+			projectProps.store(outStream, null);
+		} catch (IOException ioe) {
+			//TODO throw error
+			ioe.printStackTrace();
+		}
 	}
 	
 	public Project loadProject(File projectLocation) {
