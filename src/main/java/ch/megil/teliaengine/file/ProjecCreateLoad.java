@@ -53,7 +53,15 @@ public class ProjecCreateLoad {
 		}
 	}
 	
-	public Project loadProject(File projectLocation) {
-		return new Project("", projectLocation);
+	public Project loadProject(File projectInfo) throws IOException {
+		var projectProps = new Properties();
+		try (var projectInfoIn = new FileInputStream(projectInfo)) {
+			projectProps.load(projectInfoIn);
+			
+			return new Project(projectProps.getProperty(KEY_PROJECT_NAME), projectInfo.getParentFile());	
+		} catch (IOException ioe) {
+			//TODO: wrap error
+			throw ioe;
+		}
 	}
 }

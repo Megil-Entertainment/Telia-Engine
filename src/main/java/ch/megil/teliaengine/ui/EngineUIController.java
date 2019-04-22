@@ -1,6 +1,7 @@
 package ch.megil.teliaengine.ui;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -26,6 +27,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextInputDialog;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
 public class EngineUIController {	
@@ -63,10 +66,15 @@ public class EngineUIController {
 	}
 	
 	@FXML
-	private void fileOpenProject() {
-		var location = new File("."); //TODO: chooser
-		var project = projecCreateLoad.loadProject(location);
-		ProjectController.get().openProject(project);
+	private void fileOpenProject() throws IOException {
+		var chooser = new FileChooser();
+		chooser.getExtensionFilters().add(new ExtensionFilter("Project", "*" + FileConfiguration.FILE_EXT_PROJECT.getConfiguration()));
+		var projectInfo = chooser.showOpenDialog(mapEditor.getScene().getWindow());
+		if (projectInfo != null) {
+			//TODO: catch error
+			var project = projecCreateLoad.loadProject(projectInfo);
+			ProjectController.get().openProject(project);
+		}
 	}
 	
 	@FXML
