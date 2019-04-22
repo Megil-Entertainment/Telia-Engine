@@ -1,10 +1,12 @@
 package ch.megil.teliaengine.file;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import ch.megil.teliaengine.configuration.ConfigurationContstants;
 import ch.megil.teliaengine.project.Project;
 
 public class ProjecCreateLoad {
@@ -22,12 +24,28 @@ public class ProjecCreateLoad {
 		new File(root + "/config").mkdirs();
 		new File(root + "/const").mkdirs();
 		
-		var projectProps = new Properties();
+		var properties = new Properties();
 		
-		projectProps.setProperty(KEY_PROJECT_NAME, project.getName());
-		
-		try (var outStream = new FileOutputStream(root + "/" + project.getName().replaceAll("\\s", "") + ".teliaproject")) {
-			projectProps.store(outStream, null);
+		try (var projectOut = new FileOutputStream(root + "/" + project.getName().replaceAll("\\s", "") + ".teliaproject");
+				var constPhysicsIn = new FileInputStream("." + ConfigurationContstants.PHYSIC_CONSTANTS);
+				var constPhysicsOut = new FileOutputStream(root + ConfigurationContstants.PHYSIC_CONSTANTS);
+				var configGameIn = new FileInputStream("." + ConfigurationContstants.GAME_CONFIGURATION);
+				var configGameOut = new FileOutputStream(root + ConfigurationContstants.GAME_CONFIGURATION)) {
+
+			//project info
+			properties.setProperty(KEY_PROJECT_NAME, project.getName());
+			properties.store(projectOut, null);
+			properties.clear();
+			
+			//physics constants
+			properties.load(constPhysicsIn);
+			properties.store(constPhysicsOut, null);
+			properties.clear();
+			
+			//game conifiguration
+			properties.load(configGameIn);
+			properties.store(configGameOut, null);
+			properties.clear();
 		} catch (IOException ioe) {
 			//TODO throw error
 			ioe.printStackTrace();
