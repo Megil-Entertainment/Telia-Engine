@@ -10,6 +10,7 @@ public enum FileConfiguration {
 	FILE_EXT_MAP("fileExtMap"),
 	FILE_EXT_OBJECT("fileExtObject"),
 	FILE_EXT_TEXTURE("fileExtTexture"),
+	FILE_EXT_PROJECT("fileExtProject"),
 	SEPARATOR_ENTRY("separatorEntry"),
 	SEPERATOR_PROPERTY("seperatorProperty");
 	

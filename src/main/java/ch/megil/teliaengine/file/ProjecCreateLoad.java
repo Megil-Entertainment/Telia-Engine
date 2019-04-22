@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import ch.megil.teliaengine.configuration.ConfigurationContstants;
+import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.project.Project;
 
 public class ProjecCreateLoad {
@@ -26,7 +27,7 @@ public class ProjecCreateLoad {
 		
 		var properties = new Properties();
 		
-		try (var projectOut = new FileOutputStream(root + "/" + project.getName().replaceAll("\\s", "") + ".teliaproject");
+		try (var projectOut = new FileOutputStream(root + "/" + project.getName().replaceAll("\\s", "") + FileConfiguration.FILE_EXT_PROJECT.getConfiguration());
 				var constPhysicsIn = new FileInputStream("." + ConfigurationContstants.PHYSIC_CONSTANTS);
 				var constPhysicsOut = new FileOutputStream(root + ConfigurationContstants.PHYSIC_CONSTANTS);
 				var configGameIn = new FileInputStream("." + ConfigurationContstants.GAME_CONFIGURATION);
