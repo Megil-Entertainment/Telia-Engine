@@ -12,14 +12,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import ch.megil.teliaengine.configuration.GameConfiguration;
+import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 public class GameObjectSaveLoadTest {
-	private static File parentDir = new File(GameConfiguration.ASSETS_OBJECTS.getConfiguration());
+	private static File parentDir = new File(ProjectFolderConfiguration.ASSETS_OBJECTS.getConfiguration());
 
 	@Rule
 	public TemporaryFolder testObjectDir = new TemporaryFolder(parentDir);

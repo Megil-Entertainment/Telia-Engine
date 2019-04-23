@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mock;
 
-import ch.megil.teliaengine.configuration.GameConfiguration;
+import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
@@ -27,8 +27,8 @@ import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.game.player.Player;
 
 public class MapSaveLoadTest {
-	private static File parentDir = new File(GameConfiguration.ASSETS_MAPS.getConfiguration());
-	private static File objParentDir = new File(GameConfiguration.ASSETS_OBJECTS.getConfiguration());
+	private static File parentDir = new File(ProjectFolderConfiguration.ASSETS_MAPS.getConfiguration());
+	private static File objParentDir = new File(ProjectFolderConfiguration.ASSETS_OBJECTS.getConfiguration());
 	
 	@Rule
 	public TemporaryFolder testMapsDir = new TemporaryFolder(parentDir);

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
-import ch.megil.teliaengine.configuration.GameConfiguration;
+import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
@@ -20,7 +20,7 @@ import javafx.scene.paint.Color;
 
 public class GameObjectSaveLoad {
 	public GameObject load(String name) throws AssetNotFoundException, AssetFormatException {
-		var fileName = GameConfiguration.ASSETS_OBJECTS.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
+		var fileName = ProjectFolderConfiguration.ASSETS_OBJECTS.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
 		var file = new File(fileName);
 		
 		try (var reader = new BufferedReader(new FileReader(file))) {
@@ -43,7 +43,7 @@ public class GameObjectSaveLoad {
 	public List<GameObject> loadAll() {
 		List<GameObject> res = new ArrayList<>();
 		
-		var path = new File(GameConfiguration.ASSETS_OBJECTS.getConfiguration());
+		var path = new File(ProjectFolderConfiguration.ASSETS_OBJECTS.getConfiguration());
 		
 		for (var file : path.list()) {
 			var name = file.split(FileConfiguration.FILE_EXT_OBJECT.getConfiguration())[0];

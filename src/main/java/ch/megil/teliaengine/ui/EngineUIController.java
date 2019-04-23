@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import ch.megil.teliaengine.GameMain;
 import ch.megil.teliaengine.configuration.FileConfiguration;
-import ch.megil.teliaengine.configuration.GameConfiguration;
+import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.MapSaveLoad;
 import ch.megil.teliaengine.file.ProjecCreateLoad;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
@@ -50,7 +50,7 @@ public class EngineUIController {
 		objectExplorer.setMapEditor(mapEditor);
 		objectExplorer.setMaxWidth(300);
 		try {
-			assetExplorer.initialize(GameConfiguration.ASSETS.getConfiguration(), this::loadMap);
+			assetExplorer.initialize(ProjectFolderConfiguration.ASSETS.getConfiguration(), this::loadMap);
 			assetExplorer.setMaxWidth(300);
 		} catch (AssetNotFoundException e) {
 			LogHandler.log(e, Level.SEVERE);
@@ -97,7 +97,7 @@ public class EngineUIController {
 		
 		mapSaveLoad.save(map, mapEditor.getPlayer());
 		try {
-			assetExplorer.initialize(GameConfiguration.ASSETS.getConfiguration(), this::loadMap);
+			assetExplorer.initialize(ProjectFolderConfiguration.ASSETS.getConfiguration(), this::loadMap);
 		} catch(AssetNotFoundException e) {
 			LogHandler.log(e, Level.SEVERE);
 		}
@@ -105,7 +105,7 @@ public class EngineUIController {
 	
 	@FXML
 	private void fileLoadMap() {
-		var mapDir = new File(GameConfiguration.ASSETS_MAPS.getConfiguration());
+		var mapDir = new File(ProjectFolderConfiguration.ASSETS_MAPS.getConfiguration());
 		var mapNames = Arrays.stream(mapDir.listFiles())
 				.map(m -> m.getName().replace(FileConfiguration.FILE_EXT_MAP.getConfiguration(), "")).sorted()
 				.collect(Collectors.toList());

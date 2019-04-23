@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
-import ch.megil.teliaengine.configuration.GameConfiguration;
+import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import javafx.scene.image.Image;
 
@@ -39,7 +39,7 @@ public class TextureLoader {
 			}
 		}
 		
-		var fileName = GameConfiguration.ASSETS_TEXTURES.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration();
+		var fileName = ProjectFolderConfiguration.ASSETS_TEXTURES.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration();
 		var file = new File(fileName);
 		
 		try (var is = new FileInputStream(file)) {
