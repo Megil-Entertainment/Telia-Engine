@@ -22,7 +22,7 @@ public enum ProjectFolderConfiguration {
 	
 	public static void reload() {
 		projectfolderProp = new XProperties();
-		try (var in = new FileInputStream(ProjectController.get().getProjectPath() + ConfigurationContstants.PROJEC_FOLDER_CONFIGURATION)) {
+		try (var in = new FileInputStream(ConfigurationContstants.PROJEC_FOLDER_CONFIGURATION)) {
 			projectfolderProp.load(in);
 		} catch (Exception e) {
 			LogHandler.log(e, Level.SEVERE);
