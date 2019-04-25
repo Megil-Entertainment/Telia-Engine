@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuItem?>
@@ -35,7 +36,7 @@
 		<SplitPane>
 			<items>
 				<AssetExplorer fx:id="assetExplorer"/>
-				<MapEditor fx:id="mapEditor"/>
+				<TabPane fx:id="tabPane"></TabPane>
 				<ObjectExplorer fx:id="objectExplorer"/>
 			</items>
 		</SplitPane>

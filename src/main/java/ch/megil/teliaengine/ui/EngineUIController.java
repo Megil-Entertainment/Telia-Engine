@@ -2,6 +2,8 @@ package ch.megil.teliaengine.ui;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -20,6 +22,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 
@@ -30,13 +34,17 @@ public class EngineUIController {
 	private ObjectExplorer objectExplorer;
 	@FXML
 	private AssetExplorer assetExplorer;
+	@FXML
+	private TabPane tabPane;
 	
 	private MapSaveLoad mapSaveLoad;
-
+	
+	private MapEditor currentMapEditor;
+	
+	private Map<String, Tab> openTabs = new HashMap<>();
 	@FXML
 	private void initialize() {
 		mapSaveLoad = new MapSaveLoad();
-		objectExplorer.setMapEditor(mapEditor);
 		objectExplorer.setMaxWidth(300);
 		try {
 			assetExplorer.initialize(GameConfiguration.ASSETS.getConfiguration(), this::loadMap);
@@ -48,6 +56,17 @@ public class EngineUIController {
 	
 	@FXML
 	private void fileNewMap() {
+		Tab mapEditorTab = new Tab();
+		MapEditor mapEditor = new MapEditor();
+		mapEditorTab.setContent(mapEditor);
+		tabPane.getTabs().add(mapEditorTab);
+		mapEditorTab.setOnSelectionChanged(event -> updateTab(mapEditor));
+		mapEditorTab.setText(mapEditor.getMap().getName());
+		objectExplorer.setMapEditor(mapEditor);
+		currentMapEditor = mapEditor;
+		tabPane.getSelectionModel().select(mapEditorTab);
+		openTabs.put(mapEditor.getMap().getName(), mapEditorTab);
+		mapEditorTab.setOnClosed(event -> openTabs.remove(mapEditor.getMap().getName()));
 		new MapCreateDialog().showAndWait().ifPresent(mapEditor::setMap);
 	}
 	
@@ -100,7 +119,16 @@ public class EngineUIController {
 	
 	private void loadMap(String mapName) {
 		try {
-			mapEditor.setMap(mapSaveLoad.load(mapName, false));
+			Tab mapEditorTab = new Tab();
+			MapEditor mapEditor = new MapEditor();
+			mapEditorTab.setContent(mapEditor);
+			tabPane.getTabs().add(mapEditorTab);
+			currentMapEditor = mapEditor;
+			currentMapEditor.setMap(mapSaveLoad.load(mapName, false));
+			mapEditorTab.setOnSelectionChanged(event -> updateTab(mapEditor));
+			mapEditorTab.setText(mapEditor.getMap().getName());
+			objectExplorer.setMapEditor(currentMapEditor);
+			tabPane.getSelectionModel().select(mapEditorTab);
 		} catch (AssetNotFoundException | AssetFormatException e) {
 			var alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Map Load Error");
@@ -110,7 +138,16 @@ public class EngineUIController {
 			var res = alert.showAndWait();
 			if (res.isPresent() && res.get().equals(ButtonType.YES)) {
 				try {
+					Tab mapEditorTab = new Tab();
+					MapEditor mapEditor = new MapEditor();
+					mapEditorTab.setContent(mapEditor);
+					tabPane.getTabs().add(mapEditorTab);
+					currentMapEditor = mapEditor;
 					mapEditor.setMap(mapSaveLoad.load(mapName, true));
+					mapEditorTab.setOnSelectionChanged(event -> updateTab(mapEditor));
+					mapEditorTab.setText(mapEditor.getMap().getName());
+					objectExplorer.setMapEditor(currentMapEditor);
+					tabPane.getSelectionModel().select(mapEditorTab);
 				} catch (AssetNotFoundException | AssetFormatException e2) {
 					LogHandler.log(e2, Level.SEVERE);
 				}
@@ -150,5 +187,10 @@ public class EngineUIController {
 	@FXML
 	private void helpAbout() {
 		new AboutDialog().showAndWait();
+	}
+	
+	private void updateTab(MapEditor mapEditor) {
+		objectExplorer.setMapEditor(mapEditor);
+		currentMapEditor = mapEditor;
 	}
 }
