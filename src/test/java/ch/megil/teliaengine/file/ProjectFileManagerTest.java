@@ -102,6 +102,7 @@ public class ProjectFileManagerTest {
 		var projectDir = testProject.getLocationPath();
 		var fileProjectInfo = new File(projectDir + "/test.test");
 		
+		@SuppressWarnings("unused")
 		var loadedProject = projecFileManager.loadProject(fileProjectInfo);
 	}
 }
