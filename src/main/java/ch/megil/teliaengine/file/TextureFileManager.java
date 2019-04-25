@@ -3,11 +3,13 @@ package ch.megil.teliaengine.file;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
+import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import javafx.scene.image.Image;
 
@@ -49,6 +51,17 @@ public class TextureFileManager {
 			return obj;
 		} catch (IOException e) {
 			throw new AssetNotFoundException("Texture not found: " + name, e);
+		}
+	}
+	
+	public void importTexture(String name, File original) throws AssetCreationException {
+		var origPath = original.toPath();
+		var destPath = new File(ProjectFolderConfiguration.ASSETS_TEXTURES.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration()).toPath();
+		
+		try {
+			Files.copy(origPath, destPath);
+		} catch (IOException e) {
+			throw new AssetCreationException("Texture not created: " + name, e);
 		}
 	}
 }

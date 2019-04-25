@@ -48,8 +48,8 @@ public class ProjecFileManager {
 			properties.load(configGameIn);
 			properties.store(configGameOut, null);
 			properties.clear();
-		} catch (IOException ioe) {
-			throw new AssetCreationException("Default project properties not created.", ioe);
+		} catch (IOException e) {
+			throw new AssetCreationException("Default project properties not created.", e);
 		}
 	}
 	
@@ -59,8 +59,8 @@ public class ProjecFileManager {
 			projectProps.load(projectInfoIn);
 			
 			return new Project(projectProps.getProperty(KEY_PROJECT_NAME), projectInfo.getParentFile());	
-		} catch (IOException ioe) {
-			throw new AssetLoadException("Project could not be loaded.", ioe);
+		} catch (IOException e) {
+			throw new AssetLoadException("Project could not be loaded.", e);
 		}
 	}
 }
