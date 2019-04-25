@@ -2,6 +2,7 @@ package ch.megil.teliaengine.ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.MapFileManager;
 import ch.megil.teliaengine.file.ProjecFileManager;
+import ch.megil.teliaengine.file.TextureFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetLoadException;
@@ -68,6 +70,17 @@ public class EngineUIController {
 	private void initNewProject(Project project) {
 		try {
 			projecCreateLoad.initProject(project);
+			ProjectController.get().openProject(project);
+			//TODO: as soon as created: open ObjectCreator to create player and remove static player creation
+			TextureFileManager.get().importTexture("player", new File("assets/texture/player.png"));
+			var origin = new File("assets/texture/player.tobj").toPath();
+			var dest = new File(ProjectFolderConfiguration.ASSET_PLAYER.getConfiguration() + ".tobj").toPath();
+			try {
+				Files.copy(origin, dest);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 			openProject(project);
 		} catch (AssetCreationException e) {
 			LogHandler.log(e, Level.SEVERE);
