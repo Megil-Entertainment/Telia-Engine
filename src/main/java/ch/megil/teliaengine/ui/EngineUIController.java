@@ -130,7 +130,7 @@ public class EngineUIController {
 		
 		mapFileManger.save(map, mapEditor.getPlayer());
 		try {
-			assetExplorer.changeRoots(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
+			assetExplorer.reload();
 		} catch(AssetNotFoundException e) {
 			LogHandler.log(e, Level.SEVERE);
 		}

@@ -7,12 +7,13 @@ import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.IconConfiguration;
 import ch.megil.teliaengine.file.IconFileManager;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
+import ch.megil.teliaengine.helper.NamedValue;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 
-public class AssetExplorer extends TreeView<String>{
+public class AssetExplorer extends TreeView<NamedValue<File>>{
 	private int INDEX_NOT_FOUND = 0;
 	private int DOUBLE_CLICK = 2;
 	
@@ -28,27 +29,35 @@ public class AssetExplorer extends TreeView<String>{
 	}
 	
 	public void changeRoots(String... rootPaths) throws AssetNotFoundException {
-		var treeRoot = new TreeItem<String>(null);
+		var treeRoot = new TreeItem<NamedValue<File>>(null);
 		for (var rootPath : rootPaths) {
 			var root = new File(rootPath);
 			
-			var pseudoRoot = new TreeItem<>(root.getName());
+			var pseudoRoot = new TreeItem<>(new NamedValue<>(root.getName(), root));
 			pseudoRoot.setGraphic(new ImageView(IconFileManager.get().load(IconConfiguration.FOLDER_ICON.getConfiguration(), 32, 32)));
-			
-			if(root.isDirectory()) {
-				for (var child : root.listFiles()) {
-					addNewTreeEntryFile(pseudoRoot, child);
-				}
-			}
 			
 			treeRoot.getChildren().add(pseudoRoot);
 		}
 		
 		this.setRoot(treeRoot);
+		
+		reload();
 	}
 	
-	private void addNewTreeEntryFile(TreeItem<String> parent, File file) throws AssetNotFoundException {
-		var treeItem = new TreeItem<>(stripFilename(file.getName()));
+	public void reload() throws AssetNotFoundException {
+		for (var pseudoRoot : this.getRoot().getChildren()) {
+			var file = pseudoRoot.getValue().getValue();
+			if (file.isDirectory()) {
+				pseudoRoot.getChildren().clear();
+				for (var child : file.listFiles()) {
+					addNewTreeEntryFile(pseudoRoot, child);
+				}
+			}
+		}
+	}
+	
+	private void addNewTreeEntryFile(TreeItem<NamedValue<File>> parent, File file) throws AssetNotFoundException {
+		var treeItem = new TreeItem<>(new NamedValue<>(stripFilename(file.getName()), file));
 		if (file.isDirectory()) {
 			treeItem.setGraphic(new ImageView(IconFileManager.get().load(IconConfiguration.FOLDER_ICON.getConfiguration(), 32, 32)));
 			for (var child : file.listFiles()) {
