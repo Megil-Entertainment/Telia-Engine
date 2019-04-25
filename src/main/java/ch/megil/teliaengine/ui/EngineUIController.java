@@ -70,7 +70,8 @@ public class EngineUIController {
 			projecCreateLoad.initProject(project);
 			openProject(project);
 		} catch (AssetCreationException e) {
-			//TODO: error dialog
+			LogHandler.log(e, Level.SEVERE);
+			showErrorAlert("Create Error", "There was an error while creating a new project.");
 		}
 	}
 	
@@ -84,7 +85,8 @@ public class EngineUIController {
 				var project = projecCreateLoad.loadProject(projectInfo);
 				openProject(project);
 			} catch (AssetLoadException e) {
-				//TODO: error dialog
+				LogHandler.log(e, Level.SEVERE);
+				showErrorAlert("Load Error", "The specified project could not been loaded.");
 			}
 		}
 	}
@@ -185,12 +187,7 @@ public class EngineUIController {
 			} catch (Exception e) {
 				stage.hide();
 				LogHandler.log(e, Level.SEVERE);
-			
-				var alert = new Alert(AlertType.ERROR);
-				alert.setTitle("Load Error");
-				alert.setHeaderText(null);
-				alert.setContentText("There was an error while loading the game.");
-				alert.showAndWait();
+				showErrorAlert("Load Error", "There was an error while loading the game.");
 			}
 		}
 	}
@@ -198,5 +195,13 @@ public class EngineUIController {
 	@FXML
 	private void helpAbout() {
 		new AboutDialog().showAndWait();
+	}
+	
+	private void showErrorAlert(String title, String message) {
+		var alert = new Alert(AlertType.ERROR);
+		alert.setTitle(title);
+		alert.setHeaderText(null);
+		alert.setContentText(message);
+		alert.showAndWait();
 	}
 }
