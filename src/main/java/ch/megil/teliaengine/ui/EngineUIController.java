@@ -55,7 +55,8 @@ public class EngineUIController {
 		objectExplorer.setMapEditor(mapEditor);
 		objectExplorer.setMaxWidth(300);
 		try {
-			assetExplorer.initialize(ProjectFolderConfiguration.ASSETS.getConfigurationWithProjectPath(), this::loadMap);
+			assetExplorer.initialize(this::loadMap);
+			assetExplorer.changeRoots(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
 			assetExplorer.setMaxWidth(300);
 		} catch (AssetNotFoundException e) {
 			LogHandler.log(e, Level.SEVERE);
@@ -106,7 +107,7 @@ public class EngineUIController {
 	
 	private void openProject(Project project) throws AssetNotFoundException {
 		ProjectController.get().openProject(project);
-		assetExplorer.initialize(ProjectFolderConfiguration.ASSETS.getConfigurationWithProjectPath(), this::loadMap);
+		assetExplorer.changeRoots(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
 	}
 	
 	@FXML
@@ -129,7 +130,7 @@ public class EngineUIController {
 		
 		mapFileManger.save(map, mapEditor.getPlayer());
 		try {
-			assetExplorer.initialize(ProjectFolderConfiguration.ASSETS.getConfigurationWithProjectPath(), this::loadMap);
+			assetExplorer.changeRoots(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
 		} catch(AssetNotFoundException e) {
 			LogHandler.log(e, Level.SEVERE);
 		}

@@ -15,7 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
-public class GameObjectListItem extends AnchorPane{
+public class GameObjectListItem extends AnchorPane {
 	private static final int PADDING = 5;
 	private static final int SPACING = 5;
 	
