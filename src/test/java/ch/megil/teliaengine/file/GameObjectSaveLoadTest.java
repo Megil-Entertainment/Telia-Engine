@@ -22,7 +22,7 @@ public class GameObjectSaveLoadTest {
 	@Rule
 	public TemporaryFolder testObjectDir = new TemporaryFolder(parentDir);
 
-	private GameObjectSaveLoad gameObjectSaveLoad;
+	private GameObjectFileManager gameObjectSaveLoad;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -33,7 +33,7 @@ public class GameObjectSaveLoadTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gameObjectSaveLoad = new GameObjectSaveLoad();
+		gameObjectSaveLoad = new GameObjectFileManager();
 
 		var red = testObjectDir.newFile("red.tobj");
 		try (var writer = new BufferedWriter(new FileWriter(red))) {

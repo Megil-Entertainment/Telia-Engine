@@ -18,7 +18,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
-public class PlayerLoad {
+public class PlayerFileManager {
 	public Player load(PlayerConstructor constructor) {
 		var fileName = ProjectFolderConfiguration.ASSET_PLAYER.getConfiguration() + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
 		var file = new File(fileName);
@@ -39,7 +39,7 @@ public class PlayerLoad {
 			var spec = scanner.next().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 
 			depictionName = spec[2];
-			depiction = TextureLoader.get().load(depictionName, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
+			depiction = TextureFileManager.get().load(depictionName, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			hitbox =  new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			color = Color.web(spec[3]);
 		} catch (IOException e) {

@@ -7,35 +7,39 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
-import ch.megil.teliaengine.configuration.IconConfiguration;
+import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import javafx.scene.image.Image;
 
-public class IconLoader {
-	private static IconLoader instance;
+public class TextureFileManager {
+	private static TextureFileManager instance;
 	
 	private Map<String, Image> cache;
 	
-	private IconLoader() {
+	private TextureFileManager() {
 		cache = new HashMap<String, Image>();
 	}
 	
-	public static IconLoader get() {
+	public static TextureFileManager get() {
 		if (instance == null) {
-			instance = new IconLoader();
+			instance = new TextureFileManager();
 		}
 		return instance;
 	}
 	
+	public void clearCache() {
+		cache.clear();
+	}
+	
 	public Image load(String name, double width, double height) throws AssetNotFoundException {
 		if (cache.containsKey(name)) {
-			var img = cache.get(name);
-			if (img.getWidth() >= width && img.getHeight() >= height) {
-				return img;
+			var tex = cache.get(name);
+			if (tex.getWidth() >= width && tex.getHeight() >= height) {
+				return tex;
 			}
 		}
 		
-		var fileName = IconConfiguration.ICONS.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration();
+		var fileName = ProjectFolderConfiguration.ASSETS_TEXTURES.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration();
 		var file = new File(fileName);
 		
 		try (var is = new FileInputStream(file)) {
@@ -44,7 +48,7 @@ public class IconLoader {
 			cache.put(name, obj);
 			return obj;
 		} catch (IOException e) {
-			throw new AssetNotFoundException("Icon not found: " + name, e);
+			throw new AssetNotFoundException("Texture not found: " + name, e);
 		}
 	}
 }

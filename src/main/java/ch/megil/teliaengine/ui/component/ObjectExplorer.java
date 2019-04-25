@@ -3,7 +3,7 @@ package ch.megil.teliaengine.ui.component;
 import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.ObjectListConfiguration;
-import ch.megil.teliaengine.file.GameObjectSaveLoad;
+import ch.megil.teliaengine.file.GameObjectFileManager;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
@@ -24,7 +24,7 @@ public class ObjectExplorer extends ScrollPane{
 		container.setFillWidth(true);
 		setContent(container);
 		
-		new GameObjectSaveLoad().loadAll().forEach(this::loadGameObject);
+		new GameObjectFileManager().loadAll().forEach(this::loadGameObject);
 		
 	}
 	
@@ -39,7 +39,7 @@ public class ObjectExplorer extends ScrollPane{
 	
 	public void createNewObject(GameObject object) {
 		try {
-			var newObject = new GameObjectSaveLoad().load(object.getName());
+			var newObject = new GameObjectFileManager().load(object.getName());
 			mapEditor.addGameObject(newObject);
 		} catch (AssetNotFoundException | AssetFormatException e) {
 			LogHandler.log(e, Level.SEVERE);

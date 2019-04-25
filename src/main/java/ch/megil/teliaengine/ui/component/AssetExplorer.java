@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.function.Consumer;
 
 import ch.megil.teliaengine.configuration.IconConfiguration;
-import ch.megil.teliaengine.file.IconLoader;
+import ch.megil.teliaengine.file.IconFileManager;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -22,7 +22,7 @@ public class AssetExplorer extends TreeView<String>{
 		this.onMapLoad = onMapLoad;
 		
 		var treeRoot = new TreeItem<>(root.getName(), null);
-		treeRoot.setGraphic(new ImageView(IconLoader.get().load(IconConfiguration.FOLDER_ICON.getConfiguration(), 32, 32)));
+		treeRoot.setGraphic(new ImageView(IconFileManager.get().load(IconConfiguration.FOLDER_ICON.getConfiguration(), 32, 32)));
 		
 		if(root.isDirectory()) {
 			for (var child : root.listFiles()) {
@@ -39,12 +39,12 @@ public class AssetExplorer extends TreeView<String>{
 	private void addNewTreeEntryFile(TreeItem<String> parent, File file) throws AssetNotFoundException {
 		var treeItem = new TreeItem<>(stripFilename(file.getName()));		
 		if (file.isDirectory()) {
-			treeItem.setGraphic(new ImageView(IconLoader.get().load(IconConfiguration.FOLDER_ICON.getConfiguration(), 32, 32)));
+			treeItem.setGraphic(new ImageView(IconFileManager.get().load(IconConfiguration.FOLDER_ICON.getConfiguration(), 32, 32)));
 			for (var child : file.listFiles()) {
 				addNewTreeEntryFile(treeItem, child);
 			}
 		} else {
-			treeItem.setGraphic(new ImageView(IconLoader.get().load(IconConfiguration.FILE_ICON.getConfiguration(), 32, 32)));
+			treeItem.setGraphic(new ImageView(IconFileManager.get().load(IconConfiguration.FILE_ICON.getConfiguration(), 32, 32)));
 		}
 		parent.getChildren().add(treeItem);
 	}

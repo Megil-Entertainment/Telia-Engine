@@ -48,7 +48,7 @@ public class MapSaveLoadTest {
 	private static Vector vector2;
 	private static Vector playerVector;
 
-	private MapSaveLoad mapSaveLoad;
+	private MapFileManager mapSaveLoad;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -81,7 +81,7 @@ public class MapSaveLoadTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		mapSaveLoad = new MapSaveLoad();
+		mapSaveLoad = new MapFileManager();
 		
 		var redObj = testObjectDir.newFile("red.tobj");
 		try (var writer = new BufferedWriter(new FileWriter(redObj))) {

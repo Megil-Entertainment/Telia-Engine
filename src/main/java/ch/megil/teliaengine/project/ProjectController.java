@@ -4,7 +4,7 @@ import java.io.File;
 
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.configuration.PhysicsConstants;
-import ch.megil.teliaengine.file.TextureLoader;
+import ch.megil.teliaengine.file.TextureFileManager;
 
 public class ProjectController {
 	private final String DOT_DIRECTORY = ".";
@@ -31,7 +31,7 @@ public class ProjectController {
 	private void refresh() {
 		PhysicsConstants.reload();
 		GameConfiguration.reload();
-		TextureLoader.get().clearCache();
+		TextureFileManager.get().clearCache();
 	}
 	
 	public String getProjectPath() {

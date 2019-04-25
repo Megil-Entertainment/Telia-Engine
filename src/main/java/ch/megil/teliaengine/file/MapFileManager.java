@@ -16,7 +16,7 @@ import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.logging.LogHandler;
 
-public class MapSaveLoad {
+public class MapFileManager {
 	private void checkAndCreateDirectory() {
 		var dir = new File(ProjectFolderConfiguration.ASSETS_MAPS.getConfiguration());
 		if (!dir.exists()) {
@@ -59,7 +59,7 @@ public class MapSaveLoad {
 			
 			var map = new Map(mapName, Double.parseDouble(mapSize[0]), Double.parseDouble(mapSize[1]));
 
-			var objectLoader = new GameObjectSaveLoad();
+			var objectLoader = new GameObjectFileManager();
 			while (scanner.hasNext()) {
 				var objSpec = scanner.next().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 				try {

@@ -18,7 +18,7 @@ import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.logging.LogHandler;
 import javafx.scene.paint.Color;
 
-public class GameObjectSaveLoad {
+public class GameObjectFileManager {
 	public GameObject load(String name) throws AssetNotFoundException, AssetFormatException {
 		var fileName = ProjectFolderConfiguration.ASSETS_OBJECTS.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
 		var file = new File(fileName);
@@ -26,7 +26,7 @@ public class GameObjectSaveLoad {
 		try (var reader = new BufferedReader(new FileReader(file))) {
 			var spec = reader.readLine().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			var depictionName = spec[2];
-			var depiction = TextureLoader.get().load(depictionName, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
+			var depiction = TextureFileManager.get().load(depictionName, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			var hitbox = new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			var color = Color.web(spec[3]);
 			

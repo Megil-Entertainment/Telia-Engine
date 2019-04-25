@@ -10,7 +10,7 @@ import ch.megil.teliaengine.configuration.ConfigurationContstants;
 import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.project.Project;
 
-public class ProjecCreateLoad {
+public class ProjecFileManager {
 	private static final String KEY_PROJECT_NAME = "pName";
 	
 	public void initProject(Project project) {
