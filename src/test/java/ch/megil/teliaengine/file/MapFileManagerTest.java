@@ -26,7 +26,7 @@ import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.game.player.Player;
 
-public class MapSaveLoadTest {
+public class MapFileManagerTest {
 	private static File parentDir = new File(ProjectFolderConfiguration.ASSETS_MAPS.getConfiguration());
 	private static File objParentDir = new File(ProjectFolderConfiguration.ASSETS_OBJECTS.getConfiguration());
 	

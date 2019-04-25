@@ -16,7 +16,7 @@ import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 
-public class GameObjectSaveLoadTest {
+public class GameObjectFileManagerTest {
 	private static File parentDir = new File(ProjectFolderConfiguration.ASSETS_OBJECTS.getConfiguration());
 
 	@Rule
