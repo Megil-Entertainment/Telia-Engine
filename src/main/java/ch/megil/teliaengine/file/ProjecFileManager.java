@@ -17,8 +17,8 @@ public class ProjecFileManager {
 	
 	public void initProject(Project project) throws AssetCreationException {
 		var root = project.getLocationPath();
-		if (!new File(root).mkdirs() ||
-				!new File(root + "/assets/maps").mkdirs() ||
+		new File(root).mkdirs();
+		if (!new File(root + "/assets/maps").mkdirs() ||
 				!new File(root + "/assets/object").mkdirs() ||
 				!new File(root + "/assets/texture").mkdirs() ||
 				!new File(root + "/config").mkdirs() ||
