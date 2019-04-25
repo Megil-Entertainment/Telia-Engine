@@ -17,6 +17,7 @@ import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
+import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.logging.LogHandler;
 import ch.megil.teliaengine.project.Project;
 import ch.megil.teliaengine.project.ProjectController;
@@ -112,7 +113,17 @@ public class EngineUIController {
 	
 	@FXML
 	private void fileNewMap() {
-		new MapCreateDialog().showAndWait().ifPresent(mapEditor::setMap);
+		new MapCreateDialog().showAndWait().ifPresent(this::initMap);
+	}
+	
+	private void initMap(Map map) {
+		mapEditor.setMap(map);
+		mapFileManger.save(map, mapEditor.getPlayer());
+		try {
+			assetExplorer.reload();
+		} catch(AssetNotFoundException e) {
+			LogHandler.log(e, Level.SEVERE);
+		}
 	}
 	
 	@FXML
@@ -129,11 +140,6 @@ public class EngineUIController {
 		}
 		
 		mapFileManger.save(map, mapEditor.getPlayer());
-		try {
-			assetExplorer.reload();
-		} catch(AssetNotFoundException e) {
-			LogHandler.log(e, Level.SEVERE);
-		}
 	}
 	
 	@FXML
