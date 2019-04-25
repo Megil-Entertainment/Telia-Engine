@@ -59,11 +59,11 @@ public class MapFileManager {
 			
 			var map = new Map(mapName, Double.parseDouble(mapSize[0]), Double.parseDouble(mapSize[1]));
 
-			var objectLoader = new GameObjectFileManager();
+			var objectFileManager = new GameObjectFileManager();
 			while (scanner.hasNext()) {
 				var objSpec = scanner.next().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 				try {
-					var obj = objectLoader.load(objSpec[0]);
+					var obj = objectFileManager.load(objSpec[0]);
 					obj.setPosX(Double.parseDouble(objSpec[1]));
 					obj.setPosY(Double.parseDouble(objSpec[2]));
 					map.addObject(obj);

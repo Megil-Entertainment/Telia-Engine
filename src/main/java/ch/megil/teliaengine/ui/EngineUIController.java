@@ -44,13 +44,13 @@ public class EngineUIController {
 	@FXML
 	private AssetExplorer assetExplorer;
 	
-	private MapFileManager mapSaveLoad;
-	private ProjecFileManager projecCreateLoad;
+	private MapFileManager mapFileManger;
+	private ProjecFileManager projecFileManager;
 
 	@FXML
 	private void initialize() {
-		mapSaveLoad = new MapFileManager();
-		projecCreateLoad = new ProjecFileManager();
+		mapFileManger = new MapFileManager();
+		projecFileManager = new ProjecFileManager();
 		
 		objectExplorer.setMapEditor(mapEditor);
 		objectExplorer.setMaxWidth(300);
@@ -69,7 +69,7 @@ public class EngineUIController {
 	
 	private void initNewProject(Project project) {
 		try {
-			projecCreateLoad.initProject(project);
+			projecFileManager.initProject(project);
 			ProjectController.get().openProject(project);
 			//TODO: as soon as created: open ObjectCreator to create player and remove static player creation
 			TextureFileManager.get().importTexture("player", new File("assets/texture/player.png"));
@@ -95,7 +95,7 @@ public class EngineUIController {
 		var projectInfo = chooser.showOpenDialog(mapEditor.getScene().getWindow());
 		if (projectInfo != null) {
 			try {
-				var project = projecCreateLoad.loadProject(projectInfo);
+				var project = projecFileManager.loadProject(projectInfo);
 				openProject(project);
 			} catch (AssetLoadException e) {
 				LogHandler.log(e, Level.SEVERE);
@@ -127,7 +127,7 @@ public class EngineUIController {
 			result.ifPresent(map::setName);
 		}
 		
-		mapSaveLoad.save(map, mapEditor.getPlayer());
+		mapFileManger.save(map, mapEditor.getPlayer());
 		try {
 			assetExplorer.initialize(ProjectFolderConfiguration.ASSETS.getConfiguration(), this::loadMap);
 		} catch(AssetNotFoundException e) {
@@ -163,7 +163,7 @@ public class EngineUIController {
 	
 	private void loadMap(String mapName) {
 		try {
-			mapEditor.setMap(mapSaveLoad.load(mapName, false));
+			mapEditor.setMap(mapFileManger.load(mapName, false));
 		} catch (AssetNotFoundException | AssetFormatException e) {
 			var alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Map Load Error");
@@ -173,7 +173,7 @@ public class EngineUIController {
 			var res = alert.showAndWait();
 			if (res.isPresent() && res.get().equals(ButtonType.YES)) {
 				try {
-					mapEditor.setMap(mapSaveLoad.load(mapName, true));
+					mapEditor.setMap(mapFileManger.load(mapName, true));
 				} catch (AssetNotFoundException | AssetFormatException e2) {
 					LogHandler.log(e2, Level.SEVERE);
 				}
