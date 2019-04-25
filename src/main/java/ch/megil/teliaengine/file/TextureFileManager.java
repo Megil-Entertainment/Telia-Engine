@@ -41,7 +41,7 @@ public class TextureFileManager {
 			}
 		}
 		
-		var fileName = ProjectFolderConfiguration.ASSETS_TEXTURES.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration();
+		var fileName = ProjectFolderConfiguration.ASSETS_TEXTURES.getConfigurationWithProjectPath() + "/" + name + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration();
 		var file = new File(fileName);
 		
 		try (var is = new FileInputStream(file)) {
@@ -56,7 +56,7 @@ public class TextureFileManager {
 	
 	public void importTexture(String name, File original) throws AssetCreationException {
 		var origPath = original.toPath();
-		var destPath = new File(ProjectFolderConfiguration.ASSETS_TEXTURES.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration()).toPath();
+		var destPath = new File(ProjectFolderConfiguration.ASSETS_TEXTURES.getConfigurationWithProjectPath() + "/" + name + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration()).toPath();
 		
 		try {
 			Files.copy(origPath, destPath);

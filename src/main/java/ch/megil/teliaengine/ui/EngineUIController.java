@@ -55,7 +55,7 @@ public class EngineUIController {
 		objectExplorer.setMapEditor(mapEditor);
 		objectExplorer.setMaxWidth(300);
 		try {
-			assetExplorer.initialize(ProjectFolderConfiguration.ASSETS.getConfiguration(), this::loadMap);
+			assetExplorer.initialize(ProjectFolderConfiguration.ASSETS.getConfigurationWithProjectPath(), this::loadMap);
 			assetExplorer.setMaxWidth(300);
 		} catch (AssetNotFoundException e) {
 			LogHandler.log(e, Level.SEVERE);
@@ -74,7 +74,7 @@ public class EngineUIController {
 			//TODO: as soon as created: open ObjectCreator to create player and remove static player creation
 			TextureFileManager.get().importTexture("player", new File("assets/texture/player.png"));
 			var origin = new File("assets/player.tobj").toPath();
-			var dest = new File(ProjectFolderConfiguration.ASSET_PLAYER.getConfiguration() + ".tobj").toPath();
+			var dest = new File(ProjectFolderConfiguration.ASSET_PLAYER.getConfigurationWithProjectPath() + ".tobj").toPath();
 			try {
 				Files.copy(origin, dest);
 			} catch (IOException e) {
@@ -106,7 +106,7 @@ public class EngineUIController {
 	
 	private void openProject(Project project) throws AssetNotFoundException {
 		ProjectController.get().openProject(project);
-		assetExplorer.initialize(ProjectFolderConfiguration.ASSETS.getConfiguration(), this::loadMap);
+		assetExplorer.initialize(ProjectFolderConfiguration.ASSETS.getConfigurationWithProjectPath(), this::loadMap);
 	}
 	
 	@FXML
@@ -129,7 +129,7 @@ public class EngineUIController {
 		
 		mapFileManger.save(map, mapEditor.getPlayer());
 		try {
-			assetExplorer.initialize(ProjectFolderConfiguration.ASSETS.getConfiguration(), this::loadMap);
+			assetExplorer.initialize(ProjectFolderConfiguration.ASSETS.getConfigurationWithProjectPath(), this::loadMap);
 		} catch(AssetNotFoundException e) {
 			LogHandler.log(e, Level.SEVERE);
 		}
@@ -137,7 +137,7 @@ public class EngineUIController {
 	
 	@FXML
 	private void fileLoadMap() {
-		var mapDir = new File(ProjectFolderConfiguration.ASSETS_MAPS.getConfiguration());
+		var mapDir = new File(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
 		var mapNames = Arrays.stream(mapDir.listFiles())
 				.map(m -> m.getName().replace(FileConfiguration.FILE_EXT_MAP.getConfiguration(), "")).sorted()
 				.collect(Collectors.toList());

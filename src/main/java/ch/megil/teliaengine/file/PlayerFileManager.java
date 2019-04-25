@@ -20,7 +20,7 @@ import javafx.scene.paint.Color;
 
 public class PlayerFileManager {
 	public Player load(PlayerConstructor constructor) {
-		var fileName = ProjectFolderConfiguration.ASSET_PLAYER.getConfiguration() + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
+		var fileName = ProjectFolderConfiguration.ASSET_PLAYER.getConfigurationWithProjectPath() + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
 		var file = new File(fileName);
 		
 		String depictionName = null;

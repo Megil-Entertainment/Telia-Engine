@@ -35,7 +35,11 @@ public enum ProjectFolderConfiguration {
 		this.key = key;
 	}
 	
-	public String getConfiguration() {
+	public String getConfigurationWithoutProjectPath() {
+		return projectfolderProp.getProperty(key);
+	}
+	
+	public String getConfigurationWithProjectPath() {
 		return ProjectController.get().getProjectPath() + projectfolderProp.getProperty(key);
 	}
 }

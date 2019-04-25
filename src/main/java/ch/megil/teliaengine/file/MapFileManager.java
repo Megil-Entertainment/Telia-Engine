@@ -18,7 +18,7 @@ import ch.megil.teliaengine.logging.LogHandler;
 
 public class MapFileManager {
 	private void checkAndCreateDirectory() {
-		var dir = new File(ProjectFolderConfiguration.ASSETS_MAPS.getConfiguration());
+		var dir = new File(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}
@@ -26,7 +26,7 @@ public class MapFileManager {
 	
 	public void save(Map map, Player player) {
 		checkAndCreateDirectory();
-		var fileName = ProjectFolderConfiguration.ASSETS_MAPS.getConfiguration() + "/" + map.getName() + FileConfiguration.FILE_EXT_MAP.getConfiguration();
+		var fileName = ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath() + "/" + map.getName() + FileConfiguration.FILE_EXT_MAP.getConfiguration();
 		
 		var propSeperator = FileConfiguration.SEPERATOR_PROPERTY.getConfiguration();
 		var entrySeperator = FileConfiguration.SEPARATOR_ENTRY.getConfiguration();
@@ -43,7 +43,7 @@ public class MapFileManager {
 	}
 	
 	public Map load(String mapName, boolean recoverMode) throws AssetNotFoundException, AssetFormatException {
-		var fileName = ProjectFolderConfiguration.ASSETS_MAPS.getConfiguration() + "/" + mapName
+		var fileName = ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath() + "/" + mapName
 				+ FileConfiguration.FILE_EXT_MAP.getConfiguration();
 		var file = new File(fileName);
 

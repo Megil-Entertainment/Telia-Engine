@@ -20,7 +20,7 @@ import javafx.scene.paint.Color;
 
 public class GameObjectFileManager {
 	public GameObject load(String name) throws AssetNotFoundException, AssetFormatException {
-		var fileName = ProjectFolderConfiguration.ASSETS_OBJECTS.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
+		var fileName = ProjectFolderConfiguration.ASSETS_OBJECTS.getConfigurationWithProjectPath() + "/" + name + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
 		var file = new File(fileName);
 		
 		try (var reader = new BufferedReader(new FileReader(file))) {
@@ -43,7 +43,7 @@ public class GameObjectFileManager {
 	public List<GameObject> loadAll() {
 		List<GameObject> res = new ArrayList<>();
 		
-		var path = new File(ProjectFolderConfiguration.ASSETS_OBJECTS.getConfiguration());
+		var path = new File(ProjectFolderConfiguration.ASSETS_OBJECTS.getConfigurationWithProjectPath());
 		
 		for (var file : path.list()) {
 			var name = file.split(FileConfiguration.FILE_EXT_OBJECT.getConfiguration())[0];

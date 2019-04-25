@@ -55,7 +55,7 @@ public class VulkanTextureLoader {
 			return cache.get(name);
 		}
 		
-		var fileName = ProjectFolderConfiguration.ASSETS_TEXTURES.getConfiguration() + "/" + name + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration();
+		var fileName = ProjectFolderConfiguration.ASSETS_TEXTURES.getConfigurationWithProjectPath() + "/" + name + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration();
 		
 		var pTexWidth = memAllocInt(1);
 		var pTexHeight = memAllocInt(1);
