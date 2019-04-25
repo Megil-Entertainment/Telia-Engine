@@ -29,8 +29,6 @@ import javafx.stage.Stage;
 
 public class EngineUIController {	
 	@FXML
-	private MapEditor mapEditor;
-	@FXML
 	private ObjectExplorer objectExplorer;
 	@FXML
 	private AssetExplorer assetExplorer;
@@ -63,16 +61,16 @@ public class EngineUIController {
 		mapEditorTab.setOnSelectionChanged(event -> updateTab(mapEditor));
 		mapEditorTab.setText(mapEditor.getMap().getName());
 		objectExplorer.setMapEditor(mapEditor);
-		currentMapEditor = mapEditor;
 		tabPane.getSelectionModel().select(mapEditorTab);
 		openTabs.put(mapEditor.getMap().getName(), mapEditorTab);
 		mapEditorTab.setOnClosed(event -> openTabs.remove(mapEditor.getMap().getName()));
 		new MapCreateDialog().showAndWait().ifPresent(mapEditor::setMap);
+		currentMapEditor = mapEditor;
 	}
 	
 	@FXML
 	private void fileSaveMap() {
-		var map = mapEditor.getMap();
+		var map = currentMapEditor.getMap();
 		
 		if (map.getName() == null) {
 			var dialog = new TextInputDialog();
@@ -83,7 +81,7 @@ public class EngineUIController {
 			result.ifPresent(map::setName);
 		}
 		
-		mapSaveLoad.save(map, mapEditor.getPlayer());
+		mapSaveLoad.save(map, currentMapEditor.getPlayer());
 		try {
 			assetExplorer.initialize(GameConfiguration.ASSETS.getConfiguration(), this::loadMap);
 		} catch(AssetNotFoundException e) {
@@ -122,18 +120,7 @@ public class EngineUIController {
 			if(openTabs.containsKey(mapName)) {
 				tabPane.getSelectionModel().select(openTabs.get(mapName));
 			}else {
-				Tab mapEditorTab = new Tab();
-				MapEditor mapEditor = new MapEditor();
-				mapEditorTab.setContent(mapEditor);
-				tabPane.getTabs().add(mapEditorTab);
-				currentMapEditor = mapEditor;
-				currentMapEditor.setMap(mapSaveLoad.load(mapName, false));
-				mapEditorTab.setOnSelectionChanged(event -> updateTab(mapEditor));
-				mapEditorTab.setText(mapEditor.getMap().getName());
-				objectExplorer.setMapEditor(currentMapEditor);
-				tabPane.getSelectionModel().select(mapEditorTab);
-				openTabs.put(mapEditor.getMap().getName(), mapEditorTab);
-				mapEditorTab.setOnClosed(event -> openTabs.remove(mapEditor.getMap().getName()));
+				openNewTab(mapName, false);
 			}
 		} catch (AssetNotFoundException | AssetFormatException e) {
 			var alert = new Alert(AlertType.WARNING);
@@ -144,18 +131,7 @@ public class EngineUIController {
 			var res = alert.showAndWait();
 			if (res.isPresent() && res.get().equals(ButtonType.YES)) {
 				try {
-					Tab mapEditorTab = new Tab();
-					MapEditor mapEditor = new MapEditor();
-					mapEditorTab.setContent(mapEditor);
-					tabPane.getTabs().add(mapEditorTab);
-					currentMapEditor = mapEditor;
-					mapEditor.setMap(mapSaveLoad.load(mapName, true));
-					mapEditorTab.setOnSelectionChanged(event -> updateTab(mapEditor));
-					mapEditorTab.setText(mapEditor.getMap().getName());
-					objectExplorer.setMapEditor(currentMapEditor);
-					tabPane.getSelectionModel().select(mapEditorTab);
-					openTabs.put(mapEditor.getMap().getName(), mapEditorTab);
-					mapEditorTab.setOnClosed(event -> openTabs.remove(mapEditor.getMap().getName()));
+					openNewTab(mapName, true);
 				} catch (AssetNotFoundException | AssetFormatException e2) {
 					LogHandler.log(e2, Level.SEVERE);
 				}
@@ -167,7 +143,7 @@ public class EngineUIController {
 	
 	@FXML
 	private void gameRun() {
-		if(mapEditor.getMap() == null) {
+		if(currentMapEditor.getMap() == null) {
 			var alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Run Error");
 			alert.setHeaderText(null);
@@ -177,7 +153,7 @@ public class EngineUIController {
 			fileSaveMap();
 			var stage = new Stage();
 			try {
-				var main = new GameMain(mapEditor.getMap().getName());
+				var main = new GameMain(currentMapEditor.getMap().getName());
 				main.run();
 			} catch (Exception e) {
 				stage.hide();
@@ -200,5 +176,20 @@ public class EngineUIController {
 	private void updateTab(MapEditor mapEditor) {
 		objectExplorer.setMapEditor(mapEditor);
 		currentMapEditor = mapEditor;
+	}
+	
+	private void openNewTab(String mapName, boolean safeMode) throws AssetNotFoundException, AssetFormatException {
+		Tab mapEditorTab = new Tab();
+		MapEditor mapEditor = new MapEditor();
+		mapEditorTab.setContent(mapEditor);
+		tabPane.getTabs().add(mapEditorTab);
+		currentMapEditor = mapEditor;
+		currentMapEditor.setMap(mapSaveLoad.load(mapName, safeMode));
+		mapEditorTab.setOnSelectionChanged(event -> updateTab(mapEditor));
+		mapEditorTab.setText(mapEditor.getMap().getName());
+		objectExplorer.setMapEditor(currentMapEditor);
+		tabPane.getSelectionModel().select(mapEditorTab);
+		openTabs.put(mapEditor.getMap().getName(), mapEditorTab);
+		mapEditorTab.setOnClosed(event -> openTabs.remove(mapEditor.getMap().getName()));
 	}
 }
