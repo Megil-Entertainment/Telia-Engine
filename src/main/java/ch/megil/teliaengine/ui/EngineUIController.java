@@ -73,7 +73,7 @@ public class EngineUIController {
 			ProjectController.get().openProject(project);
 			//TODO: as soon as created: open ObjectCreator to create player and remove static player creation
 			TextureFileManager.get().importTexture("player", new File("assets/texture/player.png"));
-			var origin = new File("assets/texture/player.tobj").toPath();
+			var origin = new File("assets/player.tobj").toPath();
 			var dest = new File(ProjectFolderConfiguration.ASSET_PLAYER.getConfiguration() + ".tobj").toPath();
 			try {
 				Files.copy(origin, dest);
