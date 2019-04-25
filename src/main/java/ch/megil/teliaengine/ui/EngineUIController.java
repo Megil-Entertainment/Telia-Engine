@@ -82,7 +82,7 @@ public class EngineUIController {
 			}
 			
 			openProject(project);
-		} catch (AssetCreationException e) {
+		} catch (AssetCreationException | AssetNotFoundException e) {
 			LogHandler.log(e, Level.SEVERE);
 			showErrorAlert("Create Error", "There was an error while creating a new project.");
 		}
@@ -104,9 +104,9 @@ public class EngineUIController {
 		}
 	}
 	
-	private void openProject(Project project) {
+	private void openProject(Project project) throws AssetNotFoundException {
 		ProjectController.get().openProject(project);
-		//TODO: reload editors
+		assetExplorer.initialize(ProjectFolderConfiguration.ASSETS.getConfiguration(), this::loadMap);
 	}
 	
 	@FXML
