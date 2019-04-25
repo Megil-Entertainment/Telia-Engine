@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import ch.megil.teliaengine.configuration.ConfigurationContstants;
 import ch.megil.teliaengine.configuration.FileConfiguration;
+import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.project.Project;
@@ -18,11 +19,11 @@ public class ProjecFileManager {
 	public void initProject(Project project) throws AssetCreationException {
 		var root = project.getLocationPath();
 		new File(root).mkdirs();
-		if (!new File(root + "/assets/maps").mkdirs() ||
-				!new File(root + "/assets/object").mkdirs() ||
-				!new File(root + "/assets/texture").mkdirs() ||
-				!new File(root + "/config").mkdirs() ||
-				!new File(root + "/const").mkdirs()) {
+		if (!new File(root + ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithoutProjectPath()).mkdirs() ||
+				!new File(root + ProjectFolderConfiguration.ASSETS_OBJECTS.getConfigurationWithoutProjectPath()).mkdirs() ||
+				!new File(root + ProjectFolderConfiguration.ASSETS_TEXTURES.getConfigurationWithoutProjectPath()).mkdirs() ||
+				!new File(root + "/" + ConfigurationContstants.CONFIGURATION_DIR).mkdirs() ||
+				!new File(root + "/" + ConfigurationContstants.CONSTANT_DIR).mkdirs()) {
 			throw new AssetCreationException("Directory structure not creatable.");
 		}
 		
