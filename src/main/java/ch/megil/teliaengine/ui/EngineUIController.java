@@ -119,16 +119,22 @@ public class EngineUIController {
 	
 	private void loadMap(String mapName) {
 		try {
-			Tab mapEditorTab = new Tab();
-			MapEditor mapEditor = new MapEditor();
-			mapEditorTab.setContent(mapEditor);
-			tabPane.getTabs().add(mapEditorTab);
-			currentMapEditor = mapEditor;
-			currentMapEditor.setMap(mapSaveLoad.load(mapName, false));
-			mapEditorTab.setOnSelectionChanged(event -> updateTab(mapEditor));
-			mapEditorTab.setText(mapEditor.getMap().getName());
-			objectExplorer.setMapEditor(currentMapEditor);
-			tabPane.getSelectionModel().select(mapEditorTab);
+			if(openTabs.containsKey(mapName)) {
+				tabPane.getSelectionModel().select(openTabs.get(mapName));
+			}else {
+				Tab mapEditorTab = new Tab();
+				MapEditor mapEditor = new MapEditor();
+				mapEditorTab.setContent(mapEditor);
+				tabPane.getTabs().add(mapEditorTab);
+				currentMapEditor = mapEditor;
+				currentMapEditor.setMap(mapSaveLoad.load(mapName, false));
+				mapEditorTab.setOnSelectionChanged(event -> updateTab(mapEditor));
+				mapEditorTab.setText(mapEditor.getMap().getName());
+				objectExplorer.setMapEditor(currentMapEditor);
+				tabPane.getSelectionModel().select(mapEditorTab);
+				openTabs.put(mapEditor.getMap().getName(), mapEditorTab);
+				mapEditorTab.setOnClosed(event -> openTabs.remove(mapEditor.getMap().getName()));
+			}
 		} catch (AssetNotFoundException | AssetFormatException e) {
 			var alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Map Load Error");
@@ -148,6 +154,8 @@ public class EngineUIController {
 					mapEditorTab.setText(mapEditor.getMap().getName());
 					objectExplorer.setMapEditor(currentMapEditor);
 					tabPane.getSelectionModel().select(mapEditorTab);
+					openTabs.put(mapEditor.getMap().getName(), mapEditorTab);
+					mapEditorTab.setOnClosed(event -> openTabs.remove(mapEditor.getMap().getName()));
 				} catch (AssetNotFoundException | AssetFormatException e2) {
 					LogHandler.log(e2, Level.SEVERE);
 				}
