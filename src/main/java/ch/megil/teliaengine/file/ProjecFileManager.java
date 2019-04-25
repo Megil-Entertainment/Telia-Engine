@@ -8,22 +8,23 @@ import java.util.Properties;
 
 import ch.megil.teliaengine.configuration.ConfigurationContstants;
 import ch.megil.teliaengine.configuration.FileConfiguration;
+import ch.megil.teliaengine.file.exception.AssetCreationException;
+import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.project.Project;
 
 public class ProjecFileManager {
 	private static final String KEY_PROJECT_NAME = "pName";
 	
-	public void initProject(Project project) {
+	public void initProject(Project project) throws AssetCreationException {
 		var root = project.getLocationPath();
-		if (!new File(root).mkdirs()) {
-			throw new RuntimeException("directory error"); //TODO: new exception
+		if (!new File(root).mkdirs() ||
+				!new File(root + "/assets/maps").mkdirs() ||
+				!new File(root + "/assets/object").mkdirs() ||
+				!new File(root + "/assets/texture").mkdirs() ||
+				!new File(root + "/config").mkdirs() ||
+				!new File(root + "/const").mkdirs()) {
+			throw new AssetCreationException("Directory structure not creatable.");
 		}
-		
-		new File(root + "/assets/maps").mkdirs();
-		new File(root + "/assets/object").mkdirs();
-		new File(root + "/assets/texture").mkdirs();
-		new File(root + "/config").mkdirs();
-		new File(root + "/const").mkdirs();
 		
 		var properties = new Properties();
 		
@@ -48,20 +49,18 @@ public class ProjecFileManager {
 			properties.store(configGameOut, null);
 			properties.clear();
 		} catch (IOException ioe) {
-			//TODO throw error
-			ioe.printStackTrace();
+			throw new AssetCreationException("Default project properties not created.", ioe);
 		}
 	}
 	
-	public Project loadProject(File projectInfo) throws IOException {
+	public Project loadProject(File projectInfo) throws AssetLoadException {
 		var projectProps = new Properties();
 		try (var projectInfoIn = new FileInputStream(projectInfo)) {
 			projectProps.load(projectInfoIn);
 			
 			return new Project(projectProps.getProperty(KEY_PROJECT_NAME), projectInfo.getParentFile());	
 		} catch (IOException ioe) {
-			//TODO: wrap error
-			throw ioe;
+			throw new AssetLoadException("Project could not be loaded.", ioe);
 		}
 	}
 }

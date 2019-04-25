@@ -11,9 +11,12 @@ import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.MapFileManager;
 import ch.megil.teliaengine.file.ProjecFileManager;
+import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
+import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.logging.LogHandler;
+import ch.megil.teliaengine.project.Project;
 import ch.megil.teliaengine.project.ProjectController;
 import ch.megil.teliaengine.ui.component.AssetExplorer;
 import ch.megil.teliaengine.ui.component.MapEditor;
@@ -59,10 +62,16 @@ public class EngineUIController {
 	
 	@FXML
 	private void fileNewProject() {
-		new ProjectCreateDialog().showAndWait().ifPresent(proj -> {
-			projecCreateLoad.initProject(proj);
-			ProjectController.get().openProject(proj);
-		});
+		new ProjectCreateDialog().showAndWait().ifPresent(this::initNewProject);
+	}
+	
+	private void initNewProject(Project project) {
+		try {
+			projecCreateLoad.initProject(project);
+			openProject(project);
+		} catch (AssetCreationException e) {
+			//TODO: error dialog
+		}
 	}
 	
 	@FXML
@@ -71,10 +80,18 @@ public class EngineUIController {
 		chooser.getExtensionFilters().add(new ExtensionFilter("Project", "*" + FileConfiguration.FILE_EXT_PROJECT.getConfiguration()));
 		var projectInfo = chooser.showOpenDialog(mapEditor.getScene().getWindow());
 		if (projectInfo != null) {
-			//TODO: catch error
-			var project = projecCreateLoad.loadProject(projectInfo);
-			ProjectController.get().openProject(project);
+			try {
+				var project = projecCreateLoad.loadProject(projectInfo);
+				openProject(project);
+			} catch (AssetLoadException e) {
+				//TODO: error dialog
+			}
 		}
+	}
+	
+	private void openProject(Project project) {
+		ProjectController.get().openProject(project);
+		//TODO: reload editors
 	}
 	
 	@FXML
