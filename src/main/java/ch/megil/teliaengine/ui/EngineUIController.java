@@ -109,6 +109,7 @@ public class EngineUIController {
 	private void openProject(Project project) throws AssetNotFoundException {
 		ProjectController.get().openProject(project);
 		assetExplorer.changeRoots(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
+		objectExplorer.reload();
 	}
 	
 	@FXML

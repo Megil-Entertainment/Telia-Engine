@@ -12,7 +12,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-public class ObjectExplorer extends ScrollPane{
+public class ObjectExplorer extends ScrollPane {
 	private VBox container;
 	
 	private MapEditor mapEditor;
@@ -24,11 +24,15 @@ public class ObjectExplorer extends ScrollPane{
 		container.setFillWidth(true);
 		setContent(container);
 		
-		new GameObjectFileManager().loadAll().forEach(this::loadGameObject);
-		
+		reload();
 	}
 	
-	public void loadGameObject(GameObject obj) {
+	public void reload() {
+		container.getChildren().clear();
+		new GameObjectFileManager().loadAll().forEach(this::loadGameObject);
+	}
+	
+	private void loadGameObject(GameObject obj) {
 		var listItem = new GameObjectListItem();
 		listItem.setGameObject(obj);
 		listItem.setBgColor(Color.web(ObjectListConfiguration.OBJECT_LIST_BG.getConfiguration()));
@@ -37,7 +41,7 @@ public class ObjectExplorer extends ScrollPane{
 		container.getChildren().add(listItem);
 	}
 	
-	public void createNewObject(GameObject object) {
+	private void createNewObject(GameObject object) {
 		try {
 			var newObject = new GameObjectFileManager().load(object.getName());
 			mapEditor.addGameObject(newObject);
