@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -17,9 +18,11 @@ import ch.megil.teliaengine.logging.LogHandler;
 import ch.megil.teliaengine.ui.component.AssetExplorer;
 import ch.megil.teliaengine.ui.component.MapEditor;
 import ch.megil.teliaengine.ui.component.ObjectExplorer;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Tab;
@@ -40,6 +43,7 @@ public class EngineUIController {
 	private MapEditor currentMapEditor;
 	
 	private Map<String, Tab> openTabs = new HashMap<>();
+	
 	@FXML
 	private void initialize() {
 		mapSaveLoad = new MapSaveLoad();
@@ -56,16 +60,8 @@ public class EngineUIController {
 	private void fileNewMap() {
 		Tab mapEditorTab = new Tab();
 		MapEditor mapEditor = new MapEditor();
-		mapEditorTab.setContent(mapEditor);
-		tabPane.getTabs().add(mapEditorTab);
-		mapEditorTab.setOnSelectionChanged(event -> updateTab(mapEditor));
-		mapEditorTab.setText(mapEditor.getMap().getName());
-		objectExplorer.setMapEditor(mapEditor);
-		tabPane.getSelectionModel().select(mapEditorTab);
-		openTabs.put(mapEditor.getMap().getName(), mapEditorTab);
-		mapEditorTab.setOnClosed(event -> openTabs.remove(mapEditor.getMap().getName()));
 		new MapCreateDialog().showAndWait().ifPresent(mapEditor::setMap);
-		currentMapEditor = mapEditor;
+		addTabFunctionality(mapEditorTab, mapEditor);
 	}
 	
 	@FXML
@@ -181,15 +177,48 @@ public class EngineUIController {
 	private void openNewTab(String mapName, boolean safeMode) throws AssetNotFoundException, AssetFormatException {
 		Tab mapEditorTab = new Tab();
 		MapEditor mapEditor = new MapEditor();
-		mapEditorTab.setContent(mapEditor);
-		tabPane.getTabs().add(mapEditorTab);
+		mapEditor.setMap(mapSaveLoad.load(mapName, safeMode));
+		addTabFunctionality(mapEditorTab, mapEditor);
+	}
+	
+	private boolean checkForChanges(MapEditor mapEditor) {
+		return mapEditor.getSaved();
+	}
+	
+	private void openSafeDialog(Tab mapEditorTab, Event event) {
+		var alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Tab Close");
+		alert.setHeaderText("There are unsaved changes");
+		alert.setContentText("Do you want to save them?");
+		
+		ButtonType saveButton = new ButtonType("Save");
+		ButtonType ignoreButton = new ButtonType("Ignore");
+		ButtonType cancelButton = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+		
+		alert.getButtonTypes().setAll(saveButton, ignoreButton, cancelButton);
+		Optional<ButtonType> result = alert.showAndWait();
+		if(result.get() == saveButton) {
+			fileSaveMap();
+		}else if(result.get() == cancelButton) {
+			event.consume();
+		}
+	}
+	
+	private void addTabFunctionality(Tab tab, MapEditor mapEditor) {
+		tab.setContent(mapEditor);
+		tabPane.getTabs().add(tab);
 		currentMapEditor = mapEditor;
-		currentMapEditor.setMap(mapSaveLoad.load(mapName, safeMode));
-		mapEditorTab.setOnSelectionChanged(event -> updateTab(mapEditor));
-		mapEditorTab.setText(mapEditor.getMap().getName());
+		tab.setOnSelectionChanged(event -> updateTab(mapEditor));
+		tab.setText(mapEditor.getMap().getName());
 		objectExplorer.setMapEditor(currentMapEditor);
-		tabPane.getSelectionModel().select(mapEditorTab);
-		openTabs.put(mapEditor.getMap().getName(), mapEditorTab);
-		mapEditorTab.setOnClosed(event -> openTabs.remove(mapEditor.getMap().getName()));
+		tabPane.getSelectionModel().select(tab);
+		openTabs.put(mapEditor.getMap().getName(), tab);
+		tab.setOnCloseRequest(event -> {
+			var changes = checkForChanges(mapEditor);
+			if(!changes) {
+				openSafeDialog(tab, event);
+			}
+		});
+		tab.setOnClosed(event -> openTabs.remove(mapEditor.getMap().getName()));
 	}
 }
