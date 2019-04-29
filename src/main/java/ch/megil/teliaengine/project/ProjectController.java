@@ -5,6 +5,7 @@ import java.io.File;
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.configuration.PhysicsConstants;
 import ch.megil.teliaengine.file.TextureFileManager;
+import ch.megil.teliaengine.game.player.Player;
 
 public class ProjectController {
 	private final String DOT_DIRECTORY = ".";
@@ -31,6 +32,7 @@ public class ProjectController {
 	private void refresh() {
 		PhysicsConstants.reload();
 		GameConfiguration.reload();
+		Player.reload();
 		TextureFileManager.get().clearCache();
 	}
 	
