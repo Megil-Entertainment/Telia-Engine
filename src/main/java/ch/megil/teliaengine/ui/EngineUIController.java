@@ -138,6 +138,7 @@ public class EngineUIController {
 			
 			var result = dialog.showAndWait();
 			result.ifPresent(map::setName);
+			currentMapEditor.setSaved(true);
 		}
 		
 
