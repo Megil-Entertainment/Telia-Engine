@@ -3,7 +3,7 @@ package ch.megil.teliaengine.game.player;
 import java.util.List;
 
 import ch.megil.teliaengine.configuration.PhysicsConstants;
-import ch.megil.teliaengine.file.PlayerLoad;
+import ch.megil.teliaengine.file.PlayerFileManager;
 import ch.megil.teliaengine.game.GameElement;
 import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
@@ -32,7 +32,7 @@ public class Player extends GameElement{
 	
 	public static Player get() {
 		if (instance == null) {
-			instance = new PlayerLoad().load(Player::new);
+			instance = new PlayerFileManager().load(Player::new);
 		}
 		return instance;
 	}

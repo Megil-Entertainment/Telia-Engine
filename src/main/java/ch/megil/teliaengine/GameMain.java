@@ -18,7 +18,7 @@ import org.lwjgl.vulkan.VkPresentInfoKHR;
 import org.lwjgl.vulkan.VkSubmitInfo;
 
 import ch.megil.teliaengine.configuration.SystemConfiguration;
-import ch.megil.teliaengine.file.MapSaveLoad;
+import ch.megil.teliaengine.file.MapFileManager;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.Map;
@@ -106,7 +106,7 @@ public class GameMain {
 	
 	public GameMain(String mapName) throws AssetNotFoundException, AssetFormatException {
 		this();
-		GameState.get().setMap(new MapSaveLoad().load(mapName, false));
+		GameState.get().setMap(new MapFileManager().load(mapName, false));
 	}
 
 	public void run() throws IllegalStateException, VulkanException, AssetNotFoundException {

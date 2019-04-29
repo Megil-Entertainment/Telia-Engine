@@ -1,6 +1,6 @@
 package ch.megil.teliaengine.file.exception;
 
-public class AssetFormatException extends Exception {
+public class AssetFormatException extends AssetLoadException {
 	private static final long serialVersionUID = -2102647624832672335L;
 
 	public AssetFormatException() {

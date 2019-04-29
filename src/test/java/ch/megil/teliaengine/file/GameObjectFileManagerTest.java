@@ -12,19 +12,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import ch.megil.teliaengine.configuration.GameConfiguration;
+import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
-public class GameObjectSaveLoadTest {
-	private static File parentDir = new File(GameConfiguration.ASSETS_OBJECTS.getConfiguration());
+public class GameObjectFileManagerTest {
+	private static File parentDir = new File(ProjectFolderConfiguration.ASSETS_OBJECTS.getConfigurationWithProjectPath());
 
 	@Rule
 	public TemporaryFolder testObjectDir = new TemporaryFolder(parentDir);
 
-	private GameObjectSaveLoad gameObjectSaveLoad;
+	private GameObjectFileManager gameObjectFileManager;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -35,7 +33,7 @@ public class GameObjectSaveLoadTest {
 
 	@Before
 	public void setUp() throws Exception {
-		gameObjectSaveLoad = new GameObjectSaveLoad();
+		gameObjectFileManager = new GameObjectFileManager();
 
 		var red = testObjectDir.newFile("red.tobj");
 		try (var writer = new BufferedWriter(new FileWriter(red))) {
@@ -50,7 +48,7 @@ public class GameObjectSaveLoadTest {
 
 	@Test
 	public void testLoad() throws Exception {
-		var obj = gameObjectSaveLoad.load(testObjectDir.getRoot().getName() + "/red");
+		var obj = gameObjectFileManager.load(testObjectDir.getRoot().getName() + "/red");
 
 		assertEquals(testObjectDir.getRoot().getName() + "/red", obj.getName());
 		assertEquals(0.0, obj.getPosition().getX(), 0);
@@ -61,11 +59,11 @@ public class GameObjectSaveLoadTest {
 	
 	@Test(expected = AssetNotFoundException.class)
 	public void testLoadNotExisting() throws Exception {
-		gameObjectSaveLoad.load(testObjectDir.getRoot().getName() + "/nonExisting");
+		gameObjectFileManager.load(testObjectDir.getRoot().getName() + "/nonExisting");
 	}
 	
 	@Test(expected = AssetFormatException.class)
 	public void testLoadFalseFormat() throws Exception {
-		gameObjectSaveLoad.load(testObjectDir.getRoot().getName() + "/fail");
+		gameObjectFileManager.load(testObjectDir.getRoot().getName() + "/fail");
 	}
 }
