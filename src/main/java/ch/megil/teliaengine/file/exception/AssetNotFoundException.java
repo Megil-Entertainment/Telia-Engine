@@ -1,6 +1,6 @@
 package ch.megil.teliaengine.file.exception;
 
-public class AssetNotFoundException extends Exception {
+public class AssetNotFoundException extends AssetLoadException {
 	private static final long serialVersionUID = 4149231966662622300L;
 
 	public AssetNotFoundException() {

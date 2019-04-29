@@ -1,4 +1,4 @@
-package ch.megil.teliaengine.ui;
+package ch.megil.teliaengine.ui.dialog;
 
 import ch.megil.teliaengine.game.Map;
 import javafx.application.Platform;

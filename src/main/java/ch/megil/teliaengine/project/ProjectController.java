@@ -4,16 +4,16 @@ import java.io.File;
 
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.configuration.PhysicsConstants;
-import ch.megil.teliaengine.file.TextureLoader;
+import ch.megil.teliaengine.file.TextureFileManager;
 
 public class ProjectController {
 	private final String DOT_DIRECTORY = ".";
 	private static ProjectController instance;
 	
-	private File project;
+	private Project project;
 	
 	private ProjectController() {
-		project = new File(DOT_DIRECTORY);
+		project = new Project("", new File(DOT_DIRECTORY));
 	}
 	
 	public static ProjectController get() {
@@ -23,18 +23,18 @@ public class ProjectController {
 		return instance;
 	}
 	
-	public void openProject(File projectFolder) {
-		project = projectFolder;
+	public void openProject(Project project) {
+		this.project = project;
 		refresh();
 	}
 	
 	private void refresh() {
 		PhysicsConstants.reload();
 		GameConfiguration.reload();
-		TextureLoader.get().clearCache();
+		TextureFileManager.get().clearCache();
 	}
 	
 	public String getProjectPath() {
-		return project.getAbsolutePath();
+		return project.getLocationPath();
 	}
 }

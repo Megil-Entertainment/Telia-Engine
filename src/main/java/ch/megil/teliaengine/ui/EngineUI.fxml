@@ -17,9 +17,13 @@
 		<MenuBar>
 			<menus>
 				<Menu text="File">
-					<MenuItem text="New Map" onAction="#fileNewMap" />
-					<MenuItem text="Save Map" onAction="#fileSaveMap" />
-					<MenuItem text="Load Map" onAction="#fileLoadMap" />
+					<MenuItem text="New Project" onAction="#fileNewProject" />
+					<MenuItem text="Open Project" onAction="#fileOpenProject" />
+					<Menu text="Map">
+						<MenuItem text="New Map" onAction="#fileNewMap" />
+						<MenuItem text="Save Map" onAction="#fileSaveMap" />
+						<MenuItem text="Load Map" onAction="#fileLoadMap" />
+					</Menu>
 				</Menu>
 				<Menu text="Game">
 					<MenuItem text="Run" onAction="#gameRun" />

@@ -11,18 +11,18 @@ import ch.megil.teliaengine.configuration.IconConfiguration;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import javafx.scene.image.Image;
 
-public class IconLoader {
-	private static IconLoader instance;
+public class IconFileManager {
+	private static IconFileManager instance;
 	
 	private Map<String, Image> cache;
 	
-	private IconLoader() {
+	private IconFileManager() {
 		cache = new HashMap<String, Image>();
 	}
 	
-	public static IconLoader get() {
+	public static IconFileManager get() {
 		if (instance == null) {
-			instance = new IconLoader();
+			instance = new IconFileManager();
 		}
 		return instance;
 	}

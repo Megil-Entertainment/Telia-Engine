@@ -9,16 +9,16 @@ import java.util.Scanner;
 import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
-import ch.megil.teliaengine.configuration.GameConfiguration;
+import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.logging.LogHandler;
 
-public class MapSaveLoad {
+public class MapFileManager {
 	private void checkAndCreateDirectory() {
-		var dir = new File(GameConfiguration.ASSETS_MAPS.getConfiguration());
+		var dir = new File(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}
@@ -26,7 +26,7 @@ public class MapSaveLoad {
 	
 	public void save(Map map, Player player) {
 		checkAndCreateDirectory();
-		var fileName = GameConfiguration.ASSETS_MAPS.getConfiguration() + "/" + map.getName() + FileConfiguration.FILE_EXT_MAP.getConfiguration();
+		var fileName = ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath() + "/" + map.getName() + FileConfiguration.FILE_EXT_MAP.getConfiguration();
 		
 		var propSeperator = FileConfiguration.SEPERATOR_PROPERTY.getConfiguration();
 		var entrySeperator = FileConfiguration.SEPARATOR_ENTRY.getConfiguration();
@@ -43,7 +43,7 @@ public class MapSaveLoad {
 	}
 	
 	public Map load(String mapName, boolean recoverMode) throws AssetNotFoundException, AssetFormatException {
-		var fileName = GameConfiguration.ASSETS_MAPS.getConfiguration() + "/" + mapName
+		var fileName = ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath() + "/" + mapName
 				+ FileConfiguration.FILE_EXT_MAP.getConfiguration();
 		var file = new File(fileName);
 
@@ -59,11 +59,11 @@ public class MapSaveLoad {
 			
 			var map = new Map(mapName, Double.parseDouble(mapSize[0]), Double.parseDouble(mapSize[1]));
 
-			var objectLoader = new GameObjectSaveLoad();
+			var objectFileManager = new GameObjectFileManager();
 			while (scanner.hasNext()) {
 				var objSpec = scanner.next().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 				try {
-					var obj = objectLoader.load(objSpec[0]);
+					var obj = objectFileManager.load(objSpec[0]);
 					obj.setPosX(Double.parseDouble(objSpec[1]));
 					obj.setPosY(Double.parseDouble(objSpec[2]));
 					map.addObject(obj);

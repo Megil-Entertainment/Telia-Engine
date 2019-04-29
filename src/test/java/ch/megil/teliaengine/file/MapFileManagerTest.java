@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mock;
 
-import ch.megil.teliaengine.configuration.GameConfiguration;
+import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
@@ -26,9 +26,9 @@ import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.game.player.Player;
 
-public class MapSaveLoadTest {
-	private static File parentDir = new File(GameConfiguration.ASSETS_MAPS.getConfiguration());
-	private static File objParentDir = new File(GameConfiguration.ASSETS_OBJECTS.getConfiguration());
+public class MapFileManagerTest {
+	private static File parentDir = new File(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
+	private static File objParentDir = new File(ProjectFolderConfiguration.ASSETS_OBJECTS.getConfigurationWithProjectPath());
 	
 	@Rule
 	public TemporaryFolder testMapsDir = new TemporaryFolder(parentDir);
@@ -48,7 +48,7 @@ public class MapSaveLoadTest {
 	private static Vector vector2;
 	private static Vector playerVector;
 
-	private MapSaveLoad mapSaveLoad;
+	private MapFileManager mapFileManager;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -81,7 +81,7 @@ public class MapSaveLoadTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		mapSaveLoad = new MapSaveLoad();
+		mapFileManager = new MapFileManager();
 		
 		var redObj = testObjectDir.newFile("red.tobj");
 		try (var writer = new BufferedWriter(new FileWriter(redObj))) {
@@ -140,7 +140,7 @@ public class MapSaveLoadTest {
 	public void testSave() throws Exception {
 		when(testMap.getName()).thenReturn(testMapsDir.getRoot().getName() + "/testSave");
 		
-		mapSaveLoad.save(testMap,player);
+		mapFileManager.save(testMap,player);
 		var file = testMapsDir.getRoot().listFiles((f, n) -> n.startsWith("testSave."))[0];
 
 		try (var reader = new BufferedReader(new FileReader(file))) {
@@ -154,7 +154,7 @@ public class MapSaveLoadTest {
 	@Test
 	public void testLoad() throws Exception {
 		var mapName = testMapsDir.getRoot().getName() + "/correct";
-		var map = mapSaveLoad.load(mapName, false);
+		var map = mapFileManager.load(mapName, false);
 
 		assertEquals(mapName, map.getName());
 		assertEquals(100.0, map.getWidth(), 0);
@@ -168,31 +168,31 @@ public class MapSaveLoadTest {
 	@Test(expected = AssetNotFoundException.class)
 	public void testLoadNotExisting() throws Exception {
 		var mapName = testMapsDir.getRoot().getName() + "/nonExisting";
-		mapSaveLoad.load(mapName, false);
+		mapFileManager.load(mapName, false);
 	}
 
 	@Test(expected = AssetFormatException.class)
 	public void testLoadFalseFormat() throws Exception {
 		var mapName = testMapsDir.getRoot().getName() + "/failOnMap";
-		mapSaveLoad.load(mapName, false);
+		mapFileManager.load(mapName, false);
 	}
 
 	@Test(expected = AssetFormatException.class)
 	public void testLoadFalseFormatInObject() throws Exception {
 		var mapName = testMapsDir.getRoot().getName() + "/failOnObj";
-		mapSaveLoad.load(mapName, false);
+		mapFileManager.load(mapName, false);
 	}
 
 	@Test(expected = AssetNotFoundException.class)
 	public void testLoadMissingObject() throws Exception {
 		var mapName = testMapsDir.getRoot().getName() + "/missingObject";
-		mapSaveLoad.load(mapName, false);
+		mapFileManager.load(mapName, false);
 	}
 
 	@Test
 	public void testLoadRecoverMode() throws Exception {
 		var mapName = testMapsDir.getRoot().getName() + "/recover";
-		var map = mapSaveLoad.load(mapName, true);
+		var map = mapFileManager.load(mapName, true);
 
 		assertEquals(mapName, map.getName());
 		assertEquals(100.0, map.getWidth(), 0);

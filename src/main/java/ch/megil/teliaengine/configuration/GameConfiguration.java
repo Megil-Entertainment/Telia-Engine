@@ -8,11 +8,6 @@ import ch.megil.teliaengine.logging.LogHandler;
 import ch.megil.teliaengine.project.ProjectController;
 
 public enum GameConfiguration {
-	ASSETS("assets"),
-	ASSETS_MAPS("assetsMaps"),
-	ASSETS_OBJECTS("assetsObjects"),
-	ASSETS_TEXTURES("assetsTextures"),
-	ASSET_PLAYER("assetPlayer"),
 	PLAYER_WIDTH("playerWidth"),
 	PLAYER_HEIGHT("playerHeight"),
 	MAP_WIDTH("mapWidth"),
