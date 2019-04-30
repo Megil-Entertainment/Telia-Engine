@@ -17,6 +17,7 @@ import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
+import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.logging.LogHandler;
 import ch.megil.teliaengine.project.Project;
 import ch.megil.teliaengine.project.ProjectController;
@@ -55,7 +56,8 @@ public class EngineUIController {
 		objectExplorer.setMapEditor(mapEditor);
 		objectExplorer.setMaxWidth(300);
 		try {
-			assetExplorer.initialize(ProjectFolderConfiguration.ASSETS.getConfigurationWithProjectPath(), this::loadMap);
+			assetExplorer.initialize(this::loadMap);
+			assetExplorer.changeRoots(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
 			assetExplorer.setMaxWidth(300);
 		} catch (AssetNotFoundException e) {
 			LogHandler.log(e, Level.SEVERE);
@@ -106,12 +108,23 @@ public class EngineUIController {
 	
 	private void openProject(Project project) throws AssetNotFoundException {
 		ProjectController.get().openProject(project);
-		assetExplorer.initialize(ProjectFolderConfiguration.ASSETS.getConfigurationWithProjectPath(), this::loadMap);
+		assetExplorer.changeRoots(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
+		objectExplorer.reload();
 	}
 	
 	@FXML
 	private void fileNewMap() {
-		new MapCreateDialog().showAndWait().ifPresent(mapEditor::setMap);
+		new MapCreateDialog().showAndWait().ifPresent(this::initMap);
+	}
+	
+	private void initMap(Map map) {
+		mapEditor.setMap(map);
+		mapFileManger.save(map, mapEditor.getPlayer());
+		try {
+			assetExplorer.reload();
+		} catch(AssetNotFoundException e) {
+			LogHandler.log(e, Level.SEVERE);
+		}
 	}
 	
 	@FXML
@@ -128,11 +141,6 @@ public class EngineUIController {
 		}
 		
 		mapFileManger.save(map, mapEditor.getPlayer());
-		try {
-			assetExplorer.initialize(ProjectFolderConfiguration.ASSETS.getConfigurationWithProjectPath(), this::loadMap);
-		} catch(AssetNotFoundException e) {
-			LogHandler.log(e, Level.SEVERE);
-		}
 	}
 	
 	@FXML

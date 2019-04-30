@@ -32,9 +32,13 @@ public class Player extends GameElement{
 	
 	public static Player get() {
 		if (instance == null) {
-			instance = new PlayerFileManager().load(Player::new);
+			reload();
 		}
 		return instance;
+	}
+	
+	public static void reload() {
+		instance = new PlayerFileManager().load(Player::new);
 	}
 	
 	public static Player getEngineCopy() {
