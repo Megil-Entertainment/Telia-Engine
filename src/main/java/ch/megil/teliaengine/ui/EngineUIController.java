@@ -11,7 +11,7 @@ import ch.megil.teliaengine.GameMain;
 import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.MapFileManager;
-import ch.megil.teliaengine.file.ProjecFileManager;
+import ch.megil.teliaengine.file.ProjectFileManager;
 import ch.megil.teliaengine.file.TextureFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
@@ -46,12 +46,12 @@ public class EngineUIController {
 	private AssetExplorer assetExplorer;
 	
 	private MapFileManager mapFileManger;
-	private ProjecFileManager projecFileManager;
+	private ProjectFileManager projecFileManager;
 
 	@FXML
 	private void initialize() {
 		mapFileManger = new MapFileManager();
-		projecFileManager = new ProjecFileManager();
+		projecFileManager = new ProjectFileManager();
 		
 		objectExplorer.setMapEditor(mapEditor);
 		objectExplorer.setMaxWidth(300);

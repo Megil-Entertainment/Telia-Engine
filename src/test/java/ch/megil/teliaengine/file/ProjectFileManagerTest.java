@@ -20,11 +20,11 @@ public class ProjectFileManagerTest {
 	public TemporaryFolder tempProjects = new TemporaryFolder(new File("."));
 	
 	private Project testProject;
-	private ProjecFileManager projecFileManager;
+	private ProjectFileManager projecFileManager;
 	
 	@Before
 	public void setUp() throws Exception {
-		projecFileManager = new ProjecFileManager();
+		projecFileManager = new ProjectFileManager();
 		testProject = new Project("test", tempProjects.newFolder("test"));
 	}
 	

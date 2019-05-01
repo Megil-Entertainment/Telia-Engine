@@ -11,7 +11,7 @@ import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.project.Project;
 
-public class ProjecFileManager {
+public class ProjectFileManager {
 	private static final String LAST_PROJECT = "project.last";
 	
 	private static final String KEY_PROJECT_NAME = "pName";
