@@ -16,7 +16,7 @@ public class ProjectFileManager {
 	
 	private static final String KEY_PROJECT_NAME = "pName";
 	
-	public void initProject(Project project) throws AssetCreationException {
+	public File initProject(Project project) throws AssetCreationException {
 		var root = project.getLocationPath();
 		new File(root).mkdirs();
 		if (!new File(root + ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithoutProjectPath()).mkdirs() ||
@@ -28,8 +28,9 @@ public class ProjectFileManager {
 		}
 		
 		var properties = new Properties();
+		var projectInfo = new File(root + "/" + project.getName().replaceAll("\\s", "") + FileConfiguration.FILE_EXT_PROJECT.getConfiguration());
 		
-		try (var projectOut = new FileOutputStream(root + "/" + project.getName().replaceAll("\\s", "") + FileConfiguration.FILE_EXT_PROJECT.getConfiguration());
+		try (var projectOut = new FileOutputStream(projectInfo);
 				var constPhysicsIn = new FileInputStream("." + ConfigurationContstants.PHYSIC_CONSTANTS);
 				var constPhysicsOut = new FileOutputStream(root + ConfigurationContstants.PHYSIC_CONSTANTS);
 				var configGameIn = new FileInputStream("." + ConfigurationContstants.GAME_CONFIGURATION);
@@ -49,6 +50,8 @@ public class ProjectFileManager {
 			properties.load(configGameIn);
 			properties.store(configGameOut, null);
 			properties.clear();
+			
+			return projectInfo;
 		} catch (IOException e) {
 			throw new AssetCreationException("Default project properties not created.", e);
 		}
