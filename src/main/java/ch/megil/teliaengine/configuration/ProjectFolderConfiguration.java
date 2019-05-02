@@ -8,7 +8,6 @@ import ch.megil.teliaengine.logging.LogHandler;
 import ch.megil.teliaengine.project.ProjectController;
 
 public enum ProjectFolderConfiguration {
-	ASSETS("assets"),
 	ASSETS_MAPS("assetsMaps"),
 	ASSETS_OBJECTS("assetsObjects"),
 	ASSETS_TEXTURES("assetsTextures"),
