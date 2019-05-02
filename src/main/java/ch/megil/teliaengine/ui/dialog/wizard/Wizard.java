@@ -16,9 +16,7 @@ public class Wizard<T> extends Dialog<T> {
 	private Node nextButton;
 	private Node finishButton;
 	
-	public Wizard(Pane firstPageContent, boolean firstNextState) {
-		addPage(firstPageContent, firstNextState);
-		currentPage = lastPage;
+	public Wizard() {
 		getDialogPane().getButtonTypes().setAll(ButtonType.PREVIOUS, ButtonType.NEXT, ButtonType.FINISH, ButtonType.CANCEL);
 		
 		previousButton = getDialogPane().lookupButton(ButtonType.PREVIOUS);
@@ -26,8 +24,6 @@ public class Wizard<T> extends Dialog<T> {
 		nextButton = getDialogPane().lookupButton(ButtonType.NEXT);
 		nextButton.addEventFilter(ActionEvent.ACTION, this::nextPage);
 		finishButton = getDialogPane().lookupButton(ButtonType.FINISH);
-		
-		onPageChange();
 	}
 	
 	private void previousPage(ActionEvent event) {
@@ -69,9 +65,14 @@ public class Wizard<T> extends Dialog<T> {
 	}
 	
 	private void addPage(WizardPage page) {
-		page.setPrevious(lastPage);
-		lastPage.setNext(page);
-		lastPage = page;
+		if (currentPage == null) {
+			currentPage = page;
+		}
+		if (lastPage != null) {
+			page.setPrevious(lastPage);
+			lastPage.setNext(page);
+			lastPage = page;
+		}
 		onPageChange();
 	}
 	
