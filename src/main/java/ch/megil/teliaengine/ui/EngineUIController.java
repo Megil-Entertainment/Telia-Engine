@@ -53,7 +53,7 @@ public class EngineUIController {
 		
 	private MapEditor currentMapEditor;
 	
-	private HashMap<String, Tab> openTabs = new HashMap<>();
+	private java.util.Map<String, Tab> openTabs;
 	
 	private MapFileManager mapFileManger;
 	private ProjectFileManager projectFileManager;
@@ -72,6 +72,8 @@ public class EngineUIController {
 		} catch (AssetNotFoundException e) {
 			LogHandler.log(e, Level.SEVERE);
 		}
+		
+		openTabs = new HashMap<>();
 	}
 	
 	@FXML
@@ -124,6 +126,8 @@ public class EngineUIController {
 		ProjectController.get().openProject(project);
 		assetExplorer.changeRoots(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
 		objectExplorer.reload();
+		tabPane.getTabs().clear();
+		openTabs.clear();
 	}
 	
 	@FXML
