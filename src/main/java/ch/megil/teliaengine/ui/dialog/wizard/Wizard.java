@@ -27,18 +27,22 @@ public class Wizard<T> extends Dialog<T> {
 	}
 	
 	private void previousPage(ActionEvent event) {
+		currentPage = currentPage.getPrevious();
 		nextButton.setDisable(false);
 		onPageChange();
 		event.consume();
 	}
 	
 	private void nextPage(ActionEvent event) {
+		currentPage = currentPage.getNext();
 		nextButton.setDisable(currentPage.getNextState());
 		onPageChange();
 		event.consume();
 	}
 	
 	private void onPageChange() {
+		getDialogPane().setContent(currentPage.getPage());
+		
 		if (currentPage.getPrevious() == null) {
 			previousButton.setDisable(true);
 		} else {
