@@ -11,7 +11,7 @@ import ch.megil.teliaengine.GameMain;
 import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.MapFileManager;
-import ch.megil.teliaengine.file.ProjecFileManager;
+import ch.megil.teliaengine.file.ProjectFileManager;
 import ch.megil.teliaengine.file.TextureFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
@@ -46,12 +46,12 @@ public class EngineUIController {
 	private AssetExplorer assetExplorer;
 	
 	private MapFileManager mapFileManger;
-	private ProjecFileManager projecFileManager;
+	private ProjectFileManager projectFileManager;
 
 	@FXML
 	private void initialize() {
 		mapFileManger = new MapFileManager();
-		projecFileManager = new ProjecFileManager();
+		projectFileManager = new ProjectFileManager();
 		
 		objectExplorer.setMapEditor(mapEditor);
 		objectExplorer.setMaxWidth(300);
@@ -71,7 +71,8 @@ public class EngineUIController {
 	
 	private void initNewProject(Project project) {
 		try {
-			projecFileManager.initProject(project);
+			var projectInfo = projectFileManager.initProject(project);
+			projectFileManager.updateLastOpenedProject(projectInfo);
 			ProjectController.get().openProject(project);
 			//TODO: as soon as created: open ObjectCreator to create player and remove static player creation
 			TextureFileManager.get().importTexture("player", new File("assets/texture/player.png"));
@@ -97,11 +98,14 @@ public class EngineUIController {
 		var projectInfo = chooser.showOpenDialog(mapEditor.getScene().getWindow());
 		if (projectInfo != null) {
 			try {
-				var project = projecFileManager.loadProject(projectInfo);
+				var project = projectFileManager.loadProject(projectInfo);
+				projectFileManager.updateLastOpenedProject(projectInfo);
 				openProject(project);
 			} catch (AssetLoadException e) {
 				LogHandler.log(e, Level.SEVERE);
 				showErrorAlert("Load Error", "The specified project could not been loaded.");
+			} catch (AssetCreationException e) {
+				LogHandler.log(e, Level.WARNING);
 			}
 		}
 	}
