@@ -69,7 +69,6 @@ public class ProjectFileManager {
 	}
 	
 	public void updateLastOpenedProject(File projectInfo) throws AssetCreationException {
-		System.out.println(projectInfo.getAbsolutePath());
 		try (var writer = new BufferedWriter(new FileWriter(LAST_PROJECT))) {
 			writer.write(projectInfo.getAbsolutePath());
 		} catch (IOException e) {
