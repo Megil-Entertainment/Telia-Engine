@@ -2,6 +2,7 @@ package ch.megil.teliaengine.ui.dialog.wizard;
 
 import java.util.function.Supplier;
 
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonType;
@@ -78,6 +79,10 @@ public class Wizard<T> extends Dialog<T> {
 			lastPage = page;
 		}
 		onPageChange();
+	}
+	
+	public <S> void doNextPageCheckListener(ObservableValue<? extends S> obs, S oldVal, S newVal) {
+		doNextPageCheck();
 	}
 	
 	public void doNextPageCheck() {
