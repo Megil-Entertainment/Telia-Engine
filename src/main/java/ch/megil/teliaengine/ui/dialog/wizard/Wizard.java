@@ -76,13 +76,13 @@ public class Wizard<T> extends Dialog<T> {
 
 			nextButton.setDisable(currentPage.getNextState());
 			finishButton.setDisable(currentPage.getNextState());
-			onPageChange();
 		}
 		if (lastPage != null) {
 			page.setPrevious(lastPage);
 			lastPage.setNext(page);
 			lastPage = page;
 		}
+		onPageChange();
 	}
 	
 	public <S> void doNextPageCheckListener(ObservableValue<? extends S> obs, S oldVal, S newVal) {
@@ -91,5 +91,6 @@ public class Wizard<T> extends Dialog<T> {
 	
 	public void doNextPageCheck() {
 		nextButton.setDisable(currentPage.getNextState());
+		finishButton.setDisable(currentPage.getNextState());
 	}
 }
