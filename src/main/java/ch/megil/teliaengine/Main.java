@@ -80,6 +80,8 @@ public class Main extends Application {
 			} catch (AssetCreationException e) {
 				LogHandler.log(e, Level.WARNING);
 			}
+		} else {
+			System.exit(0);
 		}
 	}
 
