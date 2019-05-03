@@ -20,9 +20,13 @@ public class ProjectCreateDialog extends Wizard<Project> {
 	private TextField projectName;
 	private TextField location;
 	
+	private TextField playerWidth;
+	private TextField playerHeight;
+	private TextField playerTexture;
+	
 	public ProjectCreateDialog() {
-		addPage(createProjectInfoPage(), this::checkProjectInfo);
-		addPage(createPlayerCreationPage(), this::checkProjectInfo);
+		addPage(createProjectInfoPage(), this::checkProjectInfoDisable);
+		addPage(createPlayerCreationPage(), this::checkPlayerCreationDisable);
 		
 		setResultConverter(b -> b.equals(ButtonType.FINISH)
 				? createProject(projectName.getText(), location.getText())
@@ -58,16 +62,18 @@ public class ProjectCreateDialog extends Wizard<Project> {
 		playerCreationGrid.setHgap(PADDING);
 		playerCreationGrid.setVgap(PADDING);
 		
-		playerCreationGrid.add(new Label("Project Name"), 0, 0);
-		var projectName = new TextField();
-		projectName.textProperty().addListener(super::doNextPageCheckListener);
-		Platform.runLater(() -> projectName.requestFocus());
-		playerCreationGrid.add(projectName, 1, 0, 2, 1);
+		playerCreationGrid.add(new Label("Player Width / Height"), 0, 0);
+		playerWidth = new TextField();
+		playerWidth.textProperty().addListener(super::doNextPageCheckListener);
+		playerCreationGrid.add(playerWidth, 1, 0);
+		playerHeight = new TextField();
+		playerHeight.textProperty().addListener(super::doNextPageCheckListener);
+		playerCreationGrid.add(playerHeight, 2, 0);
 		
-		playerCreationGrid.add(new Label("Location"), 0, 1);
-		var location = new TextField();
-		location.textProperty().addListener(super::doNextPageCheckListener);
-		playerCreationGrid.add(location, 1, 1);
+		playerCreationGrid.add(new Label("Player texture"), 0, 1);
+		playerTexture = new TextField();
+		playerTexture.textProperty().addListener(super::doNextPageCheckListener);
+		playerCreationGrid.add(playerTexture, 1, 1);
 		var searchBtn = new Button("...");
 		searchBtn.setOnAction(this::searchDirectory);
 		playerCreationGrid.add(searchBtn, 2, 1);
@@ -100,7 +106,18 @@ public class ProjectCreateDialog extends Wizard<Project> {
 		}
 	}
 	
-	private boolean checkProjectInfo() {
+	private boolean checkProjectInfoDisable() {
 		return projectName.getText().trim().isEmpty() || location.getText().trim().isEmpty();
+	}
+	
+	private boolean checkPlayerCreationDisable() {
+		try {
+			var width = Integer.parseInt(playerWidth.getText());
+			var height = Integer.parseInt(playerHeight.getText());
+
+			return width <= 0 || height <= 0 || playerTexture.getText().trim().isEmpty();
+		} catch (NumberFormatException e) {
+			return true;
+		}
 	}
 }
