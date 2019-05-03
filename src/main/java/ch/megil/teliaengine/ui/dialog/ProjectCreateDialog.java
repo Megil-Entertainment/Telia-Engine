@@ -77,7 +77,6 @@ public class ProjectCreateDialog extends Wizard<Project> {
 		var searchBtn = new Button("...");
 		searchBtn.setOnAction(this::searchDirectory);
 		playerCreationGrid.add(searchBtn, 2, 1);
-		
 		return playerCreationGrid;
 	}
 	

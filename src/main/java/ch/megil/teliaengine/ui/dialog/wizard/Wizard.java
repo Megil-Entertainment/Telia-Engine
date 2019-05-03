@@ -18,6 +18,7 @@ public class Wizard<T> extends Dialog<T> {
 	private Node finishButton;
 	
 	public Wizard() {
+		setResizable(true);
 		getDialogPane().getButtonTypes().setAll(ButtonType.PREVIOUS, ButtonType.NEXT, ButtonType.FINISH, ButtonType.CANCEL);
 		
 		previousButton = getDialogPane().lookupButton(ButtonType.PREVIOUS);
