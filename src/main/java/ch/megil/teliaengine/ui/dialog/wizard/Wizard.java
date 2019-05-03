@@ -60,13 +60,13 @@ public class Wizard<T> extends Dialog<T> {
 		}
 	}
 	
-	public void addPage(Pane pageContent, Supplier<Boolean> nextStateCheck) {
-		var newPage = new WizardPage(pageContent, nextStateCheck);
+	public void addPage(Pane pageContent, Supplier<Boolean> nextDisableCheck) {
+		var newPage = new WizardPage(pageContent, nextDisableCheck);
 		addPage(newPage);
 	}
 	
-	public void addPage(Pane pageContent, boolean nextState) {
-		var newPage = new WizardPage(pageContent, nextState);
+	public void addPage(Pane pageContent) {
+		var newPage = new WizardPage(pageContent, false);
 		addPage(newPage);
 	}
 	
