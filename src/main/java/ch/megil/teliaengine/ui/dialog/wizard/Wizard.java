@@ -73,11 +73,11 @@ public class Wizard<T> extends Dialog<T> {
 	private void addPage(WizardPage page) {
 		if (currentPage == null) {
 			currentPage = page;
+			lastPage = page;
 
 			nextButton.setDisable(currentPage.getNextState());
 			finishButton.setDisable(currentPage.getNextState());
-		}
-		if (lastPage != null) {
+		} else if (lastPage != null) {
 			page.setPrevious(lastPage);
 			lastPage.setNext(page);
 			lastPage = page;
