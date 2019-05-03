@@ -21,30 +21,58 @@ public class ProjectCreateDialog extends Wizard<Project> {
 	private TextField location;
 	
 	public ProjectCreateDialog() {
-		var grid = new GridPane();
-		grid.setPadding(new Insets(PADDING));
-		grid.setHgap(PADDING);
-		grid.setVgap(PADDING);
-		
-		grid.add(new Label("Project Name"), 0, 0);
-		projectName = new TextField();
-		projectName.textProperty().addListener(super::doNextPageCheckListener);
-		Platform.runLater(() -> projectName.requestFocus());
-		grid.add(projectName, 1, 0, 2, 1);
-		
-		grid.add(new Label("Location"), 0, 1);
-		location = new TextField();
-		location.textProperty().addListener(super::doNextPageCheckListener);
-		grid.add(location, 1, 1);
-		var searchBtn = new Button("...");
-		searchBtn.setOnAction(this::searchDirectory);
-		grid.add(searchBtn, 2, 1);
-		
-		addPage(grid, this::checkFinish);
+		addPage(createProjectInfoPage(), this::checkProjectInfo);
+		addPage(createPlayerCreationPage(), this::checkProjectInfo);
 		
 		setResultConverter(b -> b.equals(ButtonType.FINISH)
 				? createProject(projectName.getText(), location.getText())
 				: null);
+	}
+	
+	private GridPane createProjectInfoPage() {
+		var projectInfoGrid = new GridPane();
+		projectInfoGrid.setPadding(new Insets(PADDING));
+		projectInfoGrid.setHgap(PADDING);
+		projectInfoGrid.setVgap(PADDING);
+		
+		projectInfoGrid.add(new Label("Project Name"), 0, 0);
+		projectName = new TextField();
+		projectName.textProperty().addListener(super::doNextPageCheckListener);
+		Platform.runLater(() -> projectName.requestFocus());
+		projectInfoGrid.add(projectName, 1, 0, 2, 1);
+		
+		projectInfoGrid.add(new Label("Location"), 0, 1);
+		location = new TextField();
+		location.textProperty().addListener(super::doNextPageCheckListener);
+		projectInfoGrid.add(location, 1, 1);
+		var searchBtn = new Button("...");
+		searchBtn.setOnAction(this::searchDirectory);
+		projectInfoGrid.add(searchBtn, 2, 1);
+		
+		return projectInfoGrid;
+	}
+	
+	private GridPane createPlayerCreationPage() {
+		var playerCreationGrid = new GridPane();
+		playerCreationGrid.setPadding(new Insets(PADDING));
+		playerCreationGrid.setHgap(PADDING);
+		playerCreationGrid.setVgap(PADDING);
+		
+		playerCreationGrid.add(new Label("Project Name"), 0, 0);
+		var projectName = new TextField();
+		projectName.textProperty().addListener(super::doNextPageCheckListener);
+		Platform.runLater(() -> projectName.requestFocus());
+		playerCreationGrid.add(projectName, 1, 0, 2, 1);
+		
+		playerCreationGrid.add(new Label("Location"), 0, 1);
+		var location = new TextField();
+		location.textProperty().addListener(super::doNextPageCheckListener);
+		playerCreationGrid.add(location, 1, 1);
+		var searchBtn = new Button("...");
+		searchBtn.setOnAction(this::searchDirectory);
+		playerCreationGrid.add(searchBtn, 2, 1);
+		
+		return playerCreationGrid;
 	}
 	
 	private Project createProject(String projectName, String location) {
@@ -72,7 +100,7 @@ public class ProjectCreateDialog extends Wizard<Project> {
 		}
 	}
 	
-	private boolean checkFinish() {
+	private boolean checkProjectInfo() {
 		return projectName.getText().trim().isEmpty() || location.getText().trim().isEmpty();
 	}
 }
