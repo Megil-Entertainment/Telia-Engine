@@ -40,7 +40,7 @@
 		<SplitPane>
 			<items>
 				<AssetExplorer fx:id="assetExplorer"/>
-				<TabPane fx:id="tabPane"></TabPane>
+				<TabPane fx:id="tabPane"/>
 				<ObjectExplorer fx:id="objectExplorer"/>
 			</items>
 		</SplitPane>

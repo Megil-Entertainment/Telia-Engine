@@ -107,7 +107,7 @@ public class EngineUIController {
 	private void fileOpenProject() throws IOException {
 		var chooser = new FileChooser();
 		chooser.getExtensionFilters().add(new ExtensionFilter("Project", "*" + FileConfiguration.FILE_EXT_PROJECT.getConfiguration()));
-		var projectInfo = chooser.showOpenDialog(currentMapEditor.getScene().getWindow());
+		var projectInfo = chooser.showOpenDialog(tabPane.getScene().getWindow());
 		if (projectInfo != null) {
 			try {
 				var project = projectFileManager.loadProject(projectInfo);
@@ -251,10 +251,10 @@ public class EngineUIController {
 		currentMapEditor = mapEditor;
 	}
 	
-	private void openNewTab(String mapName, boolean safeMode) throws AssetNotFoundException, AssetFormatException {
+	private void openNewTab(String mapName, boolean saveMode) throws AssetNotFoundException, AssetFormatException {
 		Tab mapEditorTab = new Tab();
 		MapEditor mapEditor = new MapEditor();
-		mapEditor.setMap(mapFileManger.load(mapName, safeMode));
+		mapEditor.setMap(mapFileManger.load(mapName, saveMode));
 		addTabFunctionality(mapEditorTab, mapEditor);
 	}
 	
@@ -262,7 +262,7 @@ public class EngineUIController {
 		return mapEditor.getSaved();
 	}
 	
-	private void openSafeDialog(Tab mapEditorTab, Event event) {
+	private void openSaveDialog(Tab mapEditorTab, Event event) {
 		var alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Tab Close");
 		alert.setHeaderText("There are unsaved changes");
@@ -293,7 +293,7 @@ public class EngineUIController {
 		tab.setOnCloseRequest(event -> {
 			var changes = checkForChanges(mapEditor);
 			if(!changes) {
-				openSafeDialog(tab, event);
+				openSaveDialog(tab, event);
 			}
 		});
 		tab.setOnClosed(event -> openTabs.remove(mapEditor.getMap().getName()));
