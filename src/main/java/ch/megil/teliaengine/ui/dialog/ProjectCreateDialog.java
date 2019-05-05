@@ -2,6 +2,7 @@ package ch.megil.teliaengine.ui.dialog;
 
 import java.io.File;
 
+import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.project.Project;
 import ch.megil.teliaengine.ui.dialog.wizard.Wizard;
 import javafx.application.Platform;
@@ -13,6 +14,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 public class ProjectCreateDialog extends Wizard<Project> {
 	private static final int PADDING = 15;
@@ -75,7 +78,7 @@ public class ProjectCreateDialog extends Wizard<Project> {
 		playerTexture.textProperty().addListener(super::doNextPageCheckListener);
 		playerCreationGrid.add(playerTexture, 1, 1);
 		var searchBtn = new Button("...");
-		searchBtn.setOnAction(this::searchDirectory);
+		searchBtn.setOnAction(this::searchTexture);
 		playerCreationGrid.add(searchBtn, 2, 1);
 		return playerCreationGrid;
 	}
@@ -103,6 +106,16 @@ public class ProjectCreateDialog extends Wizard<Project> {
 		if (dir != null) {
 			location.setText(dir.getAbsolutePath());
 		}
+	}
+	
+	private void searchTexture(ActionEvent ae) {
+		var chooser = new FileChooser();
+		chooser.getExtensionFilters().add(new ExtensionFilter("Texture Image", "*" + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration()));
+		var texture = chooser.showOpenDialog(playerTexture.getScene().getWindow());
+		if (texture != null) {
+			playerTexture.setText(texture.getAbsolutePath());
+		}
+		
 	}
 	
 	private boolean checkProjectInfoDisable() {
