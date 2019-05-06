@@ -132,11 +132,10 @@ public class EngineUIController {
 	
 	@FXML
 	private void fileNewMap() {
-		Tab mapEditorTab = new Tab();
-		MapEditor mapEditor = new MapEditor();
-		currentMapEditor = mapEditor;
+		var mapEditorTab = new Tab();
+		currentMapEditor = new MapEditor();
 		new MapCreateDialog().showAndWait().ifPresent(this::initMap);
-		addTabFunctionality(mapEditorTab, mapEditor);
+		addTabFunctionality(mapEditorTab, currentMapEditor);
 	}
 	
 	private void initMap(Map map) {
@@ -252,8 +251,8 @@ public class EngineUIController {
 	}
 	
 	private void openNewTab(String mapName, boolean saveMode) throws AssetNotFoundException, AssetFormatException {
-		Tab mapEditorTab = new Tab();
-		MapEditor mapEditor = new MapEditor();
+		var mapEditorTab = new Tab();
+		var mapEditor = new MapEditor();
 		mapEditor.setMap(mapFileManger.load(mapName, saveMode));
 		addTabFunctionality(mapEditorTab, mapEditor);
 	}
@@ -268,12 +267,12 @@ public class EngineUIController {
 		alert.setHeaderText("There are unsaved changes");
 		alert.setContentText("Do you want to save them?");
 		
-		ButtonType saveButton = new ButtonType("Save");
-		ButtonType ignoreButton = new ButtonType("Ignore");
-		ButtonType cancelButton = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+		var saveButton = new ButtonType("Save");
+		var ignoreButton = new ButtonType("Ignore");
+		var cancelButton = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
 		
 		alert.getButtonTypes().setAll(saveButton, ignoreButton, cancelButton);
-		Optional<ButtonType> result = alert.showAndWait();
+		var<ButtonType> result = alert.showAndWait();
 		if(result.get() == saveButton) {
 			fileSaveMap();
 		}else if(result.get() == cancelButton) {
