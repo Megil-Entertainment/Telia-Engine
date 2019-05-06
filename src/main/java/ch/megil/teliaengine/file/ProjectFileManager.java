@@ -83,6 +83,9 @@ public class ProjectFileManager {
 		}
 		try (var scanner = new Scanner(lastProjectInfo)) {
 			scanner.useDelimiter("\n");
+			if (!scanner.hasNext()) {
+				return null;
+			}
 			var lastProject = scanner.next();
 			if (new File(lastProject).exists()) {
 				return lastProject;
