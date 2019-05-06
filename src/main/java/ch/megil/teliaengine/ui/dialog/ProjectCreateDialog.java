@@ -52,7 +52,8 @@ public class ProjectCreateDialog extends Wizard<File> {
 		
 		setResultConverter(b -> b.equals(ButtonType.FINISH)
 				? createProject(projectName.getText(), location.getText(),
-						Double.parseDouble(playerWidth.getText()), Double.parseDouble(playerHeight.getText()), playerTexture.getText())
+						Double.parseDouble(playerWidth.getText()), Double.parseDouble(playerHeight.getText()), playerTexture.getText(),
+						new GameConfigData(Double.parseDouble(mapWidth.getText()), Double.parseDouble(mapHeight.getText())))
 				: null);
 	}
 	
@@ -121,12 +122,12 @@ public class ProjectCreateDialog extends Wizard<File> {
 		return gameConfigGrid;
 	}
 	
-	private File createProject(String projectName, String location, double playerWidth, double playerHeight, String playerTexture) {
+	private File createProject(String projectName, String location, double playerWidth, double playerHeight, String playerTexture, GameConfigData gameConfigData) {
 		var projectDir = new File(location + "/" + projectName.replaceAll("\\s", ""));
 		var project = new Project(projectName, projectDir);
 		
 		try {
-			var projectInfo = projectFileManager.initProject(project, new GameConfigData(640, 360));
+			var projectInfo = projectFileManager.initProject(project, gameConfigData);
 			new PlayerFileManager().createPlayer(projectDir, playerWidth, playerHeight, new File(playerTexture));
 			
 			return projectInfo;
