@@ -5,6 +5,7 @@ import java.io.File;
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.configuration.PhysicsConstants;
 import ch.megil.teliaengine.file.TextureFileManager;
+import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.game.player.Player;
 
 public class ProjectController {
@@ -24,12 +25,12 @@ public class ProjectController {
 		return instance;
 	}
 	
-	public void openProject(Project project) {
+	public void openProject(Project project) throws AssetLoadException {
 		this.project = project;
 		refresh();
 	}
 	
-	private void refresh() {
+	private void refresh() throws AssetLoadException {
 		PhysicsConstants.reload();
 		GameConfiguration.reload();
 		Player.reload();

@@ -8,8 +8,8 @@ import ch.megil.teliaengine.logging.LogHandler;
 import ch.megil.teliaengine.project.ProjectController;
 
 public enum GameConfiguration {
-	PLAYER_WIDTH("playerWidth"),
-	PLAYER_HEIGHT("playerHeight"),
+//	PLAYER_WIDTH("playerWidth"),
+//	PLAYER_HEIGHT("playerHeight"),
 	MAP_WIDTH("mapWidth"),
 	MAP_HEIGHT("mapHeight");
 
