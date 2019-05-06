@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
+import ch.megil.teliaengine.configuration.data.GameConfigData;
 import ch.megil.teliaengine.file.PlayerFileManager;
 import ch.megil.teliaengine.file.ProjectFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
@@ -105,7 +106,7 @@ public class ProjectCreateDialog extends Wizard<File> {
 		var project = new Project(projectName, projectDir);
 		
 		try {
-			var projectInfo = projectFileManager.initProject(project);
+			var projectInfo = projectFileManager.initProject(project, new GameConfigData(640, 360));
 			new PlayerFileManager().createPlayer(projectDir, playerWidth, playerHeight, new File(playerTexture));
 			
 			return projectInfo;

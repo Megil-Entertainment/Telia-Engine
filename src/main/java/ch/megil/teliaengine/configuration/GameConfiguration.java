@@ -4,13 +4,13 @@ import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import ch.megil.teliaengine.configuration.data.GameConfigData;
 import ch.megil.teliaengine.logging.LogHandler;
 import ch.megil.teliaengine.project.ProjectController;
 
 public enum GameConfiguration {
 	MAP_WIDTH("mapWidth"),
 	MAP_HEIGHT("mapHeight");
-
 	
 	private static Properties gameProp;
 	
@@ -35,5 +35,10 @@ public enum GameConfiguration {
 	
 	public String getConfiguration() {
 		return gameProp.getProperty(key);
+	}
+	
+	public static void writeDataToProperties(Properties prop, GameConfigData data) {
+		prop.setProperty(MAP_WIDTH.key, data.getMapWidth());
+		prop.setProperty(MAP_HEIGHT.key, data.getMapHeight());
 	}
 }

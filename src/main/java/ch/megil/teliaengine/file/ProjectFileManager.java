@@ -6,7 +6,9 @@ import java.util.Scanner;
 
 import ch.megil.teliaengine.configuration.ConfigurationContstants;
 import ch.megil.teliaengine.configuration.FileConfiguration;
+import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
+import ch.megil.teliaengine.configuration.data.GameConfigData;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.project.Project;
@@ -16,7 +18,7 @@ public class ProjectFileManager {
 	
 	private static final String KEY_PROJECT_NAME = "pName";
 	
-	public File initProject(Project project) throws AssetCreationException {
+	public File initProject(Project project, GameConfigData gameConfigData) throws AssetCreationException {
 		var root = project.getLocationPath();
 		new File(root).mkdirs();
 		if (!new File(root + ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithoutProjectPath()).mkdirs() ||
@@ -33,7 +35,6 @@ public class ProjectFileManager {
 		try (var projectOut = new FileOutputStream(projectInfo);
 				var constPhysicsIn = new FileInputStream("." + ConfigurationContstants.PHYSIC_CONSTANTS);
 				var constPhysicsOut = new FileOutputStream(root + ConfigurationContstants.PHYSIC_CONSTANTS);
-				var configGameIn = new FileInputStream("." + ConfigurationContstants.GAME_CONFIGURATION);
 				var configGameOut = new FileOutputStream(root + ConfigurationContstants.GAME_CONFIGURATION)) {
 
 			//project info
@@ -47,7 +48,7 @@ public class ProjectFileManager {
 			properties.clear();
 			
 			//game conifiguration
-			properties.load(configGameIn);
+			GameConfiguration.writeDataToProperties(properties, gameConfigData);
 			properties.store(configGameOut, null);
 			properties.clear();
 			
