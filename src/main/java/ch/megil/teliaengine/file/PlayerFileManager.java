@@ -1,6 +1,8 @@
 package ch.megil.teliaengine.file;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -8,6 +10,7 @@ import java.util.logging.Level;
 import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
+import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
@@ -53,5 +56,19 @@ public class PlayerFileManager {
 		}
 		
 		return constructor.invoke(depictionName, depiction, hitbox, color);
+	}
+	
+	public void createPlayer(File projectDir, double width, double height, File texture) throws AssetCreationException {
+		var fileName = projectDir + ProjectFolderConfiguration.ASSET_PLAYER.getConfigurationWithoutProjectPath() + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
+		
+		var depictionName = texture.getName().replace(FileConfiguration.FILE_EXT_TEXTURE.getConfiguration(), "");
+		TextureFileManager.get().importTextureToOtherProject(projectDir, depictionName, texture);
+		
+		var propSeperator = FileConfiguration.SEPERATOR_PROPERTY.getConfiguration();
+		try (var writer = new BufferedWriter(new FileWriter(fileName))) {
+			writer.write(width + propSeperator + height + propSeperator + depictionName + propSeperator + "#000000");
+		} catch (IOException e) {
+			throw new AssetCreationException(e);
+		}
 	}
 }

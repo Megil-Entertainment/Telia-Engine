@@ -1,18 +1,15 @@
 package ch.megil.teliaengine.ui.dialog;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
-import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
+import ch.megil.teliaengine.configuration.GameConfiguration;
+import ch.megil.teliaengine.file.PlayerFileManager;
 import ch.megil.teliaengine.file.ProjectFileManager;
-import ch.megil.teliaengine.file.TextureFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.logging.LogHandler;
 import ch.megil.teliaengine.project.Project;
-import ch.megil.teliaengine.project.ProjectController;
 import ch.megil.teliaengine.ui.dialog.wizard.Wizard;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -29,7 +26,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
 /**
- * Dialog to create and initialize a new project
+ * Dialog to create and initialize a new project.
  */
 public class ProjectCreateDialog extends Wizard<Project> {
 	private static final int PADDING = 15;
@@ -50,7 +47,8 @@ public class ProjectCreateDialog extends Wizard<Project> {
 		addPage(createPlayerCreationPage(), this::checkPlayerCreationDisable);
 		
 		setResultConverter(b -> b.equals(ButtonType.FINISH)
-				? createProject(projectName.getText(), location.getText())
+				? createProject(projectName.getText(), location.getText(),
+						Double.parseDouble(playerWidth.getText()), Double.parseDouble(playerHeight.getText()), playerTexture.getText())
 				: null);
 	}
 	
@@ -84,40 +82,44 @@ public class ProjectCreateDialog extends Wizard<Project> {
 		playerCreationGrid.setVgap(PADDING);
 		
 		playerCreationGrid.add(new Label("Player Width / Height"), 0, 0);
-		playerWidth = new TextField();
+		playerWidth = new TextField(GameConfiguration.PLAYER_WIDTH.getConfiguration());
 		playerWidth.textProperty().addListener(super::doNextPageCheckListener);
 		playerCreationGrid.add(playerWidth, 1, 0);
-		playerHeight = new TextField();
+		playerHeight = new TextField(GameConfiguration.PLAYER_HEIGHT.getConfiguration());
 		playerHeight.textProperty().addListener(super::doNextPageCheckListener);
 		playerCreationGrid.add(playerHeight, 2, 0);
 		
 		playerCreationGrid.add(new Label("Player texture"), 0, 1);
 		playerTexture = new TextField();
+		playerTexture.setEditable(false);
 		playerTexture.textProperty().addListener(super::doNextPageCheckListener);
 		playerCreationGrid.add(playerTexture, 1, 1);
 		var searchBtn = new Button("...");
 		searchBtn.setOnAction(this::searchTexture);
 		playerCreationGrid.add(searchBtn, 2, 1);
+		
 		return playerCreationGrid;
 	}
 	
-	private Project createProject(String projectName, String location) {
-		var projectDir = location + "/" + projectName.replaceAll("\\s", "");
-		var project = new Project(projectName, new File(projectDir));
+	private Project createProject(String projectName, String location, double playerWidth, double playerHeight, String playerTexture) {
+		var projectDir = new File(location + "/" + projectName.replaceAll("\\s", ""));
+		var project = new Project(projectName, projectDir);
 		
 		try {
 			var projectInfo = projectFileManager.initProject(project);
-			projectFileManager.updateLastOpenedProject(projectInfo);
-			ProjectController.get().openProject(project);
+//			projectFileManager.updateLastOpenedProject(projectInfo);
+//			ProjectController.get().openProject(project);
 			//TODO: as soon as created: open ObjectCreator to create player and remove static player creation
-			TextureFileManager.get().importTexture("player", new File("assets/texture/player.png"));
-			var origin = new File("assets/player.tobj").toPath();
-			var dest = new File(ProjectFolderConfiguration.ASSET_PLAYER.getConfigurationWithProjectPath() + ".tobj").toPath();
-			try {
-				Files.copy(origin, dest);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+//			TextureFileManager.get().importTextureToOtherProject(projectDir, "player", new File(playerTexture));
+//			var origin = new File("assets/player.tobj").toPath();
+//			var dest = new File(ProjectFolderConfiguration.ASSET_PLAYER.getConfigurationWithProjectPath() + ".tobj").toPath();
+//			try {
+//				Files.copy(origin, dest);
+//			} catch (IOException e) {
+//				e.printStackTrace();	
+//			}
+			
+			new PlayerFileManager().createPlayer(projectDir, playerWidth, playerHeight, new File(playerTexture));
 			
 			return project;
 		} catch (AssetCreationException e) {
@@ -171,10 +173,10 @@ public class ProjectCreateDialog extends Wizard<Project> {
 	
 	private boolean checkPlayerCreationDisable() {
 		try {
-			var width = Integer.parseInt(playerWidth.getText());
-			var height = Integer.parseInt(playerHeight.getText());
+			var width = Double.parseDouble(playerWidth.getText());
+			var height = Double.parseDouble(playerHeight.getText());
 
-			return width <= 0 || height <= 0 || playerTexture.getText().trim().isEmpty();
+			return width <= 0.0 || height <= 0.0 || playerTexture.getText().trim().isEmpty();
 		} catch (NumberFormatException e) {
 			return true;
 		}
