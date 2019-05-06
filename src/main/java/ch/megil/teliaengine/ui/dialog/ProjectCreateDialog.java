@@ -40,11 +40,15 @@ public class ProjectCreateDialog extends Wizard<File> {
 	private TextField playerHeight;
 	private TextField playerTexture;
 	
+	private TextField mapWidth;
+	private TextField mapHeight;
+	
 	public ProjectCreateDialog(ProjectFileManager projectFileManager) {
 		this.projectFileManager = projectFileManager;
 		
 		addPage(createProjectInfoPage(), this::checkProjectInfoDisable);
 		addPage(createPlayerCreationPage(), this::checkPlayerCreationDisable);
+		addPage(createGameConfigPage(), this::checkGameConfigurationDisable);
 		
 		setResultConverter(b -> b.equals(ButtonType.FINISH)
 				? createProject(projectName.getText(), location.getText(),
@@ -91,7 +95,6 @@ public class ProjectCreateDialog extends Wizard<File> {
 		
 		playerCreationGrid.add(new Label("Player texture"), 0, 1);
 		playerTexture = new TextField();
-		playerTexture.setEditable(false);
 		playerTexture.textProperty().addListener(super::doNextPageCheckListener);
 		playerCreationGrid.add(playerTexture, 1, 1);
 		var searchBtn = new Button("...");
@@ -99,6 +102,23 @@ public class ProjectCreateDialog extends Wizard<File> {
 		playerCreationGrid.add(searchBtn, 2, 1);
 		
 		return playerCreationGrid;
+	}
+	
+	private GridPane createGameConfigPage() {
+		var gameConfigGrid = new GridPane();
+		gameConfigGrid.setPadding(new Insets(PADDING));
+		gameConfigGrid.setHgap(PADDING);
+		gameConfigGrid.setVgap(PADDING);
+		
+		gameConfigGrid.add(new Label("Visible Map Width / Height"), 0, 0);
+		mapWidth = new TextField();
+		mapWidth.textProperty().addListener(super::doNextPageCheckListener);
+		gameConfigGrid.add(mapWidth, 1, 0);
+		mapHeight = new TextField();
+		mapHeight.textProperty().addListener(super::doNextPageCheckListener);
+		gameConfigGrid.add(mapHeight, 2, 0);
+		
+		return gameConfigGrid;
 	}
 	
 	private File createProject(String projectName, String location, double playerWidth, double playerHeight, String playerTexture) {
@@ -165,6 +185,17 @@ public class ProjectCreateDialog extends Wizard<File> {
 			var height = Double.parseDouble(playerHeight.getText());
 
 			return width <= 0.0 || height <= 0.0 || playerTexture.getText().trim().isEmpty();
+		} catch (NumberFormatException e) {
+			return true;
+		}
+	}
+	
+	private boolean checkGameConfigurationDisable() {
+		try {
+			var width = Double.parseDouble(mapWidth.getText());
+			var height = Double.parseDouble(mapHeight.getText());
+
+			return width <= 0.0 || height <= 0.0;
 		} catch (NumberFormatException e) {
 			return true;
 		}
