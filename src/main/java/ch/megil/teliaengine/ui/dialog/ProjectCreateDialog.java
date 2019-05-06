@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
-import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.file.PlayerFileManager;
 import ch.megil.teliaengine.file.ProjectFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
@@ -82,10 +81,10 @@ public class ProjectCreateDialog extends Wizard<File> {
 		playerCreationGrid.setVgap(PADDING);
 		
 		playerCreationGrid.add(new Label("Player Width / Height"), 0, 0);
-		playerWidth = new TextField(GameConfiguration.PLAYER_WIDTH.getConfiguration());
+		playerWidth = new TextField();
 		playerWidth.textProperty().addListener(super::doNextPageCheckListener);
 		playerCreationGrid.add(playerWidth, 1, 0);
-		playerHeight = new TextField(GameConfiguration.PLAYER_HEIGHT.getConfiguration());
+		playerHeight = new TextField();
 		playerHeight.textProperty().addListener(super::doNextPageCheckListener);
 		playerCreationGrid.add(playerHeight, 2, 0);
 		
