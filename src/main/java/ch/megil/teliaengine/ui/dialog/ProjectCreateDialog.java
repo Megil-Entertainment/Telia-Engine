@@ -26,9 +26,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
 /**
- * Dialog to create and initialize a new project.
+ * Dialog to create and initialize a new project. Returning the project information file.
  */
-public class ProjectCreateDialog extends Wizard<Project> {
+public class ProjectCreateDialog extends Wizard<File> {
 	private static final int PADDING = 15;
 	
 	private ProjectFileManager projectFileManager;
@@ -101,7 +101,7 @@ public class ProjectCreateDialog extends Wizard<Project> {
 		return playerCreationGrid;
 	}
 	
-	private Project createProject(String projectName, String location, double playerWidth, double playerHeight, String playerTexture) {
+	private File createProject(String projectName, String location, double playerWidth, double playerHeight, String playerTexture) {
 		var projectDir = new File(location + "/" + projectName.replaceAll("\\s", ""));
 		var project = new Project(projectName, projectDir);
 		
@@ -121,7 +121,7 @@ public class ProjectCreateDialog extends Wizard<Project> {
 			
 			new PlayerFileManager().createPlayer(projectDir, playerWidth, playerHeight, new File(playerTexture));
 			
-			return project;
+			return projectInfo;
 		} catch (AssetCreationException e) {
 			LogHandler.log(e, Level.SEVERE);
 			showErrorAlert("Create Error", "There was an error while creating a new project.");

@@ -17,7 +17,6 @@ import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.logging.LogHandler;
-import ch.megil.teliaengine.project.Project;
 import ch.megil.teliaengine.project.ProjectController;
 import ch.megil.teliaengine.ui.component.AssetExplorer;
 import ch.megil.teliaengine.ui.component.MapEditor;
@@ -64,16 +63,7 @@ public class EngineUIController {
 	
 	@FXML
 	private void fileNewProject() {
-		new ProjectCreateDialog(projectFileManager).showAndWait().ifPresent(this::initNewProject);
-	}
-	
-	private void initNewProject(Project project) {
-		try {
-			openProject(project);
-		} catch (AssetNotFoundException e) {
-			LogHandler.log(e, Level.SEVERE);
-			showErrorAlert("Create Error", "There was an error while creating a new project.");
-		}
+		new ProjectCreateDialog(projectFileManager).showAndWait().ifPresent(this::openProject);
 	}
 	
 	@FXML
@@ -82,23 +72,23 @@ public class EngineUIController {
 		chooser.getExtensionFilters().add(new ExtensionFilter("Project", "*" + FileConfiguration.FILE_EXT_PROJECT.getConfiguration()));
 		var projectInfo = chooser.showOpenDialog(mapEditor.getScene().getWindow());
 		if (projectInfo != null) {
-			try {
-				var project = projectFileManager.loadProject(projectInfo);
-				projectFileManager.updateLastOpenedProject(projectInfo);
-				openProject(project);
-			} catch (AssetLoadException e) {
-				LogHandler.log(e, Level.SEVERE);
-				showErrorAlert("Load Error", "The specified project could not been loaded.");
-			} catch (AssetCreationException e) {
-				LogHandler.log(e, Level.WARNING);
-			}
+			openProject(projectInfo);
 		}
 	}
 	
-	private void openProject(Project project) throws AssetNotFoundException {
-		ProjectController.get().openProject(project);
-		assetExplorer.changeRoots(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
-		objectExplorer.reload();
+	private void openProject(File projectInfo) {
+		try {
+			var project = projectFileManager.loadProject(projectInfo);
+			projectFileManager.updateLastOpenedProject(projectInfo);
+			ProjectController.get().openProject(project);
+			assetExplorer.changeRoots(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
+			objectExplorer.reload();
+		} catch (AssetLoadException e) {
+			LogHandler.log(e, Level.SEVERE);
+			showErrorAlert("Load Error", "The specified project could not been loaded.");
+		} catch (AssetCreationException e) {
+			LogHandler.log(e, Level.WARNING);
+		}
 	}
 	
 	@FXML

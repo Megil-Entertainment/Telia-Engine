@@ -29,8 +29,7 @@ public class Main extends Application {
 		var projectFileManager = new ProjectFileManager();
 		var lastProjectInfo = projectFileManager.getLastOpenedProject();
 		if (lastProjectInfo != null) {
-			var project = projectFileManager.loadProject(new File(lastProjectInfo));
-			ProjectController.get().openProject(project);
+			openProject(new File(lastProjectInfo), projectFileManager);
 		} else {
 			openCreationOpenChooser(primaryStage, projectFileManager);
 		}
@@ -64,12 +63,12 @@ public class Main extends Application {
 	}
 	
 	private void openCreateDialog(ProjectFileManager projectFileManager) {
-		var project = new ProjectCreateDialog(projectFileManager).showAndWait().get();
+		var projectInfo = new ProjectCreateDialog(projectFileManager).showAndWait().get();
 		
-		if (project == null) {
+		if (projectInfo == null) {
 			System.exit(0);
 		} else {
-			ProjectController.get().openProject(project);
+			openProject(projectInfo, projectFileManager);
 		}
 	}
 	
@@ -81,19 +80,23 @@ public class Main extends Application {
 		if (projectInfo == null) {
 			System.exit(0);
 		} else {
-			try {
-				var project = projectFileManager.loadProject(projectInfo);
-				projectFileManager.updateLastOpenedProject(projectInfo);
-				ProjectController.get().openProject(project);
-			} catch (AssetLoadException e) {
-				LogHandler.log(e, Level.SEVERE);
-				Alert error = new Alert(AlertType.ERROR);
-				error.setContentText("Could not open Project.");
-				error.showAndWait();
-				System.exit(-1);
-			} catch (AssetCreationException e) {
-				LogHandler.log(e, Level.WARNING);
-			}
+			openProject(projectInfo, projectFileManager);
+		}
+	}
+	
+	private void openProject(File projectInfo, ProjectFileManager projectFileManager) {
+		try {
+			var project = projectFileManager.loadProject(projectInfo);
+			projectFileManager.updateLastOpenedProject(projectInfo);
+			ProjectController.get().openProject(project);
+		} catch (AssetLoadException e) {
+			LogHandler.log(e, Level.SEVERE);
+			Alert error = new Alert(AlertType.ERROR);
+			error.setContentText("Could not open Project.");
+			error.showAndWait();
+			System.exit(-1);
+		} catch (AssetCreationException e) {
+			LogHandler.log(e, Level.WARNING);
 		}
 	}
 
