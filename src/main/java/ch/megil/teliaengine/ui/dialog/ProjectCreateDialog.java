@@ -107,18 +107,6 @@ public class ProjectCreateDialog extends Wizard<File> {
 		
 		try {
 			var projectInfo = projectFileManager.initProject(project);
-//			projectFileManager.updateLastOpenedProject(projectInfo);
-//			ProjectController.get().openProject(project);
-			//TODO: as soon as created: open ObjectCreator to create player and remove static player creation
-//			TextureFileManager.get().importTextureToOtherProject(projectDir, "player", new File(playerTexture));
-//			var origin = new File("assets/player.tobj").toPath();
-//			var dest = new File(ProjectFolderConfiguration.ASSET_PLAYER.getConfigurationWithProjectPath() + ".tobj").toPath();
-//			try {
-//				Files.copy(origin, dest);
-//			} catch (IOException e) {
-//				e.printStackTrace();	
-//			}
-			
 			new PlayerFileManager().createPlayer(projectDir, playerWidth, playerHeight, new File(playerTexture));
 			
 			return projectInfo;
