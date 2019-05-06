@@ -1,13 +1,24 @@
 package ch.megil.teliaengine.ui.dialog;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
+import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
+import ch.megil.teliaengine.file.ProjectFileManager;
+import ch.megil.teliaengine.file.TextureFileManager;
+import ch.megil.teliaengine.file.exception.AssetCreationException;
+import ch.megil.teliaengine.logging.LogHandler;
 import ch.megil.teliaengine.project.Project;
+import ch.megil.teliaengine.project.ProjectController;
 import ch.megil.teliaengine.ui.dialog.wizard.Wizard;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
@@ -17,8 +28,13 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
+/**
+ * Dialog to create and initialize a new project
+ */
 public class ProjectCreateDialog extends Wizard<Project> {
 	private static final int PADDING = 15;
+	
+	private ProjectFileManager projectFileManager;
 	
 	private TextField projectName;
 	private TextField location;
@@ -27,7 +43,9 @@ public class ProjectCreateDialog extends Wizard<Project> {
 	private TextField playerHeight;
 	private TextField playerTexture;
 	
-	public ProjectCreateDialog() {
+	public ProjectCreateDialog(ProjectFileManager projectFileManager) {
+		this.projectFileManager = projectFileManager;
+		
 		addPage(createProjectInfoPage(), this::checkProjectInfoDisable);
 		addPage(createPlayerCreationPage(), this::checkPlayerCreationDisable);
 		
@@ -85,7 +103,36 @@ public class ProjectCreateDialog extends Wizard<Project> {
 	
 	private Project createProject(String projectName, String location) {
 		var projectDir = location + "/" + projectName.replaceAll("\\s", "");
-		return new Project(projectName, new File(projectDir));
+		var project = new Project(projectName, new File(projectDir));
+		
+		try {
+			var projectInfo = projectFileManager.initProject(project);
+			projectFileManager.updateLastOpenedProject(projectInfo);
+			ProjectController.get().openProject(project);
+			//TODO: as soon as created: open ObjectCreator to create player and remove static player creation
+			TextureFileManager.get().importTexture("player", new File("assets/texture/player.png"));
+			var origin = new File("assets/player.tobj").toPath();
+			var dest = new File(ProjectFolderConfiguration.ASSET_PLAYER.getConfigurationWithProjectPath() + ".tobj").toPath();
+			try {
+				Files.copy(origin, dest);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			return project;
+		} catch (AssetCreationException e) {
+			LogHandler.log(e, Level.SEVERE);
+			showErrorAlert("Create Error", "There was an error while creating a new project.");
+		}
+		return null;
+	}
+	
+	private void showErrorAlert(String title, String message) {
+		var alert = new Alert(AlertType.ERROR);
+		alert.setTitle(title);
+		alert.setHeaderText(null);
+		alert.setContentText(message);
+		alert.showAndWait();
 	}
 	
 	private File getLowestExistingDir(File dir) {

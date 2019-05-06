@@ -2,7 +2,6 @@ package ch.megil.teliaengine.ui;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -12,7 +11,6 @@ import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.MapFileManager;
 import ch.megil.teliaengine.file.ProjectFileManager;
-import ch.megil.teliaengine.file.TextureFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetLoadException;
@@ -66,26 +64,13 @@ public class EngineUIController {
 	
 	@FXML
 	private void fileNewProject() {
-		new ProjectCreateDialog().showAndWait().ifPresent(this::initNewProject);
+		new ProjectCreateDialog(projectFileManager).showAndWait().ifPresent(this::initNewProject);
 	}
 	
 	private void initNewProject(Project project) {
 		try {
-			var projectInfo = projectFileManager.initProject(project);
-			projectFileManager.updateLastOpenedProject(projectInfo);
-			ProjectController.get().openProject(project);
-			//TODO: as soon as created: open ObjectCreator to create player and remove static player creation
-			TextureFileManager.get().importTexture("player", new File("assets/texture/player.png"));
-			var origin = new File("assets/player.tobj").toPath();
-			var dest = new File(ProjectFolderConfiguration.ASSET_PLAYER.getConfigurationWithProjectPath() + ".tobj").toPath();
-			try {
-				Files.copy(origin, dest);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
 			openProject(project);
-		} catch (AssetCreationException | AssetNotFoundException e) {
+		} catch (AssetNotFoundException e) {
 			LogHandler.log(e, Level.SEVERE);
 			showErrorAlert("Create Error", "There was an error while creating a new project.");
 		}
