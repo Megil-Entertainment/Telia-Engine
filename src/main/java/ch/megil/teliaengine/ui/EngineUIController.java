@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -24,14 +25,18 @@ import ch.megil.teliaengine.project.ProjectController;
 import ch.megil.teliaengine.ui.component.AssetExplorer;
 import ch.megil.teliaengine.ui.component.MapEditor;
 import ch.megil.teliaengine.ui.component.ObjectExplorer;
+import javafx.event.Event;
 import ch.megil.teliaengine.ui.dialog.AboutDialog;
 import ch.megil.teliaengine.ui.dialog.MapCreateDialog;
 import ch.megil.teliaengine.ui.dialog.ProjectCreateDialog;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -39,11 +44,15 @@ import javafx.stage.Stage;
 
 public class EngineUIController {	
 	@FXML
-	private MapEditor mapEditor;
-	@FXML
 	private ObjectExplorer objectExplorer;
 	@FXML
 	private AssetExplorer assetExplorer;
+	@FXML
+	private TabPane tabPane;
+		
+	private MapEditor currentMapEditor;
+	
+	private java.util.Map<String, Tab> openTabs;
 	
 	private MapFileManager mapFileManger;
 	private ProjectFileManager projectFileManager;
@@ -51,9 +60,9 @@ public class EngineUIController {
 	@FXML
 	private void initialize() {
 		mapFileManger = new MapFileManager();
+
 		projectFileManager = new ProjectFileManager();
-		
-		objectExplorer.setMapEditor(mapEditor);
+
 		objectExplorer.setMaxWidth(300);
 		try {
 			assetExplorer.initialize(this::loadMap);
@@ -62,6 +71,8 @@ public class EngineUIController {
 		} catch (AssetNotFoundException e) {
 			LogHandler.log(e, Level.SEVERE);
 		}
+		
+		openTabs = new HashMap<>();
 	}
 	
 	@FXML
@@ -95,7 +106,7 @@ public class EngineUIController {
 	private void fileOpenProject() throws IOException {
 		var chooser = new FileChooser();
 		chooser.getExtensionFilters().add(new ExtensionFilter("Project", "*" + FileConfiguration.FILE_EXT_PROJECT.getConfiguration()));
-		var projectInfo = chooser.showOpenDialog(mapEditor.getScene().getWindow());
+		var projectInfo = chooser.showOpenDialog(tabPane.getScene().getWindow());
 		if (projectInfo != null) {
 			try {
 				var project = projectFileManager.loadProject(projectInfo);
@@ -114,16 +125,21 @@ public class EngineUIController {
 		ProjectController.get().openProject(project);
 		assetExplorer.changeRoots(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
 		objectExplorer.reload();
+		tabPane.getTabs().clear();
+		openTabs.clear();
 	}
 	
 	@FXML
 	private void fileNewMap() {
+		var mapEditorTab = new Tab();
+		currentMapEditor = new MapEditor();
 		new MapCreateDialog().showAndWait().ifPresent(this::initMap);
+		addFunctionalityToTab(mapEditorTab, currentMapEditor);
 	}
 	
 	private void initMap(Map map) {
-		mapEditor.setMap(map);
-		mapFileManger.save(map, mapEditor.getPlayer());
+		currentMapEditor.setMap(map);
+		mapFileManger.save(map, currentMapEditor.getPlayer());
 		try {
 			assetExplorer.reload();
 		} catch(AssetNotFoundException e) {
@@ -133,7 +149,7 @@ public class EngineUIController {
 	
 	@FXML
 	private void fileSaveMap() {
-		var map = mapEditor.getMap();
+		var map = currentMapEditor.getMap();
 		
 		if (map.getName() == null) {
 			var dialog = new TextInputDialog();
@@ -142,9 +158,10 @@ public class EngineUIController {
 			
 			var result = dialog.showAndWait();
 			result.ifPresent(map::setName);
+			currentMapEditor.setSaved(true);
 		}
 		
-		mapFileManger.save(map, mapEditor.getPlayer());
+		mapFileManger.save(map, currentMapEditor.getPlayer());
 	}
 	
 	@FXML
@@ -175,7 +192,12 @@ public class EngineUIController {
 	
 	private void loadMap(String mapName) {
 		try {
-			mapEditor.setMap(mapFileManger.load(mapName, false));
+			if(openTabs.containsKey(mapName)) {
+				tabPane.getSelectionModel().select(openTabs.get(mapName));
+			}else {
+				openNewTab(mapName, false);
+			}
+
 		} catch (AssetNotFoundException | AssetFormatException e) {
 			var alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Map Load Error");
@@ -185,7 +207,7 @@ public class EngineUIController {
 			var res = alert.showAndWait();
 			if (res.isPresent() && res.get().equals(ButtonType.YES)) {
 				try {
-					mapEditor.setMap(mapFileManger.load(mapName, true));
+					openNewTab(mapName, true);
 				} catch (AssetNotFoundException | AssetFormatException e2) {
 					LogHandler.log(e2, Level.SEVERE);
 				}
@@ -197,7 +219,7 @@ public class EngineUIController {
 	
 	@FXML
 	private void gameRun() {
-		if(mapEditor.getMap() == null) {
+		if(currentMapEditor.getMap() == null) {
 			var alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Run Error");
 			alert.setHeaderText(null);
@@ -207,7 +229,7 @@ public class EngineUIController {
 			fileSaveMap();
 			var stage = new Stage();
 			try {
-				var main = new GameMain(mapEditor.getMap().getName());
+				var main = new GameMain(currentMapEditor.getMap().getName());
 				main.run();
 			} catch (Exception e) {
 				stage.hide();
@@ -222,6 +244,59 @@ public class EngineUIController {
 		new AboutDialog().showAndWait();
 	}
 	
+	private void onChangeTab(MapEditor mapEditor) {
+		objectExplorer.setMapEditor(mapEditor);
+		currentMapEditor = mapEditor;
+	}
+	
+	private void openNewTab(String mapName, boolean saveMode) throws AssetNotFoundException, AssetFormatException {
+		var mapEditorTab = new Tab();
+		var mapEditor = new MapEditor();
+		mapEditor.setMap(mapFileManger.load(mapName, saveMode));
+		addFunctionalityToTab(mapEditorTab, mapEditor);
+	}
+	
+	private boolean checkForMapChanges(MapEditor mapEditor) {
+		return mapEditor.getSaved();
+	}
+	
+	private void openSaveDialog(Tab mapEditorTab, Event event) {
+		var alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Tab Close");
+		alert.setHeaderText("There are unsaved changes");
+		alert.setContentText("Do you want to save them?");
+		
+		var saveButton = new ButtonType("Save");
+		var ignoreButton = new ButtonType("Ignore");
+		var cancelButton = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+		
+		alert.getButtonTypes().setAll(saveButton, ignoreButton, cancelButton);
+		var result = alert.showAndWait().get();
+		if(result == saveButton) {
+			fileSaveMap();
+		}else if(result == cancelButton) {
+			event.consume();
+		}
+	}
+	
+	private void addFunctionalityToTab(Tab tab, MapEditor mapEditor) {
+		tab.setContent(mapEditor);
+		tabPane.getTabs().add(tab);
+		currentMapEditor = mapEditor;
+		tab.setOnSelectionChanged(event -> onChangeTab(mapEditor));
+		tab.setText(mapEditor.getMap().getName());
+		objectExplorer.setMapEditor(currentMapEditor);
+		tabPane.getSelectionModel().select(tab);
+		openTabs.put(mapEditor.getMap().getName(), tab);
+		tab.setOnCloseRequest(event -> {
+			var changes = checkForMapChanges(mapEditor);
+			if(!changes) {
+				openSaveDialog(tab, event);
+			}
+		});
+		tab.setOnClosed(event -> openTabs.remove(mapEditor.getMap().getName()));
+	}
+		
 	private void showErrorAlert(String title, String message) {
 		var alert = new Alert(AlertType.ERROR);
 		alert.setTitle(title);
