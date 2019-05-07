@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -272,10 +271,10 @@ public class EngineUIController {
 		var cancelButton = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
 		
 		alert.getButtonTypes().setAll(saveButton, ignoreButton, cancelButton);
-		var<ButtonType> result = alert.showAndWait();
-		if(result.get() == saveButton) {
+		var result = alert.showAndWait().get();
+		if(result == saveButton) {
 			fileSaveMap();
-		}else if(result.get() == cancelButton) {
+		}else if(result == cancelButton) {
 			event.consume();
 		}
 	}
