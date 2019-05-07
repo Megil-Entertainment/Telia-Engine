@@ -134,7 +134,7 @@ public class EngineUIController {
 		var mapEditorTab = new Tab();
 		currentMapEditor = new MapEditor();
 		new MapCreateDialog().showAndWait().ifPresent(this::initMap);
-		addTabFunctionality(mapEditorTab, currentMapEditor);
+		addFunctionalityToTab(mapEditorTab, currentMapEditor);
 	}
 	
 	private void initMap(Map map) {
@@ -244,7 +244,7 @@ public class EngineUIController {
 		new AboutDialog().showAndWait();
 	}
 	
-	private void updateTab(MapEditor mapEditor) {
+	private void onChangeTab(MapEditor mapEditor) {
 		objectExplorer.setMapEditor(mapEditor);
 		currentMapEditor = mapEditor;
 	}
@@ -253,10 +253,10 @@ public class EngineUIController {
 		var mapEditorTab = new Tab();
 		var mapEditor = new MapEditor();
 		mapEditor.setMap(mapFileManger.load(mapName, saveMode));
-		addTabFunctionality(mapEditorTab, mapEditor);
+		addFunctionalityToTab(mapEditorTab, mapEditor);
 	}
 	
-	private boolean checkForChanges(MapEditor mapEditor) {
+	private boolean checkForMapChanges(MapEditor mapEditor) {
 		return mapEditor.getSaved();
 	}
 	
@@ -279,17 +279,17 @@ public class EngineUIController {
 		}
 	}
 	
-	private void addTabFunctionality(Tab tab, MapEditor mapEditor) {
+	private void addFunctionalityToTab(Tab tab, MapEditor mapEditor) {
 		tab.setContent(mapEditor);
 		tabPane.getTabs().add(tab);
 		currentMapEditor = mapEditor;
-		tab.setOnSelectionChanged(event -> updateTab(mapEditor));
+		tab.setOnSelectionChanged(event -> onChangeTab(mapEditor));
 		tab.setText(mapEditor.getMap().getName());
 		objectExplorer.setMapEditor(currentMapEditor);
 		tabPane.getSelectionModel().select(tab);
 		openTabs.put(mapEditor.getMap().getName(), tab);
 		tab.setOnCloseRequest(event -> {
-			var changes = checkForChanges(mapEditor);
+			var changes = checkForMapChanges(mapEditor);
 			if(!changes) {
 				openSaveDialog(tab, event);
 			}
