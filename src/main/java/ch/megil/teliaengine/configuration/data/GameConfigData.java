@@ -1,19 +1,22 @@
 package ch.megil.teliaengine.configuration.data;
 
 public class GameConfigData {
-	private String mapWidth;
-	private String mapHeight;
-
-	public GameConfigData(double mapWidth, double mapHeight) {
-		this.mapWidth = Double.toString(mapWidth);
-		this.mapHeight = Double.toString(mapHeight);
-	}
-
-	public String getMapWidth() {
+	private double mapWidth;
+	private double mapHeight;
+	
+	public double getMapWidth() {
 		return mapWidth;
 	}
-
-	public String getMapHeight() {
+	
+	public void setMapWidth(double mapWidth) {
+		this.mapWidth = mapWidth;
+	}
+	
+	public double getMapHeight() {
 		return mapHeight;
+	}
+	
+	public void setMapHeight(double mapHeight) {
+		this.mapHeight = mapHeight;
 	}
 }

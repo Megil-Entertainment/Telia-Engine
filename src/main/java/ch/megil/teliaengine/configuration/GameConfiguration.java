@@ -28,8 +28,8 @@ public enum GameConfiguration {
 	}
 	
 	public static void writeDataToProperties(Properties prop, GameConfigData data) {
-		prop.setProperty(MAP_WIDTH.key, data.getMapWidth());
-		prop.setProperty(MAP_HEIGHT.key, data.getMapHeight());
+		prop.setProperty(MAP_WIDTH.key, Double.toString(data.getMapWidth()));
+		prop.setProperty(MAP_HEIGHT.key, Double.toString(data.getMapHeight()));
 	}
 	
 	private String key;

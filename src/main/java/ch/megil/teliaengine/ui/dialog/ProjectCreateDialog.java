@@ -43,6 +43,7 @@ public class ProjectCreateDialog extends Wizard<File> {
 	
 	private TextField mapWidth;
 	private TextField mapHeight;
+	private GameConfigData gameConfigData;
 	
 	private TextField walkSpeed;
 	private TextField jumpStrength;
@@ -52,6 +53,8 @@ public class ProjectCreateDialog extends Wizard<File> {
 	
 	public ProjectCreateDialog(ProjectFileManager projectFileManager) {
 		this.projectFileManager = projectFileManager;
+		
+		gameConfigData = new GameConfigData();
 		physicsConstData = new PhysicsConstData();
 		
 		addPage(createProjectInfoPage(), this::checkProjectInfoDisable);
@@ -62,8 +65,7 @@ public class ProjectCreateDialog extends Wizard<File> {
 		setResultConverter(b -> b.equals(ButtonType.FINISH)
 				? createProject(projectName.getText(), location.getText(),
 						Double.parseDouble(playerWidth.getText()), Double.parseDouble(playerHeight.getText()), playerTexture.getText(),
-						new GameConfigData(Double.parseDouble(mapWidth.getText()), Double.parseDouble(mapHeight.getText())),
-						physicsConstData)
+						gameConfigData, physicsConstData)
 				: null);
 	}
 	
@@ -232,10 +234,10 @@ public class ProjectCreateDialog extends Wizard<File> {
 	
 	private boolean checkGameConfigurationDisable() {
 		try {
-			var width = Double.parseDouble(mapWidth.getText());
-			var height = Double.parseDouble(mapHeight.getText());
+			gameConfigData.setMapWidth(Double.parseDouble(mapWidth.getText()));
+			gameConfigData.setMapHeight(Double.parseDouble(mapHeight.getText()));
 
-			return width <= 0.0 || height <= 0.0;
+			return gameConfigData.getMapWidth() <= 0.0 || gameConfigData.getMapHeight() <= 0.0;
 		} catch (NumberFormatException e) {
 			return true;
 		}
