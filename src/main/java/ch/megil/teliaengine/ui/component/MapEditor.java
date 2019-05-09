@@ -31,8 +31,8 @@ public class MapEditor extends Pane {
 	private double dx;
 	private double dy;
 	
-	private int gridWidth;
-	private int gridHeight;
+	private double gridWidth;
+	private double gridHeight;
 	
 	private InnerShadow nodeSelected;
 	private InnerShadow nodeDeselected;
@@ -67,8 +67,8 @@ public class MapEditor extends Pane {
 					});
 			}});
 		
-		gridWidth = Integer.parseInt(GameConfiguration.MAP_GRID_WIDTH.getConfiguration());
-		gridHeight = Integer.parseInt(GameConfiguration.MAP_GRID_HEIGHT.getConfiguration());
+		gridWidth = GameConfiguration.MAP_GRID_WIDTH.getConfiguration();
+		gridHeight = GameConfiguration.MAP_GRID_HEIGHT.getConfiguration();
 		
 		nodeSelected = new InnerShadow(INNER_SHADOW_RADIUS, INNER_SHADOW_COLOR);
 		nodeSelected.setChoke(INNER_SHADOW_CHOKE);
@@ -116,7 +116,7 @@ public class MapEditor extends Pane {
 		selected = null;
 	}
 	
-	private double roundToNearest(double value, int roundFactor) {
+	private double roundToNearest(double value, double roundFactor) {
 		return Math.round(value/roundFactor) * roundFactor;
 	}
 	

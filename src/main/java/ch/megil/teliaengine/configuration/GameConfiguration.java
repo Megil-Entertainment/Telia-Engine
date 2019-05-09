@@ -42,7 +42,7 @@ public enum GameConfiguration {
 		this.key = key;
 	}
 	
-	public String getConfiguration() {
-		return gameProp.getProperty(key);
+	public double getConfiguration() {
+		return Double.parseDouble(gameProp.getProperty(key));
 	}
 }
