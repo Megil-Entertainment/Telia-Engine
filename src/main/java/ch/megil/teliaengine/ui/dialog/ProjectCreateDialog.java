@@ -5,6 +5,7 @@ import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.data.GameConfigData;
+import ch.megil.teliaengine.configuration.data.PhysicsConstData;
 import ch.megil.teliaengine.file.PlayerFileManager;
 import ch.megil.teliaengine.file.ProjectFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
@@ -44,12 +45,14 @@ public class ProjectCreateDialog extends Wizard<File> {
 	private TextField mapHeight;
 	
 	private TextField walkSpeed;
-	private TextField jumpForce;
+	private TextField jumpStrength;
 	private TextField gravityStrength;
 	private TextField terminalVelocity;
+	private PhysicsConstData physicsConstData;
 	
 	public ProjectCreateDialog(ProjectFileManager projectFileManager) {
 		this.projectFileManager = projectFileManager;
+		physicsConstData = new PhysicsConstData();
 		
 		addPage(createProjectInfoPage(), this::checkProjectInfoDisable);
 		addPage(createPlayerCreationPage(), this::checkPlayerCreationDisable);
@@ -139,10 +142,10 @@ public class ProjectCreateDialog extends Wizard<File> {
 		walkSpeed.textProperty().addListener(super::doNextPageCheckListener);
 		physicsConstGrid.add(walkSpeed, 1, 0);
 		
-		physicsConstGrid.add(new Label("Jump Force"), 0, 1);
-		jumpForce = new TextField();
-		jumpForce.textProperty().addListener(super::doNextPageCheckListener);
-		physicsConstGrid.add(jumpForce, 1, 1);
+		physicsConstGrid.add(new Label("Jump strength"), 0, 1);
+		jumpStrength = new TextField();
+		jumpStrength.textProperty().addListener(super::doNextPageCheckListener);
+		physicsConstGrid.add(jumpStrength, 1, 1);
 
 		physicsConstGrid.add(new Label("Gravity strength"), 0, 2);
 		gravityStrength = new TextField();
@@ -239,10 +242,10 @@ public class ProjectCreateDialog extends Wizard<File> {
 	
 	private boolean checkPhysicsConstantDisable() {
 		try {
-			Double.parseDouble(walkSpeed.getText());
-			Double.parseDouble(jumpForce.getText());
-			Double.parseDouble(gravityStrength.getText());
-			Double.parseDouble(terminalVelocity.getText());
+			physicsConstData.setWalkSpeed(Double.parseDouble(walkSpeed.getText()));
+			physicsConstData.setJumpStrength(Double.parseDouble(jumpStrength.getText()));
+			physicsConstData.setGravityStrength(Double.parseDouble(gravityStrength.getText()));
+			physicsConstData.setTerminalVelocity(Double.parseDouble(terminalVelocity.getText()));
 			return false;
 		} catch (NumberFormatException e) {
 			return true;
