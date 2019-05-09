@@ -43,12 +43,18 @@ public class ProjectCreateDialog extends Wizard<File> {
 	private TextField mapWidth;
 	private TextField mapHeight;
 	
+	private TextField walkSpeed;
+	private TextField jumpForce;
+	private TextField gravityStrength;
+	private TextField terminalVelocity;
+	
 	public ProjectCreateDialog(ProjectFileManager projectFileManager) {
 		this.projectFileManager = projectFileManager;
 		
 		addPage(createProjectInfoPage(), this::checkProjectInfoDisable);
 		addPage(createPlayerCreationPage(), this::checkPlayerCreationDisable);
 		addPage(createGameConfigPage(), this::checkGameConfigurationDisable);
+		addPage(createPhysicsConstPage(), this::checkPhysicsConstantDisable);
 		
 		setResultConverter(b -> b.equals(ButtonType.FINISH)
 				? createProject(projectName.getText(), location.getText(),
@@ -120,6 +126,35 @@ public class ProjectCreateDialog extends Wizard<File> {
 		gameConfigGrid.add(mapHeight, 2, 0);
 		
 		return gameConfigGrid;
+	}
+	
+	private GridPane createPhysicsConstPage() {
+		var physicsConstGrid = new GridPane();
+		physicsConstGrid.setPadding(new Insets(PADDING));
+		physicsConstGrid.setHgap(PADDING);
+		physicsConstGrid.setVgap(PADDING);
+		
+		physicsConstGrid.add(new Label("Walk speed"), 0, 0);
+		walkSpeed = new TextField();
+		walkSpeed.textProperty().addListener(super::doNextPageCheckListener);
+		physicsConstGrid.add(walkSpeed, 1, 0);
+		
+		physicsConstGrid.add(new Label("Jump Force"), 0, 1);
+		jumpForce = new TextField();
+		jumpForce.textProperty().addListener(super::doNextPageCheckListener);
+		physicsConstGrid.add(jumpForce, 1, 1);
+
+		physicsConstGrid.add(new Label("Gravity strength"), 0, 2);
+		gravityStrength = new TextField();
+		gravityStrength.textProperty().addListener(super::doNextPageCheckListener);
+		physicsConstGrid.add(gravityStrength, 1, 2);
+
+		physicsConstGrid.add(new Label("Max fall speed"), 0, 3);
+		terminalVelocity = new TextField();
+		terminalVelocity.textProperty().addListener(super::doNextPageCheckListener);
+		physicsConstGrid.add(terminalVelocity, 1, 3);
+		
+		return physicsConstGrid;
 	}
 	
 	private File createProject(String projectName, String location, double playerWidth, double playerHeight, String playerTexture, GameConfigData gameConfigData) {
@@ -197,6 +232,18 @@ public class ProjectCreateDialog extends Wizard<File> {
 			var height = Double.parseDouble(mapHeight.getText());
 
 			return width <= 0.0 || height <= 0.0;
+		} catch (NumberFormatException e) {
+			return true;
+		}
+	}
+	
+	private boolean checkPhysicsConstantDisable() {
+		try {
+			Double.parseDouble(walkSpeed.getText());
+			Double.parseDouble(jumpForce.getText());
+			Double.parseDouble(gravityStrength.getText());
+			Double.parseDouble(terminalVelocity.getText());
+			return false;
 		} catch (NumberFormatException e) {
 			return true;
 		}
