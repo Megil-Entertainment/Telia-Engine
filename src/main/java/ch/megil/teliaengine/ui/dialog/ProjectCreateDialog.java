@@ -47,7 +47,7 @@ public class ProjectCreateDialog extends Wizard<File> {
 	private TextField walkSpeed;
 	private TextField jumpStrength;
 	private TextField gravityStrength;
-	private TextField terminalVelocity;
+	private TextField terminalSpeed;
 	private PhysicsConstData physicsConstData;
 	
 	public ProjectCreateDialog(ProjectFileManager projectFileManager) {
@@ -153,9 +153,9 @@ public class ProjectCreateDialog extends Wizard<File> {
 		physicsConstGrid.add(gravityStrength, 1, 2);
 
 		physicsConstGrid.add(new Label("Max fall speed"), 0, 3);
-		terminalVelocity = new TextField();
-		terminalVelocity.textProperty().addListener(super::doNextPageCheckListener);
-		physicsConstGrid.add(terminalVelocity, 1, 3);
+		terminalSpeed = new TextField();
+		terminalSpeed.textProperty().addListener(super::doNextPageCheckListener);
+		physicsConstGrid.add(terminalSpeed, 1, 3);
 		
 		return physicsConstGrid;
 	}
@@ -245,8 +245,8 @@ public class ProjectCreateDialog extends Wizard<File> {
 			physicsConstData.setWalkSpeed(Double.parseDouble(walkSpeed.getText()));
 			physicsConstData.setJumpStrength(Double.parseDouble(jumpStrength.getText()));
 			physicsConstData.setGravityStrength(Double.parseDouble(gravityStrength.getText()));
-			physicsConstData.setTerminalVelocity(Double.parseDouble(terminalVelocity.getText()));
-			return false;
+			physicsConstData.setTerminalSpeed(Double.parseDouble(terminalSpeed.getText()));
+			return physicsConstData.getWalkSpeed() <= 0.0 || physicsConstData.getJumpStrength() <= 0.0 || physicsConstData.getGravityStrength() <= 0.0 || physicsConstData.getTerminalSpeed() <= 0.0;
 		} catch (NumberFormatException e) {
 			return true;
 		}

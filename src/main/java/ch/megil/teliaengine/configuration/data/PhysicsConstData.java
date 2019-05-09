@@ -4,7 +4,7 @@ public class PhysicsConstData {
 	private double walkSpeed;
 	private double jumpStrength;
 	private double gravityStrength;
-	private double terminalVelocity;
+	private double terminalSpeed;
 	
 	public double getWalkSpeed() {
 		return walkSpeed;
@@ -30,11 +30,11 @@ public class PhysicsConstData {
 		this.gravityStrength = gravityStrength;
 	}
 	
-	public double getTerminalVelocity() {
-		return terminalVelocity;
+	public double getTerminalSpeed() {
+		return terminalSpeed;
 	}
 	
-	public void setTerminalVelocity(double terminalVelocity) {
-		this.terminalVelocity = terminalVelocity;
+	public void setTerminalSpeed(double terminalSpeed) {
+		this.terminalSpeed = terminalSpeed;
 	}
 }
