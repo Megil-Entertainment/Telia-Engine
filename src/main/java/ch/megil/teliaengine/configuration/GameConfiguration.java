@@ -10,7 +10,9 @@ import ch.megil.teliaengine.project.ProjectController;
 
 public enum GameConfiguration {
 	MAP_WIDTH("mapWidth"),
-	MAP_HEIGHT("mapHeight");
+	MAP_HEIGHT("mapHeight"),
+	MAP_GRID_WIDTH("mapGridWidth"),
+	MAP_GRID_HEIGHT("mapGridHeight");
 	
 	private static Properties gameProp;
 	
