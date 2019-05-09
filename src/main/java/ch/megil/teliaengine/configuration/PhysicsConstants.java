@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import ch.megil.teliaengine.configuration.data.PhysicsConstData;
 import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.logging.LogHandler;
 import ch.megil.teliaengine.project.ProjectController;
@@ -15,6 +16,10 @@ public enum PhysicsConstants {
 	GRAVITY("gravity"),
 	TERMINAL_FALL_VELOCITY("terminalFallVelocity");
 	
+	private static final String VALUE_SEPERATOR = "/";
+	private static final String VECTOR_X_ZERO = VALUE_SEPERATOR + "0";
+	private static final String VECTOR_ZERO_Y = "0" + VALUE_SEPERATOR;
+	
 	private static Properties physicsProperties;
 	
 	static {
@@ -22,7 +27,7 @@ public enum PhysicsConstants {
 	}
 
 	private static void load(PhysicsConstants phConst) {
-		var vecComp = physicsProperties.getProperty(phConst.key).split("/");
+		var vecComp = physicsProperties.getProperty(phConst.key).split(VALUE_SEPERATOR);
 		phConst.v = new Vector(Double.parseDouble(vecComp[0]), Double.parseDouble(vecComp[1]));
 	}
 	
@@ -34,6 +39,14 @@ public enum PhysicsConstants {
 		} catch (Exception e) {
 			LogHandler.log(e, Level.SEVERE);
 		}
+	}
+	
+	public static void writeDataToProperties(Properties prop, PhysicsConstData data) {
+		prop.setProperty(WALK_SPEED_RIGHT.key, data.getWalkSpeed() + VECTOR_X_ZERO);
+		prop.setProperty(WALK_SPEED_LEFT.key, (-data.getWalkSpeed()) + VECTOR_X_ZERO);
+		prop.setProperty(JUMP_FORCE.key, VECTOR_ZERO_Y + (-data.getTerminalSpeed()));
+		prop.setProperty(GRAVITY.key, VECTOR_ZERO_Y + data.getGravityStrength());
+		prop.setProperty(TERMINAL_FALL_VELOCITY.key, VECTOR_ZERO_Y + data.getTerminalSpeed());
 	}
 	
 	private String key;
