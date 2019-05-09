@@ -43,6 +43,8 @@ public class ProjectCreateDialog extends Wizard<File> {
 	
 	private TextField mapWidth;
 	private TextField mapHeight;
+	private TextField mapGridWidth;
+	private TextField mapGridHeight;
 	private GameConfigData gameConfigData;
 	
 	private TextField walkSpeed;
@@ -98,7 +100,7 @@ public class ProjectCreateDialog extends Wizard<File> {
 		playerCreationGrid.setHgap(PADDING);
 		playerCreationGrid.setVgap(PADDING);
 		
-		playerCreationGrid.add(new Label("Player Width / Height"), 0, 0);
+		playerCreationGrid.add(new Label("Player width / height"), 0, 0);
 		playerWidth = new TextField();
 		playerWidth.textProperty().addListener(super::doNextPageCheckListener);
 		playerCreationGrid.add(playerWidth, 1, 0);
@@ -123,13 +125,21 @@ public class ProjectCreateDialog extends Wizard<File> {
 		gameConfigGrid.setHgap(PADDING);
 		gameConfigGrid.setVgap(PADDING);
 		
-		gameConfigGrid.add(new Label("Visible Map Width / Height"), 0, 0);
+		gameConfigGrid.add(new Label("Visible Map width / height"), 0, 0);
 		mapWidth = new TextField();
 		mapWidth.textProperty().addListener(super::doNextPageCheckListener);
 		gameConfigGrid.add(mapWidth, 1, 0);
 		mapHeight = new TextField();
 		mapHeight.textProperty().addListener(super::doNextPageCheckListener);
 		gameConfigGrid.add(mapHeight, 2, 0);
+		
+		gameConfigGrid.add(new Label("Map grid width / height"), 0, 0);
+		mapGridWidth = new TextField();
+		mapGridWidth.textProperty().addListener(super::doNextPageCheckListener);
+		gameConfigGrid.add(mapGridWidth, 1, 0);
+		mapGridHeight = new TextField();
+		mapGridHeight.textProperty().addListener(super::doNextPageCheckListener);
+		gameConfigGrid.add(mapGridHeight, 2, 0);
 		
 		return gameConfigGrid;
 	}
@@ -236,8 +246,10 @@ public class ProjectCreateDialog extends Wizard<File> {
 		try {
 			gameConfigData.setMapWidth(Double.parseDouble(mapWidth.getText()));
 			gameConfigData.setMapHeight(Double.parseDouble(mapHeight.getText()));
+			gameConfigData.setMapGridWidth(Double.parseDouble(mapGridWidth.getText()));
+			gameConfigData.setMapGridHeight(Double.parseDouble(mapGridHeight.getText()));
 
-			return gameConfigData.getMapWidth() <= 0.0 || gameConfigData.getMapHeight() <= 0.0;
+			return gameConfigData.getMapWidth() <= 0.0 || gameConfigData.getMapHeight() <= 0.0 || gameConfigData.getMapGridWidth() < 0.0 || gameConfigData.getMapGridHeight() < 0.0;
 		} catch (NumberFormatException e) {
 			return true;
 		}
