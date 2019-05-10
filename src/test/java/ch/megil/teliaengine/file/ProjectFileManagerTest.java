@@ -12,6 +12,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import ch.megil.teliaengine.configuration.ConfigurationContstants;
+import ch.megil.teliaengine.configuration.GameConfiguration;
+import ch.megil.teliaengine.configuration.PhysicsConstants;
+import ch.megil.teliaengine.configuration.data.GameConfigData;
+import ch.megil.teliaengine.configuration.data.PhysicsConstData;
 import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.project.Project;
 
@@ -19,18 +23,33 @@ public class ProjectFileManagerTest {
 	@Rule
 	public TemporaryFolder tempProjects = new TemporaryFolder(new File("."));
 	
+	private GameConfigData gameConfigData;
+	private PhysicsConstData physicsConstData;
+	
 	private Project testProject;
 	private ProjectFileManager projecFileManager;
 	
 	@Before
 	public void setUp() throws Exception {
+		gameConfigData = new GameConfigData();
+		gameConfigData.setMapWidth(1280);
+		gameConfigData.setMapHeight(720);
+		gameConfigData.setMapGridWidth(10);
+		gameConfigData.setMapGridHeight(10);
+		
+		physicsConstData = new PhysicsConstData();
+		physicsConstData.setWalkSpeed(10);
+		physicsConstData.setJumpStrength(10);
+		physicsConstData.setGravityStrength(5);
+		physicsConstData.setTerminalSpeed(20);
+		
 		projecFileManager = new ProjectFileManager();
 		testProject = new Project("test", tempProjects.newFolder("test"));
 	}
 	
 	@Test
 	public void testInitProject() throws Exception {
-		projecFileManager.initProject(testProject);
+		projecFileManager.initProject(testProject, gameConfigData, physicsConstData);
 		
 		var projectDir = testProject.getLocationPath();
 		
@@ -59,35 +78,31 @@ public class ProjectFileManagerTest {
 		
 		var fileProjectConfigGame = new File(projectDir + ConfigurationContstants.GAME_CONFIGURATION);
 		assertTrue(fileProjectConfigGame.exists());
-		var fileOrigConfigGame = new File("." + ConfigurationContstants.GAME_CONFIGURATION);
 		
 		var fileProjectConstPhysics = new File(projectDir + ConfigurationContstants.PHYSIC_CONSTANTS);
 		assertTrue(fileProjectConstPhysics.exists());
-		var fileOrigConstPhysics = new File("." + ConfigurationContstants.PHYSIC_CONSTANTS);
 		
 		try (var projectConfigGame = new FileInputStream(fileProjectConfigGame);
-				var origConfigGame = new FileInputStream(fileOrigConfigGame);
-				var projectConstPhysics = new FileInputStream(fileProjectConstPhysics);
-				var origConstPhysics = new FileInputStream(fileOrigConstPhysics)) {
+				var projectConstPhysics = new FileInputStream(fileProjectConstPhysics);) {
 			projectProps.clear();
 			origProps.clear();
 			
 			projectProps.load(projectConfigGame);
-			origProps.load(origConfigGame);
+			GameConfiguration.writeDataToProperties(origProps, gameConfigData);
 			assertEquals("Game configuration", origProps, projectProps);
 			
 			projectProps.clear();
 			origProps.clear();
 			
 			projectProps.load(projectConstPhysics);
-			origProps.load(origConstPhysics);
+			PhysicsConstants.writeDataToProperties(origProps, physicsConstData);
 			assertEquals("Physics Constants", origProps, projectProps);
 		}
 	}
 
 	@Test
 	public void testLoadProjectCorrectFile() throws Exception {
-		projecFileManager.initProject(testProject);
+		projecFileManager.initProject(testProject, gameConfigData, physicsConstData);
 		var projectDir = testProject.getLocationPath();
 		var fileProjectInfo = new File(projectDir + "/test.teliaproject");
 		
@@ -98,7 +113,7 @@ public class ProjectFileManagerTest {
 	
 	@Test(expected = AssetLoadException.class)
 	public void testLoadProjectIncorrectFile() throws Exception {
-		projecFileManager.initProject(testProject);
+		projecFileManager.initProject(testProject, gameConfigData, physicsConstData);
 		var projectDir = testProject.getLocationPath();
 		var fileProjectInfo = new File(projectDir + "/test.test");
 		
