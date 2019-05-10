@@ -44,7 +44,7 @@ public enum PhysicsConstants {
 	public static void writeDataToProperties(Properties prop, PhysicsConstData data) {
 		prop.setProperty(WALK_SPEED_RIGHT.key, data.getWalkSpeed() + VECTOR_X_ZERO);
 		prop.setProperty(WALK_SPEED_LEFT.key, (-data.getWalkSpeed()) + VECTOR_X_ZERO);
-		prop.setProperty(JUMP_FORCE.key, VECTOR_ZERO_Y + (-data.getTerminalSpeed()));
+		prop.setProperty(JUMP_FORCE.key, VECTOR_ZERO_Y + (-data.getJumpStrength()));
 		prop.setProperty(GRAVITY.key, VECTOR_ZERO_Y + data.getGravityStrength());
 		prop.setProperty(TERMINAL_FALL_VELOCITY.key, VECTOR_ZERO_Y + data.getTerminalSpeed());
 	}
