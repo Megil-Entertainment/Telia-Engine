@@ -26,6 +26,7 @@ import ch.megil.teliaengine.ui.component.MapEditor;
 import ch.megil.teliaengine.ui.component.ObjectExplorer;
 import ch.megil.teliaengine.ui.dialog.AboutDialog;
 import ch.megil.teliaengine.ui.dialog.MapCreateDialog;
+import ch.megil.teliaengine.ui.dialog.ObjectCreateDialog;
 import ch.megil.teliaengine.ui.dialog.ProjectCreateDialog;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -62,6 +63,11 @@ public class EngineUIController {
 		} catch (AssetNotFoundException e) {
 			LogHandler.log(e, Level.SEVERE);
 		}
+	}
+	
+	@FXML
+	private void createNewObject() {
+		new ObjectCreateDialog().showAndWait().isPresent();
 	}
 	
 	@FXML

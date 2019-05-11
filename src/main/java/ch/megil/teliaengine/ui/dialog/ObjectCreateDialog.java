@@ -62,6 +62,10 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 		hitboxHeight.textProperty().addListener(this::enableCreate);
 		hitboxHeight.textProperty().addListener(this::checkInt);
 		grid.add(hitboxHeight, 1, 4);
+		
+		grid.add(new Label("Texture"), 0, 5);
+		
+		getDialogPane().setContent(grid);
 	}
 	
 	private void checkInt(ObservableValue<? extends String> obs, String oldVal, String newVal) {
