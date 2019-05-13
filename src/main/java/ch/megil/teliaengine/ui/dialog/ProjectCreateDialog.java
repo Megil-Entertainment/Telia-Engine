@@ -63,6 +63,8 @@ public class ProjectCreateDialog extends Wizard<File> {
 		addPage(createPlayerCreationPage(), this::checkPlayerCreationDisable);
 		addPage(createGameConfigPage(), this::checkGameConfigurationDisable);
 		addPage(createPhysicsConstPage(), this::checkPhysicsConstantDisable);
+		setWidth(360);
+		setHeight(360);
 		
 		setResultConverter(b -> b.equals(ButtonType.FINISH)
 				? createProject(projectName.getText(), location.getText(),
@@ -133,13 +135,13 @@ public class ProjectCreateDialog extends Wizard<File> {
 		mapHeight.textProperty().addListener(super::doNextPageCheckListener);
 		gameConfigGrid.add(mapHeight, 2, 0);
 		
-		gameConfigGrid.add(new Label("Map grid width / height"), 0, 0);
+		gameConfigGrid.add(new Label("Map grid width / height"), 0, 1);
 		mapGridWidth = new TextField();
 		mapGridWidth.textProperty().addListener(super::doNextPageCheckListener);
-		gameConfigGrid.add(mapGridWidth, 1, 0);
+		gameConfigGrid.add(mapGridWidth, 1, 1);
 		mapGridHeight = new TextField();
 		mapGridHeight.textProperty().addListener(super::doNextPageCheckListener);
-		gameConfigGrid.add(mapGridHeight, 2, 0);
+		gameConfigGrid.add(mapGridHeight, 2, 1);
 		
 		return gameConfigGrid;
 	}
