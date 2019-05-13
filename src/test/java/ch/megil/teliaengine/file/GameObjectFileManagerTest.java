@@ -2,9 +2,12 @@ package ch.megil.teliaengine.file;
 
 import static org.junit.Assert.assertEquals;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+
+import javax.imageio.ImageIO;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -53,7 +56,9 @@ public class GameObjectFileManagerTest {
 		try (var writer = new BufferedWriter(new FileWriter(red))) {
 			writer.write("50.0:60.0:red:#FF0000");
 		}
-		testProjectDir.newFile("assets/texture/red.png");
+		var redTexFile = testProjectDir.newFile("assets/texture/red.png");
+		var redTexture = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
+		ImageIO.write(redTexture, "PNG", redTexFile);
 		
 		//create fail
 		var fail = testProjectDir.newFile("assets/object/fail.tobj");
