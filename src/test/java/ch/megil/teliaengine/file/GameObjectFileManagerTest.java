@@ -50,7 +50,7 @@ public class GameObjectFileManagerTest {
 		}
 		testProjectDir.newFile("assets/texture/player.png");
 		
-		//create red object
+		//create objects
 		var red = testProjectDir.newFile("assets/object/red.tobj");
 		try (var writer = new BufferedWriter(new FileWriter(red))) {
 			writer.write("50.0:60.0:red:#FF0000");
@@ -59,7 +59,6 @@ public class GameObjectFileManagerTest {
 		var redTexture = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
 		ImageIO.write(redTexture, "PNG", redTexFile);
 		
-		//create fail
 		var fail = testProjectDir.newFile("assets/object/fail.tobj");
 		try (var writer = new BufferedWriter(new FileWriter(fail))) {
 			writer.write("50.0:60.0");
