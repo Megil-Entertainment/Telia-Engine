@@ -21,7 +21,6 @@ import ch.megil.teliaengine.project.ProjectController;
 
 public class GameObjectFileManagerTest {
 	private static File parentDir = new File(".");
-	//new File(ProjectFolderConfiguration.ASSETS_OBJECTS.getConfigurationWithProjectPath());
 
 	@Rule
 	public TemporaryFolder testProjectDir = new TemporaryFolder(parentDir);
