@@ -32,10 +32,17 @@ public class Player extends GameElement{
 	}
 	
 	/**
-	 * Returns the current player instance.<br>
-	 * <b>Attention!</b>: might be null if not project was loaded. If so call reload first to initialize the instance.
+	 * Returns the current player instance.
+	 * @throws RuntimeException If not initialized and Player can not be loaded.
 	 */
-	public static Player get() {
+	public static Player get() throws RuntimeException {
+		if (instance == null) {
+			try {
+			reload();
+			} catch (AssetLoadException e) {
+				throw new RuntimeException(e);
+			}
+		}
 		return instance;
 	}
 	
