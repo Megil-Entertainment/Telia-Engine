@@ -1,4 +1,5 @@
 package ch.megil.teliaengine.ui.dialog;
+import java.util.ArrayList;
 import ch.megil.teliaengine.game.GameObject;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
@@ -10,7 +11,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;;
 
 public class ObjectCreateDialog extends Dialog<GameObject>{
 	private static final int PADDING = 15;
@@ -21,6 +23,7 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 	private TextField objectHeight;
 	private TextField hitboxWidth;
 	private TextField hitboxHeight;
+	private ArrayList<Image> textures;
 	
 	public ObjectCreateDialog() {
 		var createType = new ButtonType("Create Object", ButtonData.OK_DONE);
@@ -64,6 +67,8 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 		grid.add(hitboxHeight, 1, 4);
 		
 		grid.add(new Label("Texture"), 0, 5);
+		textures = new ArrayList<>();
+		
 		
 		getDialogPane().setContent(grid);
 	}
