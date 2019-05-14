@@ -15,12 +15,8 @@ import ch.megil.teliaengine.ui.dialog.wizard.Wizard;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -79,13 +75,13 @@ public class ProjectCreateDialog extends Wizard<File> {
 		projectInfoGrid.setHgap(PADDING);
 		projectInfoGrid.setVgap(PADDING);
 		
-		projectInfoGrid.add(new Label("Project Name"), 0, 0);
+		projectInfoGrid.add(createLabelWithTooltip("Project Name"), 0, 0);
 		projectName = new TextField();
 		projectName.textProperty().addListener(super::doNextPageCheckListener);
 		Platform.runLater(() -> projectName.requestFocus());
 		projectInfoGrid.add(projectName, 1, 0, 2, 1);
 		
-		projectInfoGrid.add(new Label("Location"), 0, 1);
+		projectInfoGrid.add(createLabelWithTooltip("Location"), 0, 1);
 		location = new TextField();
 		location.textProperty().addListener(super::doNextPageCheckListener);
 		projectInfoGrid.add(location, 1, 1);
@@ -102,7 +98,7 @@ public class ProjectCreateDialog extends Wizard<File> {
 		playerCreationGrid.setHgap(PADDING);
 		playerCreationGrid.setVgap(PADDING);
 		
-		playerCreationGrid.add(new Label("Player width / height"), 0, 0);
+		playerCreationGrid.add(createLabelWithTooltip("Player width / height"), 0, 0);
 		playerWidth = new TextField();
 		playerWidth.textProperty().addListener(super::doNextPageCheckListener);
 		playerCreationGrid.add(playerWidth, 1, 0);
@@ -110,7 +106,7 @@ public class ProjectCreateDialog extends Wizard<File> {
 		playerHeight.textProperty().addListener(super::doNextPageCheckListener);
 		playerCreationGrid.add(playerHeight, 2, 0);
 		
-		playerCreationGrid.add(new Label("Player texture"), 0, 1);
+		playerCreationGrid.add(createLabelWithTooltip("Player texture"), 0, 1);
 		playerTexture = new TextField();
 		playerTexture.textProperty().addListener(super::doNextPageCheckListener);
 		playerCreationGrid.add(playerTexture, 1, 1);
@@ -127,7 +123,7 @@ public class ProjectCreateDialog extends Wizard<File> {
 		gameConfigGrid.setHgap(PADDING);
 		gameConfigGrid.setVgap(PADDING);
 		
-		gameConfigGrid.add(new Label("Visible Map width / height"), 0, 0);
+		gameConfigGrid.add(createLabelWithTooltip("Visible Map width / height"), 0, 0);
 		mapWidth = new TextField();
 		mapWidth.textProperty().addListener(super::doNextPageCheckListener);
 		gameConfigGrid.add(mapWidth, 1, 0);
@@ -135,7 +131,7 @@ public class ProjectCreateDialog extends Wizard<File> {
 		mapHeight.textProperty().addListener(super::doNextPageCheckListener);
 		gameConfigGrid.add(mapHeight, 2, 0);
 		
-		gameConfigGrid.add(new Label("Map grid width / height"), 0, 1);
+		gameConfigGrid.add(createLabelWithTooltip("Map grid width / height"), 0, 1);
 		mapGridWidth = new TextField();
 		mapGridWidth.textProperty().addListener(super::doNextPageCheckListener);
 		gameConfigGrid.add(mapGridWidth, 1, 1);
@@ -152,27 +148,33 @@ public class ProjectCreateDialog extends Wizard<File> {
 		physicsConstGrid.setHgap(PADDING);
 		physicsConstGrid.setVgap(PADDING);
 		
-		physicsConstGrid.add(new Label("Walk speed"), 0, 0);
+		physicsConstGrid.add(createLabelWithTooltip("Walk speed"), 0, 0);
 		walkSpeed = new TextField();
 		walkSpeed.textProperty().addListener(super::doNextPageCheckListener);
 		physicsConstGrid.add(walkSpeed, 1, 0);
 		
-		physicsConstGrid.add(new Label("Jump strength"), 0, 1);
+		physicsConstGrid.add(createLabelWithTooltip("Jump strength"), 0, 1);
 		jumpStrength = new TextField();
 		jumpStrength.textProperty().addListener(super::doNextPageCheckListener);
 		physicsConstGrid.add(jumpStrength, 1, 1);
 
-		physicsConstGrid.add(new Label("Gravity strength"), 0, 2);
+		physicsConstGrid.add(createLabelWithTooltip("Gravity strength"), 0, 2);
 		gravityStrength = new TextField();
 		gravityStrength.textProperty().addListener(super::doNextPageCheckListener);
 		physicsConstGrid.add(gravityStrength, 1, 2);
 
-		physicsConstGrid.add(new Label("Max fall speed"), 0, 3);
+		physicsConstGrid.add(createLabelWithTooltip("Max fall speed"), 0, 3);
 		terminalSpeed = new TextField();
 		terminalSpeed.textProperty().addListener(super::doNextPageCheckListener);
 		physicsConstGrid.add(terminalSpeed, 1, 3);
 		
 		return physicsConstGrid;
+	}
+	
+	private Label createLabelWithTooltip(String text) {
+		var label = new Label(text);
+		label.setTooltip(new Tooltip(text));
+		return label;
 	}
 	
 	private File createProject(String projectName, String location, double playerWidth, double playerHeight, String playerTexture, GameConfigData gameConfigData, PhysicsConstData physicsConstData) {
