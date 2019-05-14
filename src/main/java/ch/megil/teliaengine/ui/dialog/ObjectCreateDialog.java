@@ -4,7 +4,12 @@ import javafx.event.ActionEvent;
 import java.io.File;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
+import ch.megil.teliaengine.file.TextureFileManager;
+import ch.megil.teliaengine.file.exception.AssetCreationException;
+import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
+import ch.megil.teliaengine.game.Hitbox;
+import ch.megil.teliaengine.game.Vector;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
@@ -19,6 +24,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 
 public class ObjectCreateDialog extends Dialog<GameObject>{
 	private static final int PADDING = 15;
@@ -29,7 +35,8 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 	private TextField objectHeight;
 	private TextField hitboxWidth;
 	private TextField hitboxHeight;
-	private TextField texture;
+	private TextField texturePath;
+	private Image depiction;
 	
 	public ObjectCreateDialog() {
 		var createType = new ButtonType("Create Object", ButtonData.OK_DONE);
@@ -73,14 +80,34 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 		grid.add(hitboxHeight, 1, 4);
 		
 		grid.add(new Label("Texture"), 0, 5);
-		texture = new TextField();
-		grid.add(texture, 1, 5);
+		texturePath = new TextField();
+		grid.add(texturePath, 1, 5);
 		var searchBtn = new Button("...");
 		searchBtn.setOnAction(this::searchTexture);
 		grid.add(searchBtn, 2, 5);
 		
 		
 		getDialogPane().setContent(grid);
+		
+		
+		setResultConverter(b -> {
+			try {
+				return b.equals(createType)
+						? createGameObject(objectName.getText(), objectName.getText(), 
+								new Hitbox(new Vector(0, 0), Double.parseDouble(hitboxWidth.getText()), Double.parseDouble(hitboxHeight.getText())))
+						: null;
+			} catch (NumberFormatException | AssetCreationException | AssetNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+		});
+	}
+	
+	private GameObject createGameObject(String name, String depictionName, Hitbox hitbox) throws AssetCreationException, AssetNotFoundException {
+		TextureFileManager.get().importTexture(depictionName, new File(texturePath.getText()));
+		depiction = TextureFileManager.get().load(depictionName, hitbox.getVectorSize().getX(), hitbox.getVectorSize().getY());
+		return new GameObject(name, depictionName, depiction, hitbox, null);
 	}
 	
 	private void checkInt(ObservableValue<? extends String> obs, String oldVal, String newVal) {
@@ -91,16 +118,16 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 	
 	private <T> void enableCreate(ObservableValue<? extends T> obs, T oldVal, T newVal) {
 		createBtn.setDisable(objectName.getText().trim().isEmpty() || objectWidth.getText().trim().isEmpty() || objectHeight.getText().trim().isEmpty()
-				|| hitboxWidth.getText().trim().isEmpty() || hitboxHeight.getText().trim().isEmpty());
+				|| hitboxWidth.getText().trim().isEmpty() || hitboxHeight.getText().trim().isEmpty() || texturePath.getText().trim().isEmpty());
 	}
 	
 	private void searchTexture(ActionEvent ae) {
 		var chooser = new FileChooser();
 		chooser.getExtensionFilters().add(new ExtensionFilter("Texture", "*" + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration()));
 		chooser.setInitialDirectory(new File("assets/texture"));
-		var dir = chooser.showOpenDialog(texture.getScene().getWindow());
+		var dir = chooser.showOpenDialog(texturePath.getScene().getWindow());
 		if (dir != null) {
-			texture.setText(dir.getAbsolutePath());
+			texturePath.setText(dir.getAbsolutePath());
 		}
 	}
 }
