@@ -42,6 +42,8 @@ public class MapEditor extends Pane {
 	private TextArea hiddenKeyInput;
 	private Rectangle mapBackground;
 	
+	private boolean saved;
+	
 	public MapEditor() {
 		hiddenKeyInput = new TextArea();
 		getChildren().add(hiddenKeyInput);
@@ -75,12 +77,15 @@ public class MapEditor extends Pane {
 		
 		nodeDeselected = new InnerShadow();
 		nodeDeselected.setColor(Color.TRANSPARENT);
+		
+		saved = true;
 	}
 	
 	public void addGameObject(GameObject obj) {
 		if (map != null) {
 			map.addObject(obj);
 			getChildren().add(new GameElementImageView(obj));
+			saved = false;
 		}
 	}
 	
@@ -114,6 +119,7 @@ public class MapEditor extends Pane {
 		map.removeObject((GameObject)selected.getGameElement());
 		getChildren().remove(selected);
 		selected = null;
+		saved = false;
 	}
 	
 	private double roundToNearest(double value, double roundFactor) {
@@ -161,6 +167,7 @@ public class MapEditor extends Pane {
 			source.setImageViewLayoutY(
 					roundToNearest((event.getSceneY() + dy), gridHeight));
 			checkBoundries(source);
+			saved = false;
 			event.consume();
 		}
 	}
@@ -216,6 +223,14 @@ public class MapEditor extends Pane {
 		var clip = (Rectangle) getClip();
 		clip.setX(0);
 		clip.setY(0);
+	}
+	
+	public void setSaved(boolean saved) {
+		this.saved = saved;
+	}
+	
+	public boolean getSaved() {
+		return saved;
 	}
 
 }
