@@ -41,6 +41,10 @@ public class ObjectExplorer extends ScrollPane {
 		container.getChildren().add(listItem);
 	}
 	
+	public void addNewGameObject(GameObject obj) {
+		loadGameObject(obj);
+	}
+	
 	private void createNewObject(GameObject object) {
 		try {
 			var newObject = new GameObjectFileManager().load(object.getName());

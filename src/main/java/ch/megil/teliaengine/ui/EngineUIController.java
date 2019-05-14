@@ -17,6 +17,7 @@ import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
+import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.logging.LogHandler;
 import ch.megil.teliaengine.project.Project;
@@ -67,7 +68,11 @@ public class EngineUIController {
 	
 	@FXML
 	private void createNewObject() {
-		new ObjectCreateDialog().showAndWait().isPresent();
+		new ObjectCreateDialog().showAndWait().ifPresent(this::addObjectToList);
+	}
+	
+	private void addObjectToList(GameObject gameObject) {
+		objectExplorer.addNewGameObject(gameObject);
 	}
 	
 	@FXML

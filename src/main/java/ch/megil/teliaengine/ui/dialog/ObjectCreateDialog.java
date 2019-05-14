@@ -2,6 +2,7 @@ package ch.megil.teliaengine.ui.dialog;
 import javafx.event.ActionEvent;
 
 import java.io.File;
+import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.file.TextureFileManager;
@@ -10,6 +11,7 @@ import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
+import ch.megil.teliaengine.logging.LogHandler;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
@@ -33,8 +35,6 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 	private TextField objectName;
 	private TextField objectWidth;
 	private TextField objectHeight;
-	private TextField hitboxWidth;
-	private TextField hitboxHeight;
 	private TextField texturePath;
 	private Image depiction;
 	
@@ -53,7 +53,7 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 		objectName = new TextField();
 		objectName.textProperty().addListener(this::enableCreate);
 		Platform.runLater(() -> objectName.requestFocus());
-		grid.add(objectName, 1, 0);
+		grid.add(objectName, 1, 0, 2, 1);
 		
 		grid.add(new Label("Object Width"), 0, 1);
 		objectWidth = new TextField();
@@ -67,46 +67,31 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 		objectHeight.textProperty().addListener(this::checkInt);
 		grid.add(objectHeight, 1, 2);
 		
-		grid.add(new Label("Hitbox Width"), 0, 3);
-		hitboxWidth = new TextField();
-		hitboxWidth.textProperty().addListener(this::enableCreate);
-		hitboxWidth.textProperty().addListener(this::checkInt);
-		grid.add(hitboxWidth, 1, 3);
-		
-		grid.add(new Label("Hitbox Heigth"), 0, 4);
-		hitboxHeight = new TextField();
-		hitboxHeight.textProperty().addListener(this::enableCreate);
-		hitboxHeight.textProperty().addListener(this::checkInt);
-		grid.add(hitboxHeight, 1, 4);
-		
-		grid.add(new Label("Texture"), 0, 5);
+		grid.add(new Label("Texture"), 0, 3);
 		texturePath = new TextField();
-		grid.add(texturePath, 1, 5);
+		texturePath.textProperty().addListener(this::enableCreate);
+		grid.add(texturePath, 1, 3);
 		var searchBtn = new Button("...");
 		searchBtn.setOnAction(this::searchTexture);
-		grid.add(searchBtn, 2, 5);
+		grid.add(searchBtn, 2, 3);
 		
 		
 		getDialogPane().setContent(grid);
 		
 		
-		setResultConverter(b -> {
-			try {
-				return b.equals(createType)
-						? createGameObject(objectName.getText(), objectName.getText(), 
-								new Hitbox(new Vector(0, 0), Double.parseDouble(hitboxWidth.getText()), Double.parseDouble(hitboxHeight.getText())))
-						: null;
-			} catch (NumberFormatException | AssetCreationException | AssetNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return null;
-		});
+		setResultConverter(b -> b.equals(createType)
+				? createGameObject(objectName.getText(), objectName.getText(), 
+				  new Hitbox(new Vector(0, 0), Double.parseDouble(objectWidth.getText()), Double.parseDouble(objectHeight.getText())))
+				: null);
 	}
 	
-	private GameObject createGameObject(String name, String depictionName, Hitbox hitbox) throws AssetCreationException, AssetNotFoundException {
-		TextureFileManager.get().importTexture(depictionName, new File(texturePath.getText()));
-		depiction = TextureFileManager.get().load(depictionName, hitbox.getVectorSize().getX(), hitbox.getVectorSize().getY());
+	private GameObject createGameObject(String name, String depictionName, Hitbox hitbox){
+		try {
+			TextureFileManager.get().importTexture(depictionName, new File(texturePath.getText()));
+			depiction = TextureFileManager.get().load(depictionName, hitbox.getVectorSize().getX(), hitbox.getVectorSize().getY());
+		} catch (AssetNotFoundException  | AssetCreationException e) {
+			LogHandler.log(e, Level.SEVERE);
+		}
 		return new GameObject(name, depictionName, depiction, hitbox, null);
 	}
 	
@@ -118,7 +103,7 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 	
 	private <T> void enableCreate(ObservableValue<? extends T> obs, T oldVal, T newVal) {
 		createBtn.setDisable(objectName.getText().trim().isEmpty() || objectWidth.getText().trim().isEmpty() || objectHeight.getText().trim().isEmpty()
-				|| hitboxWidth.getText().trim().isEmpty() || hitboxHeight.getText().trim().isEmpty() || texturePath.getText().trim().isEmpty());
+				|| texturePath.getText().trim().isEmpty());
 	}
 	
 	private void searchTexture(ActionEvent ae) {
