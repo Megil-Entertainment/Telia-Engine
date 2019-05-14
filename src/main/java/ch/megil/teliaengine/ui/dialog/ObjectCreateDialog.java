@@ -1,10 +1,15 @@
 package ch.megil.teliaengine.ui.dialog;
 import javafx.event.ActionEvent;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
+import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.TextureFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
@@ -19,6 +24,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.scene.control.Button;
@@ -26,6 +32,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 
 public class ObjectCreateDialog extends Dialog<GameObject>{
@@ -49,31 +56,29 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 		grid.setHgap(PADDING);
 		grid.setVgap(PADDING);
 		
-		grid.add(new Label("Name"), 0, 0);
+		grid.add(createLabelWithTooltip("Object Name"), 0, 0);
 		objectName = new TextField();
 		objectName.textProperty().addListener(this::enableCreate);
 		Platform.runLater(() -> objectName.requestFocus());
 		grid.add(objectName, 1, 0, 2, 1);
 		
-		grid.add(new Label("Object Width"), 0, 1);
+		grid.add(createLabelWithTooltip("Object Width / Object Height"), 0, 1);
 		objectWidth = new TextField();
 		objectWidth.textProperty().addListener(this::enableCreate);
 		objectWidth.textProperty().addListener(this::checkInt);
-		grid.add(objectWidth, 1, 1);
-		
-		grid.add(new Label("Object Height"), 0, 2);
 		objectHeight = new TextField();
 		objectHeight.textProperty().addListener(this::enableCreate);
 		objectHeight.textProperty().addListener(this::checkInt);
-		grid.add(objectHeight, 1, 2);
+		grid.add(objectWidth, 1, 1);
+		grid.add(objectHeight, 2, 1);
 		
-		grid.add(new Label("Texture"), 0, 3);
+		grid.add(new Label("Texture"), 0, 2);
 		texturePath = new TextField();
 		texturePath.textProperty().addListener(this::enableCreate);
-		grid.add(texturePath, 1, 3);
+		grid.add(texturePath, 1, 2);
 		var searchBtn = new Button("...");
 		searchBtn.setOnAction(this::searchTexture);
-		grid.add(searchBtn, 2, 3);
+		grid.add(searchBtn, 2, 2);
 		
 		
 		getDialogPane().setContent(grid);
@@ -92,7 +97,9 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 		} catch (AssetNotFoundException  | AssetCreationException e) {
 			LogHandler.log(e, Level.SEVERE);
 		}
-		return new GameObject(name, depictionName, depiction, hitbox, null);
+		GameObject obj = new GameObject(name, depictionName, depiction, hitbox, new Color(0, 0, 0, 0));
+		addObjectToAssetsFolder(obj);
+		return obj;
 	}
 	
 	private void checkInt(ObservableValue<? extends String> obs, String oldVal, String newVal) {
@@ -108,11 +115,33 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 	
 	private void searchTexture(ActionEvent ae) {
 		var chooser = new FileChooser();
-		chooser.getExtensionFilters().add(new ExtensionFilter("Texture", "*" + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration()));
+		ArrayList<String> extensions = new ArrayList<>();
+		extensions.add("*" + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration());
+		extensions.add("*" + ".jpg");
+		chooser.getExtensionFilters().add(new ExtensionFilter("Texture", extensions));
 		chooser.setInitialDirectory(new File("assets/texture"));
 		var dir = chooser.showOpenDialog(texturePath.getScene().getWindow());
 		if (dir != null) {
 			texturePath.setText(dir.getAbsolutePath());
 		}
+	}
+	
+	private void addObjectToAssetsFolder(GameObject obj) {
+		var fileName = ProjectFolderConfiguration.ASSETS_OBJECTS.getConfigurationWithProjectPath() + "/" + obj.getName() + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
+		
+		var propSeperator = FileConfiguration.SEPERATOR_PROPERTY.getConfiguration();
+		
+		try (var writer = new BufferedWriter(new FileWriter(fileName))) {
+			writer.write(obj.getDepiction().getWidth() + propSeperator + obj.getDepiction().getHeight() + propSeperator +
+					obj.getDepictionName() + propSeperator + obj.getColor());
+		} catch (IOException e) {
+			LogHandler.log(e, Level.SEVERE);
+		}
+	}
+	
+	private Label createLabelWithTooltip(String text) {
+		var label = new Label(text);
+		label.setTooltip(new Tooltip(text));
+		return label;
 	}
 }
