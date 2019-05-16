@@ -5,8 +5,8 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.data.PhysicsConstData;
-import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.logging.LogHandler;
+import ch.megil.teliaengine.physics.Vector;
 import ch.megil.teliaengine.project.ProjectController;
 
 public enum PhysicsConstants {

@@ -25,8 +25,8 @@ import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
-import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.game.player.Player;
+import ch.megil.teliaengine.physics.Vector;
 import ch.megil.teliaengine.project.ProjectController;
 
 public class MapFileManagerTest {

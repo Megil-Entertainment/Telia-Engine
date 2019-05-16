@@ -4,7 +4,7 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 import ch.megil.teliaengine.game.GameElement;
-import ch.megil.teliaengine.game.Vector;
+import ch.megil.teliaengine.physics.Vector;
 import ch.megil.teliaengine.vulkan.buffer.VulkanIndexBuffer;
 import ch.megil.teliaengine.vulkan.buffer.VulkanVertexBuffer;
 import ch.megil.teliaengine.vulkan.obj.VulkanObject;

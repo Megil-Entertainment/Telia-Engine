@@ -1,4 +1,6 @@
-package ch.megil.teliaengine.game;
+package ch.megil.teliaengine.physics.hitbox;
+
+import ch.megil.teliaengine.physics.Vector;
 
 public class Hitbox {
 	private Vector origin;

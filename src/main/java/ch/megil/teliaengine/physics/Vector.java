@@ -1,4 +1,4 @@
-package ch.megil.teliaengine.game;
+package ch.megil.teliaengine.physics;
 
 import java.util.ArrayList;
 import java.util.Collections;

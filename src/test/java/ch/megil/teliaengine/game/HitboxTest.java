@@ -7,6 +7,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import ch.megil.teliaengine.physics.Vector;
+import ch.megil.teliaengine.physics.hitbox.Hitbox;
+
 public class HitboxTest {
 	private Vector vector1;
 	private Vector vector2;
