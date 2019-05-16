@@ -7,7 +7,7 @@ import ch.megil.teliaengine.file.PlayerFileManager;
 import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.game.GameElement;
 import ch.megil.teliaengine.physics.Vector;
-import ch.megil.teliaengine.physics.collision.Hitbox;
+import ch.megil.teliaengine.physics.collision.Collider;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
@@ -20,7 +20,7 @@ public class Player extends GameElement{
 	private Vector velocity;
 
 	
-	protected Player(String depictionName, Image depiction, Hitbox hitbox, Color color) {
+	protected Player(String depictionName, Image depiction, Collider hitbox, Color color) {
 		super(depictionName, depiction, hitbox, color);
 		jumpUsed = false;
 		
@@ -54,7 +54,7 @@ public class Player extends GameElement{
 		var player = get();
 		var hitboxSize = player.getHitbox().getVectorSize();
 		
-		var enginePlayer = new Player(player.getDepictionName(), player.getDepiction(), new Hitbox(player.getPosition(), hitboxSize.getX(), hitboxSize.getY()), player.getColor());
+		var enginePlayer = new Player(player.getDepictionName(), player.getDepiction(), new Collider(player.getPosition(), hitboxSize.getX(), hitboxSize.getY()), player.getColor());
 		enginePlayer.setPosition(player.getPosition());
 		
 		return enginePlayer;
@@ -68,7 +68,7 @@ public class Player extends GameElement{
 		velocity = velocity.add(a);
 	}
 	
-	public void update(List<Hitbox> possibleCollisions) {
+	public void update(List<Collider> possibleCollisions) {
 		velocity = velocity.add(acceleration);
 		velocity = new Vector(velocity.getX(), Math.min(velocity.getY(), PhysicsConstants.TERMINAL_FALL_VELOCITY.get().getY()));
 

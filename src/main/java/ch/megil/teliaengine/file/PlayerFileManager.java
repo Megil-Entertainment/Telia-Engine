@@ -14,7 +14,7 @@ import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.game.player.PlayerConstructor;
 import ch.megil.teliaengine.physics.Vector;
-import ch.megil.teliaengine.physics.collision.Hitbox;
+import ch.megil.teliaengine.physics.collision.Collider;
 import javafx.scene.paint.Color;
 
 public class PlayerFileManager {
@@ -29,7 +29,7 @@ public class PlayerFileManager {
 
 			var depictionName = spec[2];
 			var depiction = TextureFileManager.get().load(depictionName, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
-			var hitbox =  new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
+			var hitbox =  new Collider(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			var color = Color.web(spec[3]);
 			
 			return constructor.invoke(depictionName, depiction, hitbox, color);

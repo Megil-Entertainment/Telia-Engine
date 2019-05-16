@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.megil.teliaengine.physics.Vector;
-import ch.megil.teliaengine.physics.collision.Hitbox;
+import ch.megil.teliaengine.physics.collision.Collider;
 
 public class HitboxTest {
 	private Vector vector1;
@@ -17,12 +17,12 @@ public class HitboxTest {
 	private Vector vector4;
 	private Vector vector5;
 	private Vector vector6;
-	private Hitbox hitbox1;
-	private Hitbox hitbox2;
-	private Hitbox hitbox3;
-	private Hitbox hitbox4;
-	private Hitbox hitbox5;
-	private Hitbox hitbox6;
+	private Collider hitbox1;
+	private Collider hitbox2;
+	private Collider hitbox3;
+	private Collider hitbox4;
+	private Collider hitbox5;
+	private Collider hitbox6;
 	
 	@Before
 	public void setUp() {
@@ -33,12 +33,12 @@ public class HitboxTest {
 		vector5 = new Vector(3,3);
 		vector6 = new Vector(2,2);
 		
-		hitbox1 = new Hitbox(vector1, 5, 5);
-		hitbox2 = new Hitbox(vector2, 5, 5);
-		hitbox3 = new Hitbox(vector3, 5, 5);
-		hitbox4 = new Hitbox(vector4, 5, 5);
-		hitbox5 = new Hitbox(vector5, 5, 5);
-		hitbox6 = new Hitbox(vector6, 7, 7);
+		hitbox1 = new Collider(vector1, 5, 5);
+		hitbox2 = new Collider(vector2, 5, 5);
+		hitbox3 = new Collider(vector3, 5, 5);
+		hitbox4 = new Collider(vector4, 5, 5);
+		hitbox5 = new Collider(vector5, 5, 5);
+		hitbox6 = new Collider(vector6, 7, 7);
 	}
 	
 	@Test

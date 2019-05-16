@@ -2,16 +2,16 @@ package ch.megil.teliaengine.physics.collision;
 
 import ch.megil.teliaengine.physics.Vector;
 
-public class Hitbox {
+public class Collider {
 	private Vector origin;
 	private Vector size;
 	
-	public Hitbox(Vector origin, double width, double height) {
+	public Collider(Vector origin, double width, double height) {
 		this.origin = origin;
 		this.size = new Vector(width, height);
 	}
 	
-	public boolean checkCollision(Hitbox hitbox) {
+	public boolean checkCollision(Collider hitbox) {
 		var collision = false;
 		var endpoint = origin.add(size);
 		var hitboxEndpoint = hitbox.origin.add(hitbox.size);
@@ -62,7 +62,7 @@ public class Hitbox {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Hitbox other = (Hitbox) obj;
+		Collider other = (Collider) obj;
 		if (origin == null) {
 			if (other.origin != null)
 				return false;

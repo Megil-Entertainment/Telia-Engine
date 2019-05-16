@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import ch.megil.teliaengine.physics.Vector;
-import ch.megil.teliaengine.physics.collision.Hitbox;
+import ch.megil.teliaengine.physics.collision.Collider;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
@@ -19,12 +19,12 @@ public class GameElementTest {
 	@Mock
 	private Image image;
 	
-	private Hitbox hitbox;
+	private Collider hitbox;
 	
 	@Before
 	public void setUp() {
 		image = mock(Image.class);
-		hitbox = new Hitbox(Vector.ZERO, 5, 5);
+		hitbox = new Collider(Vector.ZERO, 5, 5);
 		
 		gameElement = new GameElement("image",image,hitbox,Color.BLACK);
 		vector = new Vector(2, 2);
