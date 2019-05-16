@@ -15,7 +15,7 @@ import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.logging.LogHandler;
 import ch.megil.teliaengine.physics.Vector;
-import ch.megil.teliaengine.physics.collision.Collider;
+import ch.megil.teliaengine.physics.collision.SquareCollider;
 import javafx.scene.paint.Color;
 
 public class GameObjectFileManager {
@@ -27,7 +27,7 @@ public class GameObjectFileManager {
 			var spec = reader.readLine().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			var depictionName = spec[2];
 			var depiction = TextureFileManager.get().load(depictionName, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
-			var hitbox = new Collider(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
+			var hitbox = new SquareCollider(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			var color = Color.web(spec[3]);
 			
 			var obj = new GameObject(name, depictionName, depiction, hitbox, color);

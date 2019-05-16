@@ -52,9 +52,8 @@ public class Player extends GameElement{
 	
 	public static Player getEngineCopy() {
 		var player = get();
-		var hitboxSize = player.getHitbox().getVectorSize();
 		
-		var enginePlayer = new Player(player.getDepictionName(), player.getDepiction(), new Collider(player.getPosition(), hitboxSize.getX(), hitboxSize.getY()), player.getColor());
+		var enginePlayer = new Player(player.getDepictionName(), player.getDepiction(), player.getHitbox(), player.getColor());
 		enginePlayer.setPosition(player.getPosition());
 		
 		return enginePlayer;
