@@ -2,7 +2,6 @@ package ch.megil.teliaengine.ui;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -13,14 +12,12 @@ import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.MapFileManager;
 import ch.megil.teliaengine.file.ProjectFileManager;
-import ch.megil.teliaengine.file.TextureFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.logging.LogHandler;
-import ch.megil.teliaengine.project.Project;
 import ch.megil.teliaengine.project.ProjectController;
 import ch.megil.teliaengine.ui.component.AssetExplorer;
 import ch.megil.teliaengine.ui.component.MapEditor;
@@ -77,29 +74,7 @@ public class EngineUIController {
 	
 	@FXML
 	private void fileNewProject() {
-		new ProjectCreateDialog().showAndWait().ifPresent(this::initNewProject);
-	}
-	
-	private void initNewProject(Project project) {
-		try {
-			var projectInfo = projectFileManager.initProject(project);
-			projectFileManager.updateLastOpenedProject(projectInfo);
-			ProjectController.get().openProject(project);
-			//TODO: as soon as created: open ObjectCreator to create player and remove static player creation
-			TextureFileManager.get().importTexture("player", new File("assets/texture/player.png"));
-			var origin = new File("assets/player.tobj").toPath();
-			var dest = new File(ProjectFolderConfiguration.ASSET_PLAYER.getConfigurationWithProjectPath() + ".tobj").toPath();
-			try {
-				Files.copy(origin, dest);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-			openProject(project);
-		} catch (AssetCreationException | AssetNotFoundException e) {
-			LogHandler.log(e, Level.SEVERE);
-			showErrorAlert("Create Error", "There was an error while creating a new project.");
-		}
+		new ProjectCreateDialog(projectFileManager).showAndWait().ifPresent(this::openProject);
 	}
 	
 	@FXML
@@ -108,25 +83,25 @@ public class EngineUIController {
 		chooser.getExtensionFilters().add(new ExtensionFilter("Project", "*" + FileConfiguration.FILE_EXT_PROJECT.getConfiguration()));
 		var projectInfo = chooser.showOpenDialog(tabPane.getScene().getWindow());
 		if (projectInfo != null) {
-			try {
-				var project = projectFileManager.loadProject(projectInfo);
-				projectFileManager.updateLastOpenedProject(projectInfo);
-				openProject(project);
-			} catch (AssetLoadException e) {
-				LogHandler.log(e, Level.SEVERE);
-				showErrorAlert("Load Error", "The specified project could not been loaded.");
-			} catch (AssetCreationException e) {
-				LogHandler.log(e, Level.WARNING);
-			}
+			openProject(projectInfo);
 		}
 	}
 	
-	private void openProject(Project project) throws AssetNotFoundException {
-		ProjectController.get().openProject(project);
-		assetExplorer.changeRoots(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
-		objectExplorer.reload();
-		tabPane.getTabs().clear();
-		openTabs.clear();
+	private void openProject(File projectInfo) {
+		try {
+			var project = projectFileManager.loadProject(projectInfo);
+			projectFileManager.updateLastOpenedProject(projectInfo);
+			ProjectController.get().openProject(project);
+			assetExplorer.changeRoots(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
+			objectExplorer.reload();
+			tabPane.getTabs().clear();
+			openTabs.clear();
+		} catch (AssetLoadException e) {
+			LogHandler.log(e, Level.SEVERE);
+			showErrorAlert("Load Error", "The specified project could not been loaded.");
+		} catch (AssetCreationException e) {
+			LogHandler.log(e, Level.WARNING);
+		}
 	}
 	
 	@FXML

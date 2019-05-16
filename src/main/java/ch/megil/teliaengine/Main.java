@@ -1,15 +1,11 @@
 package ch.megil.teliaengine;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
-import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.file.ProjectFileManager;
-import ch.megil.teliaengine.file.TextureFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.logging.LogHandler;
@@ -33,8 +29,7 @@ public class Main extends Application {
 		var projectFileManager = new ProjectFileManager();
 		var lastProjectInfo = projectFileManager.getLastOpenedProject();
 		if (lastProjectInfo != null) {
-			var project = projectFileManager.loadProject(new File(lastProjectInfo));
-			ProjectController.get().openProject(project);
+			openProject(new File(lastProjectInfo), projectFileManager);
 		} else {
 			openCreationOpenChooser(primaryStage, projectFileManager);
 		}
@@ -68,32 +63,12 @@ public class Main extends Application {
 	}
 	
 	private void openCreateDialog(ProjectFileManager projectFileManager) {
-		var project = new ProjectCreateDialog().showAndWait().get();
+		var projectInfo = new ProjectCreateDialog(projectFileManager).showAndWait().get();
 		
-		if (project == null) {
+		if (projectInfo == null) {
 			System.exit(0);
 		} else {
-			try {
-				var projectInfo = projectFileManager.initProject(project);
-				projectFileManager.updateLastOpenedProject(projectInfo);
-				ProjectController.get().openProject(project);
-				//TODO: as soon as created: open ObjectCreator to create player and remove static player creation
-				TextureFileManager.get().importTexture("player", new File("assets/texture/player.png"));
-				var origin = new File("assets/player.tobj").toPath();
-				var dest = new File(ProjectFolderConfiguration.ASSET_PLAYER.getConfigurationWithProjectPath() + ".tobj").toPath();
-				try {
-					Files.copy(origin, dest);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				ProjectController.get().openProject(project);
-			} catch (AssetCreationException e) {
-				LogHandler.log(e, Level.SEVERE);
-				Alert error = new Alert(AlertType.ERROR);
-				error.setContentText("Could not create Project.");
-				error.showAndWait();
-				System.exit(-1);
-			}
+			openProject(projectInfo, projectFileManager);
 		}
 	}
 	
@@ -105,19 +80,23 @@ public class Main extends Application {
 		if (projectInfo == null) {
 			System.exit(0);
 		} else {
-			try {
-				var project = projectFileManager.loadProject(projectInfo);
-				projectFileManager.updateLastOpenedProject(projectInfo);
-				ProjectController.get().openProject(project);
-			} catch (AssetLoadException e) {
-				LogHandler.log(e, Level.SEVERE);
-				Alert error = new Alert(AlertType.ERROR);
-				error.setContentText("Could not open Project.");
-				error.showAndWait();
-				System.exit(-1);
-			} catch (AssetCreationException e) {
-				LogHandler.log(e, Level.WARNING);
-			}
+			openProject(projectInfo, projectFileManager);
+		}
+	}
+	
+	private void openProject(File projectInfo, ProjectFileManager projectFileManager) {
+		try {
+			var project = projectFileManager.loadProject(projectInfo);
+			projectFileManager.updateLastOpenedProject(projectInfo);
+			ProjectController.get().openProject(project);
+		} catch (AssetLoadException e) {
+			LogHandler.log(e, Level.SEVERE);
+			Alert error = new Alert(AlertType.ERROR);
+			error.setContentText("Could not open Project.");
+			error.showAndWait();
+			System.exit(-1);
+		} catch (AssetCreationException e) {
+			LogHandler.log(e, Level.WARNING);
 		}
 	}
 

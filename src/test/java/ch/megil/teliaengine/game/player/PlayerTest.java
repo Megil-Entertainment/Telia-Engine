@@ -3,19 +3,30 @@ package ch.megil.teliaengine.game.player;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.Mock;
 
+import ch.megil.teliaengine.file.ProjectFileManager;
 import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
+import ch.megil.teliaengine.project.ProjectController;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public class PlayerTest {
+	private static File parentDir = new File(".");
+	
+	@Rule
+	public TemporaryFolder testProjectDir = new TemporaryFolder(parentDir);
 	
 	@Mock
 	private Image depiction;
@@ -30,6 +41,29 @@ public class PlayerTest {
 		
 		collision = new ArrayList<>();
 		collision.add(new Hitbox(new Vector(0, 83), 100, 50));
+		
+		//create folders
+		testProjectDir.newFolder("assets");
+		testProjectDir.newFolder("assets", "texture");
+		testProjectDir.newFolder("const");
+		
+		//create player
+		var player = testProjectDir.newFile("assets/player.tobj");
+		try (var writer = new BufferedWriter(new FileWriter(player))) {
+			writer.write("10.0:10.0:player:#000000");
+		}
+		testProjectDir.newFile("assets/texture/player.png");
+		
+		//create player
+		var physics = testProjectDir.newFile("const/physics.properties");
+		try (var writer = new BufferedWriter(new FileWriter(physics))) {
+			writer.write("terminalFallVelocity = 0/20");
+		}
+
+		//create info and load project
+		var projectInfo = testProjectDir.newFile("test.teliaproject");
+		var project = new ProjectFileManager().loadProject(projectInfo);
+		ProjectController.get().openProject(project);
 	}
 
 	@Test

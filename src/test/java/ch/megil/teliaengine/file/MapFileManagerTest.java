@@ -4,12 +4,15 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Arrays;
+
+import javax.imageio.ImageIO;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -18,22 +21,19 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mock;
 
-import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.game.player.Player;
+import ch.megil.teliaengine.project.ProjectController;
 
 public class MapFileManagerTest {
-	private static File parentDir = new File(ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath());
-	private static File objParentDir = new File(ProjectFolderConfiguration.ASSETS_OBJECTS.getConfigurationWithProjectPath());
+	private static File parentDir = new File(".");
 	
 	@Rule
-	public TemporaryFolder testMapsDir = new TemporaryFolder(parentDir);
-	@Rule
-	public TemporaryFolder testObjectDir = new TemporaryFolder(objParentDir);
+	public TemporaryFolder testProjectDir = new TemporaryFolder(parentDir);
 
 	@Mock
 	private static GameObject obj1;
@@ -54,9 +54,6 @@ public class MapFileManagerTest {
 	public static void setUpBeforeClass() throws Exception {
 		if (!parentDir.exists()) {
 			parentDir.mkdirs();
-		}
-		if (!objParentDir.exists()) {
-			objParentDir.mkdirs();
 		}
 		
 		obj1 = mock(GameObject.class);
@@ -83,65 +80,90 @@ public class MapFileManagerTest {
 	public void setUp() throws Exception {
 		mapFileManager = new MapFileManager();
 		
-		var redObj = testObjectDir.newFile("red.tobj");
+		//create folders
+		testProjectDir.newFolder("assets");
+		testProjectDir.newFolder("assets", "maps");
+		testProjectDir.newFolder("assets", "object");
+		testProjectDir.newFolder("assets", "texture");
+		
+		//create player
+		var player = testProjectDir.newFile("assets/player.tobj");
+		try (var writer = new BufferedWriter(new FileWriter(player))) {
+			writer.write("10.0:10.0:player:#000000");
+		}
+		testProjectDir.newFile("assets/texture/player.png");
+		
+		//create texture
+		var textureFile = testProjectDir.newFile("assets/texture/tex.png");
+		var texture = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
+		ImageIO.write(texture, "PNG", textureFile);
+		
+		//create objects
+		var redObj = testProjectDir.newFile("assets/object/red.tobj");
 		try (var writer = new BufferedWriter(new FileWriter(redObj))) {
-			writer.write("50.0:60.0:red:#FF0000");
+			writer.write("50.0:60.0:tex:#FF0000");
 		}
 		
-		var failObj = testObjectDir.newFile("fail.tobj");
+		var failObj = testProjectDir.newFile("assets/object/fail.tobj");
 		try (var writer = new BufferedWriter(new FileWriter(failObj))) {
 			writer.write("50.0:60.0");
 		}
 		
-		var correct = testMapsDir.newFile("correct.tmap");
+		//create maps
+		var correct = testProjectDir.newFile("assets/maps/correct.tmap");
 		try (var writer = new BufferedWriter(new FileWriter(correct))) {
 			writer.write( "100.0:70.0\n"
 						+ "15.0:10.0\n"
-						+ testObjectDir.getRoot().getName() + "/red:50.0:30.0\n"
-						+ testObjectDir.getRoot().getName() + "/red:40.0:30.0");
+						+ "red:50.0:30.0\n"
+						+ "red:40.0:30.0");
 		}
 		
-		var failOnMap = testMapsDir.newFile("failOnMap.tmap");
+		var failOnMap = testProjectDir.newFile("assets/maps/failOnMap.tmap");
 		try (var writer = new BufferedWriter(new FileWriter(failOnMap))) {
 			writer.write( "100.0:70.0\n"
 						+ "15.0:10.0\n"
-						+ testObjectDir.getRoot().getName() + "/red:50.0\n"
-						+ testObjectDir.getRoot().getName() + "/red:20.0:10.0\n");
+						+ "red:50.0\n"
+						+ "red:20.0:10.0\n");
 		}
 		
-		var failOnObj = testMapsDir.newFile("failOnObj.tmap");
+		var failOnObj = testProjectDir.newFile("assets/maps/failOnObj.tmap");
 		try (var writer = new BufferedWriter(new FileWriter(failOnObj))) {
 			writer.write( "100.0:70.0\n"
 						+ "15.0:10.0\n"
-						+ testObjectDir.getRoot().getName() + "/fail:50.0:30.0");
+						+ "fail:50.0:30.0");
 		}
 		
-		var missingObject = testMapsDir.newFile("missingObject.tmap");
+		var missingObject = testProjectDir.newFile("assets/maps/missingObject.tmap");
 		try (var writer = new BufferedWriter(new FileWriter(missingObject))) {
 			writer.write( "100.0:70.0\n"
 						+ "15.0:10.0\n"
-						+ testObjectDir.getRoot().getName() + "/test:50.0:30.0");
+						+ "test:50.0:30.0");
 		}
 		
-		var recover = testMapsDir.newFile("recover.tmap");
+		var recover = testProjectDir.newFile("assets/maps/recover.tmap");
 		try (var writer = new BufferedWriter(new FileWriter(recover))) {
 			writer.write( "100.0:70.0\n"
 						+ "15.0:10.0\n"
-						+ testObjectDir.getRoot().getName() + "/red:10.0:40.0\n"
-						+ testObjectDir.getRoot().getName() + "/test:50.0:20.0\n"
-						+ testObjectDir.getRoot().getName() + "/red:20.0:40.0\n"
-						+ testObjectDir.getRoot().getName() + "/red:70.0:40.0\n"
-						+ testObjectDir.getRoot().getName() + "/fail:50.0:30.0\n"
-						+ testObjectDir.getRoot().getName() + "/red:40.0:30.0");
+						+ "red:10.0:40.0\n"
+						+ "test:50.0:20.0\n"
+						+ "red:20.0:40.0\n"
+						+ "red:70.0:40.0\n"
+						+ "fail:50.0:30.0\n"
+						+ "red:40.0:30.0");
 		}
+		
+		//create info and load project
+		var projectInfo = testProjectDir.newFile("test.teliaproject");
+		var project = new ProjectFileManager().loadProject(projectInfo);
+		ProjectController.get().openProject(project);
 	}
 
 	@Test
 	public void testSave() throws Exception {
-		when(testMap.getName()).thenReturn(testMapsDir.getRoot().getName() + "/testSave");
+		when(testMap.getName()).thenReturn("testSave");
 		
 		mapFileManager.save(testMap,player);
-		var file = testMapsDir.getRoot().listFiles((f, n) -> n.startsWith("testSave."))[0];
+		var file = new File(testProjectDir.getRoot().getName() + "/assets/maps/testSave.tmap");
 
 		try (var reader = new BufferedReader(new FileReader(file))) {
 			assertEquals("150.0:100.0", reader.readLine());
@@ -153,7 +175,7 @@ public class MapFileManagerTest {
 
 	@Test
 	public void testLoad() throws Exception {
-		var mapName = testMapsDir.getRoot().getName() + "/correct";
+		var mapName = "correct";
 		var map = mapFileManager.load(mapName, false);
 
 		assertEquals(mapName, map.getName());
@@ -167,31 +189,31 @@ public class MapFileManagerTest {
 
 	@Test(expected = AssetNotFoundException.class)
 	public void testLoadNotExisting() throws Exception {
-		var mapName = testMapsDir.getRoot().getName() + "/nonExisting";
+		var mapName = "nonExisting";
 		mapFileManager.load(mapName, false);
 	}
 
 	@Test(expected = AssetFormatException.class)
 	public void testLoadFalseFormat() throws Exception {
-		var mapName = testMapsDir.getRoot().getName() + "/failOnMap";
+		var mapName = "failOnMap";
 		mapFileManager.load(mapName, false);
 	}
 
 	@Test(expected = AssetFormatException.class)
 	public void testLoadFalseFormatInObject() throws Exception {
-		var mapName = testMapsDir.getRoot().getName() + "/failOnObj";
+		var mapName = "failOnObj";
 		mapFileManager.load(mapName, false);
 	}
 
 	@Test(expected = AssetNotFoundException.class)
 	public void testLoadMissingObject() throws Exception {
-		var mapName = testMapsDir.getRoot().getName() + "/missingObject";
+		var mapName = "missingObject";
 		mapFileManager.load(mapName, false);
 	}
 
 	@Test
 	public void testLoadRecoverMode() throws Exception {
-		var mapName = testMapsDir.getRoot().getName() + "/recover";
+		var mapName = "recover";
 		var map = mapFileManager.load(mapName, true);
 
 		assertEquals(mapName, map.getName());
