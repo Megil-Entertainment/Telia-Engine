@@ -15,12 +15,4 @@ public class SquareCollider extends Collider {
 	protected boolean checkDetailedCollision(Collider other) {
 		return true;
 	}
-
-	public Vector getVectorSize() {
-		return this.size;
-	}
-	
-	public void setVectorSize(double width, double height) {
-		this.size = new Vector(width, height);
-	}
 }

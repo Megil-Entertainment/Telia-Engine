@@ -9,6 +9,7 @@ import org.mockito.Mock;
 
 import ch.megil.teliaengine.physics.Vector;
 import ch.megil.teliaengine.physics.collision.Collider;
+import ch.megil.teliaengine.physics.collision.SquareCollider;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
@@ -21,7 +22,7 @@ public class GameObjectTest {
 	@Before
 	public void setUp() throws Exception {
 		depiction = mock(Image.class);
-		hitbox = new Collider(Vector.ZERO, 50, 50);
+		hitbox = new SquareCollider(Vector.ZERO, 50, 50);
 		color = Color.BLACK;
 	}
 
