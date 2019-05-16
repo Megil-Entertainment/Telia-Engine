@@ -7,7 +7,13 @@ public class SquareCollider extends Collider {
 
 	public SquareCollider(Vector origin, double width, double height) {
 		super(origin);
-		this.size = new Vector(width, height);
+		size = new Vector(width, height);
+		setBoundingBoxSize(size);
+	}
+	
+	@Override
+	protected boolean checkDetailedCollision(Collider other) {
+		return true;
 	}
 
 	public Vector getVectorSize() {
