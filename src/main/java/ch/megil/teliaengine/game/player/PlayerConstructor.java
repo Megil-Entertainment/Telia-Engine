@@ -1,6 +1,6 @@
 package ch.megil.teliaengine.game.player;
 
-import ch.megil.teliaengine.physics.hitbox.Hitbox;
+import ch.megil.teliaengine.physics.collision.Hitbox;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 

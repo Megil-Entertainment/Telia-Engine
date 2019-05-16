@@ -1,4 +1,4 @@
-package ch.megil.teliaengine.game;
+package ch.megil.teliaengine.physics;
 
 import static org.junit.Assert.assertEquals;
 

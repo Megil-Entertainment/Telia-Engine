@@ -14,7 +14,7 @@ import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.game.player.PlayerConstructor;
 import ch.megil.teliaengine.physics.Vector;
-import ch.megil.teliaengine.physics.hitbox.Hitbox;
+import ch.megil.teliaengine.physics.collision.Hitbox;
 import javafx.scene.paint.Color;
 
 public class PlayerFileManager {

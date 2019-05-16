@@ -17,7 +17,7 @@ import org.mockito.Mock;
 
 import ch.megil.teliaengine.file.ProjectFileManager;
 import ch.megil.teliaengine.physics.Vector;
-import ch.megil.teliaengine.physics.hitbox.Hitbox;
+import ch.megil.teliaengine.physics.collision.Hitbox;
 import ch.megil.teliaengine.project.ProjectController;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;

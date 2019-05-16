@@ -1,4 +1,4 @@
-package ch.megil.teliaengine.physics.hitbox;
+package ch.megil.teliaengine.physics.collision;
 
 import ch.megil.teliaengine.physics.Vector;
 

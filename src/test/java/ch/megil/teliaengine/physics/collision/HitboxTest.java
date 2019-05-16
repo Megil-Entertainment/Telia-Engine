@@ -1,4 +1,4 @@
-package ch.megil.teliaengine.game;
+package ch.megil.teliaengine.physics.collision;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.megil.teliaengine.physics.Vector;
-import ch.megil.teliaengine.physics.hitbox.Hitbox;
+import ch.megil.teliaengine.physics.collision.Hitbox;
 
 public class HitboxTest {
 	private Vector vector1;
