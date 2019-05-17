@@ -8,7 +8,7 @@ public class SquareCollider extends Collider {
 	public SquareCollider(Vector origin, double width, double height) {
 		super(origin);
 		size = new Vector(width, height);
-		setBoundingBoxSize(size);
+		setBoundingBoxEnd(origin.add(size));
 	}
 	
 	@Override

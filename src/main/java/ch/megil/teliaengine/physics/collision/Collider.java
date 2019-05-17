@@ -9,10 +9,6 @@ public abstract class Collider {
 	private Vector boundingBoxBegin;
 	private Vector boundingBoxEnd;
 	
-	public Collider(Vector origin) {
-		this.boundingBoxBegin = origin;
-	}
-	
 	public boolean checkCollision(Collider other) {
 		var collision = false;
 		
@@ -30,20 +26,25 @@ public abstract class Collider {
 	
 	protected abstract boolean checkDetailedCollision(Collider other);
 	
-	public Vector getOrigin() {
+	public Vector getBoundingBoxBegin() {
 		return boundingBoxBegin;
 	}
 	
-	public void setOrigin(Vector origin) {
-		this.boundingBoxBegin = origin;
+	protected void setBoundingBoxBegin(Vector boundingBoxBegin) {
+		this.boundingBoxBegin = boundingBoxBegin;
 	}
 	
-	protected Vector getBoundingBoxSize() {
+	public Vector getBoundingBoxEnd() {
 		return boundingBoxEnd;
 	}
 	
-	protected void setBoundingBoxSize(Vector boundingBoxSize) {
-		this.boundingBoxEnd = boundingBoxSize;
+	protected void setBoundingBoxEnd(Vector boundingBoxEnd) {
+		this.boundingBoxEnd = boundingBoxEnd;
+	}
+	
+	protected void setBoundingBox(Vector boundingBoxBegin, Vector boundingBoxEnd) {
+		this.boundingBoxBegin = boundingBoxBegin;
+		this.boundingBoxEnd = boundingBoxEnd;
 	}
 	
 	public void move(Vector move) {
