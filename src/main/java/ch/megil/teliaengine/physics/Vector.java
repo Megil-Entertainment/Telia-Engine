@@ -39,6 +39,10 @@ public class Vector {
 		return new Vector(this.x * vector.x, this.y * vector.y);
 	}
 	
+	public double squareLength() {
+		return x*x + y*y;
+	}
+	
 	public Vector xVector() {
 		return new Vector(x, 0);
 	}
