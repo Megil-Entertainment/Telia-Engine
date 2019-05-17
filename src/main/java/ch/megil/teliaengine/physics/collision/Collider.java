@@ -9,6 +9,11 @@ public abstract class Collider {
 	private Vector boundingBoxBegin;
 	private Vector boundingBoxEnd;
 	
+	public Collider() {
+		boundingBoxBegin = Vector.ZERO;
+		boundingBoxEnd = Vector.ZERO;
+	}
+	
 	public boolean checkCollision(Collider other) {
 		var collision = false;
 		
@@ -16,8 +21,8 @@ public abstract class Collider {
 				(boundingBoxEnd.getY() > other.boundingBoxBegin.getY() && boundingBoxEnd.getY() < other.boundingBoxEnd.getY())) &&
 			((boundingBoxBegin.getX() > other.boundingBoxBegin.getX() && boundingBoxBegin.getX() < other.boundingBoxEnd.getX()) ||
 				(boundingBoxEnd.getX() > other.boundingBoxBegin.getX() && boundingBoxEnd.getX() < other.boundingBoxEnd.getX())) ||
-			(boundingBoxBegin.getY() < other.boundingBoxBegin.getY() && boundingBoxEnd.getY() > other.boundingBoxEnd.getY() && 
-				boundingBoxBegin.getX() < other.boundingBoxBegin.getX() && boundingBoxEnd.getX() > other.boundingBoxEnd.getX())) {
+			(boundingBoxBegin.getY() <= other.boundingBoxBegin.getY() && boundingBoxEnd.getY() >= other.boundingBoxEnd.getY() && 
+				boundingBoxBegin.getX() <= other.boundingBoxBegin.getX() && boundingBoxEnd.getX() >= other.boundingBoxEnd.getX())) {
 			collision = checkDetailedCollision(other);
 		}
 		
@@ -48,7 +53,7 @@ public abstract class Collider {
 	}
 	
 	public void move(Vector move) {
-		boundingBoxBegin.add(move);
-		boundingBoxEnd.add(move);
+		boundingBoxBegin = boundingBoxBegin.add(move);
+		boundingBoxEnd = boundingBoxEnd.add(move);
 	}
 }

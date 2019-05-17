@@ -41,18 +41,21 @@ public class SquareColliderTest {
 	}
 	
 	@Test
-	public void testHitboxSizes() {
-		assertEquals(5, sqCollider1.getOrigin().getX(),0);
-		assertEquals(5, sqCollider1.getBoundingBoxSize().getX(),0);
-		assertEquals(10, sqCollider1.getOrigin().add(sqCollider1.getBoundingBoxSize()).getX(),0);
+	public void testBoundingBoxSizes() {
+		assertEquals(5, sqCollider1.getBoundingBoxBegin().getX(),0);
+		assertEquals(5, sqCollider1.getBoundingBoxBegin().getY(),0);
+		assertEquals(10, sqCollider1.getBoundingBoxEnd().getX(),0);
+		assertEquals(10, sqCollider1.getBoundingBoxEnd().getY(),0);
 		
-		assertEquals(3, sqCollider2.getOrigin().getX(),0);
-		assertEquals(5, sqCollider2.getBoundingBoxSize().getX(),0);
-		assertEquals(8, sqCollider2.getOrigin().add(sqCollider2.getBoundingBoxSize()).getX(),0);
+		assertEquals(3, sqCollider2.getBoundingBoxBegin().getX(),0);
+		assertEquals(3, sqCollider2.getBoundingBoxBegin().getY(),0);
+		assertEquals(8, sqCollider2.getBoundingBoxEnd().getX(),0);
+		assertEquals(8, sqCollider2.getBoundingBoxEnd().getY(),0);
 		
-		assertEquals(20, sqCollider3.getOrigin().getX(),0);
-		assertEquals(5, sqCollider3.getBoundingBoxSize().getX(),0);
-		assertEquals(25, sqCollider3.getOrigin().add(sqCollider3.getBoundingBoxSize()).getX(),0);
+		assertEquals(20, sqCollider3.getBoundingBoxBegin().getX(),0);
+		assertEquals(20, sqCollider3.getBoundingBoxBegin().getY(),0);
+		assertEquals(25, sqCollider3.getBoundingBoxEnd().getX(),0);
+		assertEquals(25, sqCollider3.getBoundingBoxEnd().getY(),0);
 	}
 	
 	@Test
@@ -62,16 +65,19 @@ public class SquareColliderTest {
 		assertFalse(sqCollider1.checkCollision(sqCollider3));
 		assertFalse(sqCollider2.checkCollision(sqCollider3));
 		assertFalse(sqCollider2.checkCollision(sqCollider4));
-		assertTrue(sqCollider2.checkCollision(sqCollider5));
+		assertTrue(sqCollider2.checkCollision(sqCollider5));//
 		assertTrue(sqCollider2.checkCollision(sqCollider6));
 		assertTrue(sqCollider6.checkCollision(sqCollider2));
-		sqCollider2.setOrigin(vector3);
+		sqCollider2.move(vector3);
 		assertFalse(sqCollider2.checkCollision(sqCollider1));
 	}
 	
 	@Test
-	public void testSetOrigin() {
-		sqCollider1.setOrigin(vector2);
-		assertEquals(3, sqCollider1.getOrigin().getX(),0);
+	public void testMove() {
+		sqCollider1.move(vector2);
+		assertEquals(8, sqCollider1.getBoundingBoxBegin().getX(),0);
+		assertEquals(8, sqCollider1.getBoundingBoxBegin().getY(),0);
+		assertEquals(13, sqCollider1.getBoundingBoxEnd().getX(),0);
+		assertEquals(13, sqCollider1.getBoundingBoxEnd().getY(),0);
 	}
 }
