@@ -48,11 +48,11 @@ public class GameElementTest {
 	
 	@Test
 	public void testGameElementHitbox() {
-		assertEquals(0, gameElement.getHitbox().getOrigin().getX(),0);
-		assertEquals(0, gameElement.getHitbox().getOrigin().getY(),0);
+		assertEquals(0, gameElement.getHitbox().getBoundingBoxBegin().getX(),0);
+		assertEquals(0, gameElement.getHitbox().getBoundingBoxBegin().getY(),0);
 		gameElement.setPosition(vector);
-		assertEquals(2, gameElement.getHitbox().getOrigin().getX(),0);
-		assertEquals(2, gameElement.getHitbox().getOrigin().getY(),0);
+		assertEquals(2, gameElement.getHitbox().getBoundingBoxBegin().getX(),0);
+		assertEquals(2, gameElement.getHitbox().getBoundingBoxBegin().getY(),0);
 	}
 	
 

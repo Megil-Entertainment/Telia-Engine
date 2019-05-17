@@ -42,7 +42,7 @@ public class GameObjectTest {
 		assertEquals(depiction, obj.getDepiction());
 		assertEquals(30, obj.getPosition().getX(), 0);
 		assertEquals(40, obj.getPosition().getY(), 0);
-		assertEquals(30, obj.getHitbox().getOrigin().getX(), 0);
-		assertEquals(40, obj.getHitbox().getOrigin().getY(), 0);
+		assertEquals(30, obj.getHitbox().getBoundingBoxBegin().getX(), 0);
+		assertEquals(40, obj.getHitbox().getBoundingBoxBegin().getY(), 0);
 	}
 }
