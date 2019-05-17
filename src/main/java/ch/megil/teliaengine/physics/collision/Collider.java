@@ -6,25 +6,22 @@ import ch.megil.teliaengine.physics.Vector;
  * Collider base with basic boundingbox check.
  */
 public abstract class Collider {
-	private Vector origin;
-	private Vector boundingBoxSize;
+	private Vector boundingBoxBegin;
+	private Vector boundingBoxEnd;
 	
 	public Collider(Vector origin) {
-		this.origin = origin;
+		this.boundingBoxBegin = origin;
 	}
 	
 	public boolean checkCollision(Collider other) {
 		var collision = false;
-		var endpoint = origin.add(boundingBoxSize);
-		var hitboxEndpoint = other.origin.add(other.boundingBoxSize);
 		
-		if(this.equals(other) ||
-			((origin.getY() > other.origin.getY() && origin.getY() < hitboxEndpoint.getY()) ||
-				(endpoint.getY() > other.origin.getY() && endpoint.getY() < hitboxEndpoint.getY())) &&
-			((origin.getX() > other.origin.getX() && origin.getX() < hitboxEndpoint.getX()) ||
-				(endpoint.getX() > other.origin.getX() && endpoint.getX() < hitboxEndpoint.getX())) ||
-			(origin.getY() < other.origin.getY() && endpoint.getY() > hitboxEndpoint.getY() && 
-				origin.getX() < other.origin.getX() && endpoint.getX() > hitboxEndpoint.getX())) {
+		if(((boundingBoxBegin.getY() > other.boundingBoxBegin.getY() && boundingBoxBegin.getY() < other.boundingBoxEnd.getY()) ||
+				(boundingBoxEnd.getY() > other.boundingBoxBegin.getY() && boundingBoxEnd.getY() < other.boundingBoxEnd.getY())) &&
+			((boundingBoxBegin.getX() > other.boundingBoxBegin.getX() && boundingBoxBegin.getX() < other.boundingBoxEnd.getX()) ||
+				(boundingBoxEnd.getX() > other.boundingBoxBegin.getX() && boundingBoxEnd.getX() < other.boundingBoxEnd.getX())) ||
+			(boundingBoxBegin.getY() < other.boundingBoxBegin.getY() && boundingBoxEnd.getY() > other.boundingBoxEnd.getY() && 
+				boundingBoxBegin.getX() < other.boundingBoxBegin.getX() && boundingBoxEnd.getX() > other.boundingBoxEnd.getX())) {
 			collision = checkDetailedCollision(other);
 		}
 		
@@ -34,18 +31,23 @@ public abstract class Collider {
 	protected abstract boolean checkDetailedCollision(Collider other);
 	
 	public Vector getOrigin() {
-		return origin;
+		return boundingBoxBegin;
 	}
 	
 	public void setOrigin(Vector origin) {
-		this.origin = origin;
+		this.boundingBoxBegin = origin;
 	}
 	
 	protected Vector getBoundingBoxSize() {
-		return boundingBoxSize;
+		return boundingBoxEnd;
 	}
 	
 	protected void setBoundingBoxSize(Vector boundingBoxSize) {
-		this.boundingBoxSize = boundingBoxSize;
+		this.boundingBoxEnd = boundingBoxSize;
+	}
+	
+	public void move(Vector move) {
+		boundingBoxBegin.add(move);
+		boundingBoxEnd.add(move);
 	}
 }
