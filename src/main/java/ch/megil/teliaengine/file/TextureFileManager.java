@@ -64,4 +64,14 @@ public class TextureFileManager {
 			throw new AssetCreationException("Texture not created: " + name, e);
 		}
 	}
+	
+	public void deleteTexture(File original) {
+		var origPath = original.toPath();
+		
+		try {
+			Files.delete(origPath);
+		} catch (IOException e) {
+			// TODO: handle exception
+		}
+	}
 }
