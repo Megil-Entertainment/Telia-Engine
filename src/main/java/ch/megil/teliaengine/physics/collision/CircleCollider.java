@@ -20,7 +20,7 @@ public class CircleCollider extends Collider {
 	protected boolean checkDetailedCollision(Collider other) {
 		if (other instanceof CircleCollider) {
 			var otherRadius = ((CircleCollider) other).radius;
-			return center.subtract(((CircleCollider) other).center).squareLength() < (radius * radius + otherRadius * otherRadius);
+			return center.subtract(((CircleCollider) other).center).squareLength() < (radius + otherRadius) * (radius + otherRadius);
 		} else if (other instanceof RectangleCollider) {
 			return checkPointInside(((RectangleCollider) other).getNearestPoint(center));
 		}
