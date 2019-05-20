@@ -14,4 +14,8 @@ public class SquareCollider extends Collider {
 	protected boolean checkDetailedCollision(Collider other) {
 		return true;
 	}
+	
+	public Vector getNearestPoint(Vector point) {
+		return point.clamp(getBoundingBoxBegin(), getBoundingBoxEnd());
+	}
 }

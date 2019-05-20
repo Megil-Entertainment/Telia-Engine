@@ -43,6 +43,10 @@ public class Vector {
 		return x*x + y*y;
 	}
 	
+	public Vector clamp(Vector min, Vector max) {
+		return new Vector(Math.max(min.x, Math.min(x, max.x)), Math.max(min.y, Math.min(y, max.y)));
+	}
+	
 	public Vector xVector() {
 		return new Vector(x, 0);
 	}
