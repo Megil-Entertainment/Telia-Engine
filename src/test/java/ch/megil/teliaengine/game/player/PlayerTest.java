@@ -18,7 +18,7 @@ import org.mockito.Mock;
 import ch.megil.teliaengine.file.ProjectFileManager;
 import ch.megil.teliaengine.physics.Vector;
 import ch.megil.teliaengine.physics.collision.Collider;
-import ch.megil.teliaengine.physics.collision.SquareCollider;
+import ch.megil.teliaengine.physics.collision.RectangleCollider;
 import ch.megil.teliaengine.project.ProjectController;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -38,10 +38,10 @@ public class PlayerTest {
 	@Before
 	public void setUp() throws Exception {
 		depiction = mock(Image.class);
-		playerHitbox = new SquareCollider(Vector.ZERO, 50, 50);
+		playerHitbox = new RectangleCollider(Vector.ZERO, 50, 50);
 		
 		collision = new ArrayList<>();
-		collision.add(new SquareCollider(new Vector(0, 83), 100, 50));
+		collision.add(new RectangleCollider(new Vector(0, 83), 100, 50));
 		
 		//create folders
 		testProjectDir.newFolder("assets");

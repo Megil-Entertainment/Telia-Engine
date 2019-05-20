@@ -9,19 +9,19 @@ import org.junit.Test;
 
 import ch.megil.teliaengine.physics.Vector;
 
-public class SquareColliderTest {
+public class RectangleColliderTest {
 	private Vector vector1;
 	private Vector vector2;
 	private Vector vector3;
 	private Vector vector4;
 	private Vector vector5;
 	private Vector vector6;
-	private SquareCollider sqCollider1;
-	private SquareCollider sqCollider2;
-	private SquareCollider sqCollider3;
-	private SquareCollider sqCollider4;
-	private SquareCollider sqCollider5;
-	private SquareCollider sqCollider6;
+	private RectangleCollider sqCollider1;
+	private RectangleCollider sqCollider2;
+	private RectangleCollider sqCollider3;
+	private RectangleCollider sqCollider4;
+	private RectangleCollider sqCollider5;
+	private RectangleCollider sqCollider6;
 	
 	@Before
 	public void setUp() {
@@ -32,12 +32,12 @@ public class SquareColliderTest {
 		vector5 = new Vector(3,3);
 		vector6 = new Vector(2,2);
 		
-		sqCollider1 = new SquareCollider(vector1, 5, 5);
-		sqCollider2 = new SquareCollider(vector2, 5, 5);
-		sqCollider3 = new SquareCollider(vector3, 5, 5);
-		sqCollider4 = new SquareCollider(vector4, 5, 5);
-		sqCollider5 = new SquareCollider(vector5, 5, 5);
-		sqCollider6 = new SquareCollider(vector6, 7, 7);
+		sqCollider1 = new RectangleCollider(vector1, 5, 5);
+		sqCollider2 = new RectangleCollider(vector2, 5, 5);
+		sqCollider3 = new RectangleCollider(vector3, 5, 5);
+		sqCollider4 = new RectangleCollider(vector4, 5, 5);
+		sqCollider5 = new RectangleCollider(vector5, 5, 5);
+		sqCollider6 = new RectangleCollider(vector6, 7, 7);
 	}
 	
 	@Test

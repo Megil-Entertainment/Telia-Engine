@@ -13,7 +13,7 @@ import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.physics.Vector;
-import ch.megil.teliaengine.physics.collision.SquareCollider;
+import ch.megil.teliaengine.physics.collision.RectangleCollider;
 import javafx.scene.paint.Color;
 
 public class PlayerFileManager {
@@ -28,7 +28,7 @@ public class PlayerFileManager {
 
 			var depictionName = spec[2];
 			var depiction = TextureFileManager.get().load(depictionName, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
-			var hitbox =  new SquareCollider(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
+			var hitbox =  new RectangleCollider(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			var color = Color.web(spec[3]);
 			
 			return new Player(depictionName, depiction, hitbox, color);

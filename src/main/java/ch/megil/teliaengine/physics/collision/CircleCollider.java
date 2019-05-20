@@ -21,8 +21,8 @@ public class CircleCollider extends Collider {
 		if (other instanceof CircleCollider) {
 			var otherRadius = ((CircleCollider) other).radius;
 			return center.subtract(((CircleCollider) other).center).squareLength() < (radius * radius + otherRadius * otherRadius);
-		} else if (other instanceof SquareCollider) {
-			return checkPointInside(((SquareCollider) other).getNearestPoint(center));
+		} else if (other instanceof RectangleCollider) {
+			return checkPointInside(((RectangleCollider) other).getNearestPoint(center));
 		}
 		return false;
 	}
