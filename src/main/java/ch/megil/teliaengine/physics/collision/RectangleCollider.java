@@ -12,7 +12,12 @@ public class RectangleCollider extends Collider {
 	
 	@Override
 	protected boolean checkDetailedCollision(Collider other) {
-		return true;
+		if (other instanceof CircleCollider) {
+			return other.checkDetailedCollision(this);
+		} else if (other instanceof RectangleCollider) {
+			return true;
+		}
+		return false;
 	}
 	
 	public Vector getNearestPoint(Vector point) {
