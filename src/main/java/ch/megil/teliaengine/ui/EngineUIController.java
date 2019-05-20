@@ -131,10 +131,10 @@ public class EngineUIController {
 			
 			var result = dialog.showAndWait();
 			result.ifPresent(map::setName);
-			currentMapEditor.setSaved(true);
 		}
 		
 		mapFileManger.save(map, currentMapEditor.getPlayer());
+		currentMapEditor.setSaved(true);
 	}
 	
 	@FXML

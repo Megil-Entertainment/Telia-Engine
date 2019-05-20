@@ -210,6 +210,7 @@ public class MapEditor extends Pane {
 		getChildren().add(hiddenKeyInput);
 		
 		this.map = map;
+		this.player = player;
 		
 		mapBackground.setWidth(map.getWidth());
 		mapBackground.setHeight(map.getHeight());
