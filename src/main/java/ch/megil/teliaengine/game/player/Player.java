@@ -3,24 +3,19 @@ package ch.megil.teliaengine.game.player;
 import java.util.List;
 
 import ch.megil.teliaengine.configuration.PhysicsConstants;
-import ch.megil.teliaengine.file.PlayerFileManager;
-import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.game.GameElement;
 import ch.megil.teliaengine.physics.Vector;
 import ch.megil.teliaengine.physics.collision.Collider;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
-public class Player extends GameElement{
-	private static Player instance;
-	
+public class Player extends GameElement {
 	private boolean jumpUsed;
 	
 	private Vector acceleration;
 	private Vector velocity;
 
-	
-	protected Player(String depictionName, Image depiction, Collider hitbox, Color color) {
+	public Player(String depictionName, Image depiction, Collider hitbox, Color color) {
 		super(depictionName, depiction, hitbox, color);
 		jumpUsed = false;
 		
@@ -28,35 +23,6 @@ public class Player extends GameElement{
 		velocity = Vector.ZERO;
 		
 		super.setPosition(Vector.ZERO);
-
-	}
-	
-	/**
-	 * Returns the current player instance.
-	 * @throws RuntimeException If not initialized and Player can not be loaded.
-	 */
-	public static Player get() throws RuntimeException {
-		if (instance == null) {
-			try {
-			reload();
-			} catch (AssetLoadException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		return instance;
-	}
-	
-	public static void reload() throws AssetLoadException {
-		instance = new PlayerFileManager().load(Player::new);
-	}
-	
-	public static Player getEngineCopy() {
-		var player = get();
-		
-		var enginePlayer = new Player(player.getDepictionName(), player.getDepiction(), player.getHitbox(), player.getColor());
-		enginePlayer.setPosition(player.getPosition());
-		
-		return enginePlayer;
 	}
 	
 	public void applyForce(Vector f) {

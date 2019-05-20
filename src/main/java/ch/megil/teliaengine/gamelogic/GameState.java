@@ -1,10 +1,12 @@
 package ch.megil.teliaengine.gamelogic;
 
 import ch.megil.teliaengine.game.Map;
+import ch.megil.teliaengine.game.player.Player;
 
 public class GameState {
 	private static GameState instatnce;
 	
+	private Player player;
 	private Map map;
 	
 	protected GameState() {
@@ -24,5 +26,13 @@ public class GameState {
 	
 	public synchronized void setMap(Map map) {
 		this.map = map;
+	}
+	
+	public synchronized Player getPlayer() {
+		return player;
+	}
+	
+	public synchronized void setPlayer(Player player) {
+		this.player = player;
 	}
 }

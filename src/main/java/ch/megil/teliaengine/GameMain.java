@@ -19,7 +19,8 @@ import org.lwjgl.vulkan.VkSubmitInfo;
 
 import ch.megil.teliaengine.configuration.SystemConfiguration;
 import ch.megil.teliaengine.file.MapFileManager;
-import ch.megil.teliaengine.file.exception.AssetFormatException;
+import ch.megil.teliaengine.file.PlayerFileManager;
+import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
@@ -104,9 +105,11 @@ public class GameMain {
 		textureLoader = new VulkanTextureLoader();
 	}
 	
-	public GameMain(String mapName) throws AssetNotFoundException, AssetFormatException {
+	public GameMain(String mapName) throws AssetLoadException {
 		this();
-		GameState.get().setMap(new MapFileManager().load(mapName, false));
+		Player player = new PlayerFileManager().load();
+		GameState.get().setPlayer(player);
+		GameState.get().setMap(new MapFileManager().load(mapName, false, player));
 	}
 
 	public void run() throws IllegalStateException, VulkanException, AssetNotFoundException {
@@ -116,7 +119,7 @@ public class GameMain {
 		
 		try {
 			init();
-			initMap(GameState.get().getMap(), Player.get());
+			initMap(GameState.get().getMap(), GameState.get().getPlayer());
 			
 			GameLoop.get().start();
 			
@@ -168,8 +171,8 @@ public class GameMain {
 			textureLoader.loadAndUpdateGameElementTexture(physicalDevice, logicalDevice, queue, singleCommandPool, descriptorUpdater, element);
 		}
 		
-		map = new VulkanMap(GameState.get().getMap(), Player.get().getPosition());
-		player = new VulkanPlayer(Player.get(), map.getNumberOfVertecies(), Player.get().getPosition());
+		map = new VulkanMap(GameState.get().getMap(), playerObj.getPosition());
+		player = new VulkanPlayer(playerObj, map.getNumberOfVertecies(), playerObj.getPosition());
 		
 		try {
 			vertexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfVertecies() + player.getNumberOfVertecies(), new int[] {queue.getGraphicsFamily()});
@@ -237,8 +240,8 @@ public class GameMain {
 			while(!glfwWindowShouldClose(window)) {
 				glfwPollEvents();
 				
-				map = new VulkanMap(GameState.get().getMap(), Player.get().getPosition());
-				player = new VulkanPlayer(Player.get(), Player.get().getPosition());
+				map = new VulkanMap(GameState.get().getMap(), GameState.get().getPlayer().getPosition());
+				player = new VulkanPlayer(GameState.get().getPlayer(), GameState.get().getPlayer().getPosition());
 				vertexBuffer.writeVertecies(logicalDevice, map);
 				vertexBuffer.writeVertecies(logicalDevice, player, map.getNumberOfVertecies());
 				player.free();

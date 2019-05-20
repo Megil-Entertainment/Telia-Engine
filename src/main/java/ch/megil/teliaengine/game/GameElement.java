@@ -42,6 +42,7 @@ public class GameElement {
 	}
 	
 	public void setPosition(Vector position) {
+		hitbox.move(position.subtract(this.position));
 		this.position = position;
 		onPositionUpdate.accept(position);
 	}
@@ -63,7 +64,6 @@ public class GameElement {
 	}
 	
 	public Collider getHitbox() {
-		hitbox.setOrigin(getPosition());
 		return hitbox;
 	}
 	
