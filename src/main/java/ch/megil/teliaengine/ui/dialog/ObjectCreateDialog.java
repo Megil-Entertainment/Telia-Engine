@@ -78,12 +78,10 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 		searchBtn.setOnAction(this::searchTexture);
 		grid.add(searchBtn, 2, 2);
 		
-		grid.add(createLabelWithTooltip("ObjectPreview"), 0, 3);
 		objectPreview = new HBox();
 		objectPreview.setAlignment(Pos.CENTER);
 		objectPreview.setPadding(new Insets(PADDING));
-		objectPreview.setMinSize(100, 100);
-		grid.add(objectPreview, 1, 3);
+		grid.add(objectPreview, 2, 3);
 		
 		
 		getDialogPane().setContent(grid);
@@ -119,7 +117,9 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 				var obj = new GameObject(null, null, TextureFileManager.get().loadExternal(texturePath.getText(), width, height), null, null);
 				var objImageView = new GameElementImageView(obj);
 				objectPreview.getChildren().clear();
+				objectPreview.setMinSize(width, height);
 				objectPreview.getChildren().add(objImageView);
+				getDialogPane().getScene().getWindow().sizeToScene();
 				createBtn.setDisable(false);
 				return;
 			}
