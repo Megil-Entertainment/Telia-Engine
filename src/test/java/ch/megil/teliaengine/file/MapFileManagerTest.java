@@ -2,6 +2,8 @@ package ch.megil.teliaengine.file;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.awt.image.BufferedImage;
@@ -36,17 +38,17 @@ public class MapFileManagerTest {
 	public TemporaryFolder testProjectDir = new TemporaryFolder(parentDir);
 
 	@Mock
-	private static GameObject obj1;
+	private GameObject obj1;
 	@Mock
-	private static GameObject obj2;
+	private GameObject obj2;
 	@Mock
-	private static Map testMap;
+	private Map testMap;
 	@Mock
-	private static Player player;
+	private Player player;
 	
-	private static Vector vector1;
-	private static Vector vector2;
-	private static Vector playerVector;
+	private Vector vector1;
+	private Vector vector2;
+	private Vector playerVector;
 
 	private MapFileManager mapFileManager;
 
@@ -55,6 +57,17 @@ public class MapFileManagerTest {
 		if (!parentDir.exists()) {
 			parentDir.mkdirs();
 		}
+	}
+	
+	@Before
+	public void setUp() throws Exception {
+		mapFileManager = new MapFileManager();
+		
+		//create folders
+		testProjectDir.newFolder("assets");
+		testProjectDir.newFolder("assets", "maps");
+		testProjectDir.newFolder("assets", "object");
+		testProjectDir.newFolder("assets", "texture");
 		
 		obj1 = mock(GameObject.class);
 		vector1 = new Vector(10.0, 20.0);
@@ -74,17 +87,6 @@ public class MapFileManagerTest {
 		player = mock(Player.class);
 		playerVector = new Vector(20.0, 80.0);
 		when(player.getPosition()).thenReturn(playerVector);
-	}
-	
-	@Before
-	public void setUp() throws Exception {
-		mapFileManager = new MapFileManager();
-		
-		//create folders
-		testProjectDir.newFolder("assets");
-		testProjectDir.newFolder("assets", "maps");
-		testProjectDir.newFolder("assets", "object");
-		testProjectDir.newFolder("assets", "texture");
 		
 		//create player
 		var player = testProjectDir.newFile("assets/player.tobj");
@@ -176,13 +178,14 @@ public class MapFileManagerTest {
 	@Test
 	public void testLoad() throws Exception {
 		var mapName = "correct";
-		var map = mapFileManager.load(mapName, false);
+		var map = mapFileManager.load(mapName, false, player);
+		
+		verify(player, times(1)).setPosX(15.0);
+		verify(player, times(1)).setPosY(10.0);
 
 		assertEquals(mapName, map.getName());
 		assertEquals(100.0, map.getWidth(), 0);
 		assertEquals(70.0, map.getHeight(), 0);
-		assertEquals(15.0, Player.get().getPosition().getX(), 0);
-		assertEquals(10.0, Player.get().getPosition().getY(), 0);
 
 		assertEquals(2, map.getMapObjects().size());
 	}
@@ -190,37 +193,38 @@ public class MapFileManagerTest {
 	@Test(expected = AssetNotFoundException.class)
 	public void testLoadNotExisting() throws Exception {
 		var mapName = "nonExisting";
-		mapFileManager.load(mapName, false);
+		mapFileManager.load(mapName, false, player);
 	}
 
 	@Test(expected = AssetFormatException.class)
 	public void testLoadFalseFormat() throws Exception {
 		var mapName = "failOnMap";
-		mapFileManager.load(mapName, false);
+		mapFileManager.load(mapName, false, player);
 	}
 
 	@Test(expected = AssetFormatException.class)
 	public void testLoadFalseFormatInObject() throws Exception {
 		var mapName = "failOnObj";
-		mapFileManager.load(mapName, false);
+		mapFileManager.load(mapName, false, player);
 	}
 
 	@Test(expected = AssetNotFoundException.class)
 	public void testLoadMissingObject() throws Exception {
 		var mapName = "missingObject";
-		mapFileManager.load(mapName, false);
+		mapFileManager.load(mapName, false, player);
 	}
 
 	@Test
 	public void testLoadRecoverMode() throws Exception {
 		var mapName = "recover";
-		var map = mapFileManager.load(mapName, true);
+		var map = mapFileManager.load(mapName, true, player);
 
+		verify(player, times(1)).setPosX(15.0);
+		verify(player, times(1)).setPosY(10.0);
+		
 		assertEquals(mapName, map.getName());
 		assertEquals(100.0, map.getWidth(), 0);
 		assertEquals(70.0, map.getHeight(), 0);
-		assertEquals(15.0, Player.get().getPosition().getX(), 0);
-		assertEquals(10.0, Player.get().getPosition().getY(), 0);
 
 		assertEquals(4, map.getMapObjects().size());
 	}
