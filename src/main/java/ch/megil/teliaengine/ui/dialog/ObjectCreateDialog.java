@@ -136,7 +136,6 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 		extensions.add("*" + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration());
 		extensions.add("*" + ".jpg");
 		chooser.getExtensionFilters().add(new ExtensionFilter("Texture", extensions));
-		chooser.setInitialDirectory(new File("assets/texture"));
 		var dir = chooser.showOpenDialog(texturePath.getScene().getWindow());
 		if (dir != null) {
 			texturePath.setText(dir.getAbsolutePath());

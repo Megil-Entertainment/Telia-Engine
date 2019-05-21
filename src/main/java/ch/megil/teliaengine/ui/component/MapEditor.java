@@ -1,6 +1,6 @@
 package ch.megil.teliaengine.ui.component;
 
-import ch.megil.teliaengine.configuration.SystemConfiguration;
+import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
@@ -31,8 +31,8 @@ public class MapEditor extends Pane {
 	private double dx;
 	private double dy;
 	
-	private int gridWidth;
-	private int gridHeight;
+	private double gridWidth;
+	private double gridHeight;
 	
 	private InnerShadow nodeSelected;
 	private InnerShadow nodeDeselected;
@@ -41,6 +41,8 @@ public class MapEditor extends Pane {
 	
 	private TextArea hiddenKeyInput;
 	private Rectangle mapBackground;
+	
+	private boolean saved;
 	
 	public MapEditor() {
 		hiddenKeyInput = new TextArea();
@@ -67,20 +69,23 @@ public class MapEditor extends Pane {
 					});
 			}});
 		
-		gridWidth = Integer.parseInt(SystemConfiguration.MAP_GRID_WIDTH.getConfiguration());
-		gridHeight = Integer.parseInt(SystemConfiguration.MAP_GRID_HEIGHT.getConfiguration());
+		gridWidth = GameConfiguration.MAP_GRID_WIDTH.getConfiguration();
+		gridHeight = GameConfiguration.MAP_GRID_HEIGHT.getConfiguration();
 		
 		nodeSelected = new InnerShadow(INNER_SHADOW_RADIUS, INNER_SHADOW_COLOR);
 		nodeSelected.setChoke(INNER_SHADOW_CHOKE);
 		
 		nodeDeselected = new InnerShadow();
 		nodeDeselected.setColor(Color.TRANSPARENT);
+		
+		saved = true;
 	}
 	
 	public void addGameObject(GameObject obj) {
 		if (map != null) {
 			map.addObject(obj);
 			getChildren().add(new GameElementImageView(obj));
+			saved = false;
 		}
 	}
 	
@@ -114,9 +119,10 @@ public class MapEditor extends Pane {
 		map.removeObject((GameObject)selected.getGameElement());
 		getChildren().remove(selected);
 		selected = null;
+		saved = false;
 	}
 	
-	private double roundToNearest(double value, int roundFactor) {
+	private double roundToNearest(double value, double roundFactor) {
 		return Math.round(value/roundFactor) * roundFactor;
 	}
 	
@@ -161,6 +167,7 @@ public class MapEditor extends Pane {
 			source.setImageViewLayoutY(
 					roundToNearest((event.getSceneY() + dy), gridHeight));
 			checkBoundries(source);
+			saved = false;
 			event.consume();
 		}
 	}
@@ -216,6 +223,14 @@ public class MapEditor extends Pane {
 		var clip = (Rectangle) getClip();
 		clip.setX(0);
 		clip.setY(0);
+	}
+	
+	public void setSaved(boolean saved) {
+		this.saved = saved;
+	}
+	
+	public boolean getSaved() {
+		return saved;
 	}
 
 }

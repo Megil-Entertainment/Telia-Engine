@@ -12,8 +12,8 @@ public class VulkanPlayer extends VulkanElement {
 	}
 	
 	public VulkanPlayer(Player player, int indexOffset, Vector cameraPosition) {
-		super(SINGLE_OBJECT, Double.parseDouble(GameConfiguration.MAP_WIDTH.getConfiguration()), 
-				Double.parseDouble(GameConfiguration.MAP_HEIGHT.getConfiguration()), cameraPosition);
+		super(SINGLE_OBJECT, GameConfiguration.MAP_WIDTH.getConfiguration(), 
+				GameConfiguration.MAP_HEIGHT.getConfiguration(), cameraPosition);
 		
 		var vertexBuffer = vertecies.asFloatBuffer();
 		var indexBuffer = indicies.asShortBuffer();

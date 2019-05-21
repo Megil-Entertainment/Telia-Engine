@@ -9,8 +9,6 @@ import ch.megil.teliaengine.logging.LogHandler;
 public enum SystemConfiguration {
 	APP_NAME("appName"),
 	APP_ABOUT("appAbout"),
-	MAP_GRID_WIDTH("mapGridWidth"),
-	MAP_GRID_HEIGHT("mapGridHeight"),
 	GAME_NAME("gameName");
 	
 	private static Properties sysProp;

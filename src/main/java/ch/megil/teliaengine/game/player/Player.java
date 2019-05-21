@@ -4,6 +4,7 @@ import java.util.List;
 
 import ch.megil.teliaengine.configuration.PhysicsConstants;
 import ch.megil.teliaengine.file.PlayerFileManager;
+import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.game.GameElement;
 import ch.megil.teliaengine.game.Hitbox;
 import ch.megil.teliaengine.game.Vector;
@@ -30,14 +31,22 @@ public class Player extends GameElement{
 
 	}
 	
-	public static Player get() {
+	/**
+	 * Returns the current player instance.
+	 * @throws RuntimeException If not initialized and Player can not be loaded.
+	 */
+	public static Player get() throws RuntimeException {
 		if (instance == null) {
+			try {
 			reload();
+			} catch (AssetLoadException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		return instance;
 	}
 	
-	public static void reload() {
+	public static void reload() throws AssetLoadException {
 		instance = new PlayerFileManager().load(Player::new);
 	}
 	

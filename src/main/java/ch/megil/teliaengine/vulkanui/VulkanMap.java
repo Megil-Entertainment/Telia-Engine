@@ -10,8 +10,8 @@ public class VulkanMap extends VulkanElement {
 	}
 	
 	public VulkanMap(Map map, int indexOffset, Vector cameraPosition) {
-		super(map.getMapObjects().size(), Double.parseDouble(GameConfiguration.MAP_WIDTH.getConfiguration()), 
-				Double.parseDouble(GameConfiguration.MAP_HEIGHT.getConfiguration()), cameraPosition);
+		super(map.getMapObjects().size(), GameConfiguration.MAP_WIDTH.getConfiguration(), 
+				GameConfiguration.MAP_HEIGHT.getConfiguration(), cameraPosition);
 		
 		var vertexBuffer = vertecies.asFloatBuffer();
 		var indexBuffer = indicies.asShortBuffer();

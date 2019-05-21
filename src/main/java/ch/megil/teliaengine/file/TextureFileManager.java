@@ -73,4 +73,15 @@ public class TextureFileManager {
 			throw new AssetCreationException("Texture not created: " + name, e);
 		}
 	}
+	
+	public void importTextureToOtherProject(File projectDir, String name, File original) throws AssetCreationException {
+		var origPath = original.toPath();
+		var destPath = new File(projectDir.getAbsolutePath() + ProjectFolderConfiguration.ASSETS_TEXTURES.getConfigurationWithoutProjectPath() + "/" + name + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration()).toPath();
+		
+		try {
+			Files.copy(origPath, destPath);
+		} catch (IOException e) {
+			throw new AssetCreationException("Texture not created: " + name, e);
+		}
+	}
 }
