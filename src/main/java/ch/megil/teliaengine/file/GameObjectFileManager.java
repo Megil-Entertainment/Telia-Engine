@@ -1,8 +1,10 @@
 package ch.megil.teliaengine.file;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,5 +57,18 @@ public class GameObjectFileManager {
 		}
 		
 		return res;
+	}
+	
+	public void createGameObject(GameObject obj) {
+		var fileName = ProjectFolderConfiguration.ASSETS_OBJECTS.getConfigurationWithProjectPath() + "/" + obj.getDepictionName() + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
+		
+		var propSeperator = FileConfiguration.SEPERATOR_PROPERTY.getConfiguration();
+		
+		try (var writer = new BufferedWriter(new FileWriter(fileName))) {
+			writer.write(obj.getDepiction().getWidth() + propSeperator + obj.getDepiction().getHeight() + propSeperator +
+					obj.getDepictionName() + propSeperator + obj.getColor());
+		} catch (IOException e) {
+			LogHandler.log(e, Level.SEVERE);
+		}
 	}
 }

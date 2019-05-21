@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import ch.megil.teliaengine.GameMain;
 import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
+import ch.megil.teliaengine.file.GameObjectFileManager;
 import ch.megil.teliaengine.file.MapFileManager;
 import ch.megil.teliaengine.file.ProjectFileManager;
 import ch.megil.teliaengine.file.TextureFileManager;
@@ -49,11 +50,13 @@ public class EngineUIController {
 	
 	private MapFileManager mapFileManger;
 	private ProjectFileManager projectFileManager;
+	private GameObjectFileManager gameObjectFileManager;
 
 	@FXML
 	private void initialize() {
 		mapFileManger = new MapFileManager();
 		projectFileManager = new ProjectFileManager();
+		gameObjectFileManager = new GameObjectFileManager();
 		
 		objectExplorer.setMapEditor(mapEditor);
 		objectExplorer.setMaxWidth(300);
@@ -73,6 +76,7 @@ public class EngineUIController {
 	
 	private void addObjectToList(GameObject gameObject) {
 		objectExplorer.addNewGameObject(gameObject);
+		gameObjectFileManager.createGameObject(gameObject);
 	}
 	
 	@FXML

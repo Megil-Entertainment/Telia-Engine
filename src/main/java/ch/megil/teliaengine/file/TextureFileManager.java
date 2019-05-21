@@ -54,6 +54,15 @@ public class TextureFileManager {
 		}
 	}
 	
+	public Image loadExternal(String path, double width, double height) throws AssetNotFoundException {
+		try (var is = new FileInputStream(new File(path))) {
+			var obj = new Image(is, width, height, false, false);
+			return obj;
+		} catch (IOException e) {
+			throw new AssetNotFoundException("External Texture not found: " + path, e);
+		}
+	}
+	
 	public void importTexture(String name, File original) throws AssetCreationException {
 		var origPath = original.toPath();
 		var destPath = new File(ProjectFolderConfiguration.ASSETS_TEXTURES.getConfigurationWithProjectPath() + "/" + name + FileConfiguration.FILE_EXT_TEXTURE.getConfiguration()).toPath();
@@ -62,16 +71,6 @@ public class TextureFileManager {
 			Files.copy(origPath, destPath);
 		} catch (IOException e) {
 			throw new AssetCreationException("Texture not created: " + name, e);
-		}
-	}
-	
-	public void deleteTexture(File original) {
-		var origPath = original.toPath();
-		
-		try {
-			Files.delete(origPath);
-		} catch (IOException e) {
-			// TODO: handle exception
 		}
 	}
 }
