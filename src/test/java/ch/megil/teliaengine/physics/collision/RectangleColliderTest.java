@@ -65,7 +65,7 @@ public class RectangleColliderTest {
 		assertFalse(sqCollider1.checkCollision(sqCollider3));
 		assertFalse(sqCollider2.checkCollision(sqCollider3));
 		assertFalse(sqCollider2.checkCollision(sqCollider4));
-		assertTrue(sqCollider2.checkCollision(sqCollider5));//
+		assertTrue(sqCollider2.checkCollision(sqCollider5));
 		assertTrue(sqCollider2.checkCollision(sqCollider6));
 		assertTrue(sqCollider6.checkCollision(sqCollider2));
 		sqCollider2.move(vector3);
