@@ -70,4 +70,14 @@ public class ColliderTest {
 		assertEquals(13, collider1.getBoundingBoxEnd().getX(),0);
 		assertEquals(13, collider1.getBoundingBoxEnd().getY(),0);
 	}
+	
+	@Test
+	public void testRound() {
+		collider1.setBoundingBox(new Vector(0.000001, 0.49), new Vector(0.5, 0.75));
+		collider1.round();
+		assertEquals(0, collider1.getBoundingBoxBegin().getX(),0);
+		assertEquals(0, collider1.getBoundingBoxBegin().getY(),0);
+		assertEquals(1, collider1.getBoundingBoxEnd().getX(),0);
+		assertEquals(1, collider1.getBoundingBoxEnd().getY(),0);
+	}
 }
