@@ -52,6 +52,11 @@ public abstract class Collider {
 		this.boundingBoxEnd = boundingBoxEnd;
 	}
 	
+	public void round() {
+		boundingBoxBegin = boundingBoxBegin.round();
+		boundingBoxEnd = boundingBoxEnd.round();
+	}
+	
 	public void move(Vector move) {
 		boundingBoxBegin = boundingBoxBegin.add(move);
 		boundingBoxEnd = boundingBoxEnd.add(move);
