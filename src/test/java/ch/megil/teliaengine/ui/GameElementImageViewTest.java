@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import ch.megil.teliaengine.game.GameElement;
+import ch.megil.teliaengine.physics.collision.Collider;
 import ch.megil.teliaengine.ui.GameElementImageView;
 import javafx.scene.image.Image;
 
@@ -15,14 +16,17 @@ public class GameElementImageViewTest {
 	private GameElementImageView imageView;
 	
 	@Mock
+	private Collider collider;
+	@Mock
 	private Image depiction;
 	
 	private GameElement gameElement;
 	
 	@Before
 	public void setUp() {
+		collider = mock(Collider.class);
 		depiction = mock(Image.class);
-		gameElement = new GameElement(null, depiction, null, null);
+		gameElement = new GameElement(null, depiction, collider, null);
 		imageView = new GameElementImageView(gameElement);
 	}
 	
