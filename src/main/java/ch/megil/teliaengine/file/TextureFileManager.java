@@ -56,8 +56,8 @@ public class TextureFileManager {
 	
 	public Image loadExternal(String path, double width, double height) throws AssetNotFoundException {
 		try (var is = new FileInputStream(new File(path))) {
-			var obj = new Image(is, width, height, false, false);
-			return obj;
+			var tex = new Image(is, width, height, false, false);
+			return tex;
 		} catch (IOException e) {
 			throw new AssetNotFoundException("External Texture not found: " + path, e);
 		}

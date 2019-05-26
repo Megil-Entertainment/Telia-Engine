@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
+import ch.megil.teliaengine.file.GameObjectFileManager;
 import ch.megil.teliaengine.file.TextureFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
@@ -25,12 +26,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 
 public class ObjectCreateDialog extends Dialog<GameObject>{
@@ -41,8 +44,9 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 	private TextField objectWidth;
 	private TextField objectHeight;
 	private TextField texturePath;
-	private Image depiction;
 	private HBox objectPreview;
+	private GameObject obj;
+	private GameObjectFileManager gameObjectFileManager;
 
 	
 	public ObjectCreateDialog() {
@@ -97,15 +101,20 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 				Double.parseDouble(objectHeight.getText()));
 		var textureFile = new File(texturePath.getText());
 		var textureName = name;
+		gameObjectFileManager = new GameObjectFileManager();
+		
 		try {
 			TextureFileManager.get().importTexture(textureName, textureFile);
-			depiction = TextureFileManager.get().load(textureName, hitbox.getVectorSize().getX(), hitbox.getVectorSize().getY());
+			var depiction = TextureFileManager.get().load(textureName, hitbox.getVectorSize().getX(), hitbox.getVectorSize().getY());
+			obj = new GameObject(name, name, depiction, hitbox, Color.BLACK);
+			gameObjectFileManager.create(obj);
+			return obj;
 		} catch (AssetNotFoundException | AssetCreationException e) {
 			LogHandler.log(e, Level.SEVERE);
+			showErrorAlert("Creation Error", "The game object could not be created");
 		}
-		GameObject obj = new GameObject(name, name, depiction, hitbox, Color.BLACK);
 		
-		return obj;
+		return null;
 	}
 	
 	private <T> void enableCreate(ObservableValue<? extends T> obs, T oldVal, T newVal) {
@@ -146,5 +155,13 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 		var label = new Label(text);
 		label.setTooltip(new Tooltip(text));
 		return label;
+	}
+	
+	private void showErrorAlert(String title, String message) {
+		var alert = new Alert(AlertType.ERROR);
+		alert.setTitle(title);
+		alert.setHeaderText(null);
+		alert.setContentText(message);
+		alert.showAndWait();
 	}
 }

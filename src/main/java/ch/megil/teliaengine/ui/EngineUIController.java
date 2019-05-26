@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import ch.megil.teliaengine.GameMain;
 import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
-import ch.megil.teliaengine.file.GameObjectFileManager;
 import ch.megil.teliaengine.file.MapFileManager;
 import ch.megil.teliaengine.file.ProjectFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
@@ -56,14 +55,12 @@ public class EngineUIController {
 	
 	private MapFileManager mapFileManger;
 	private ProjectFileManager projectFileManager;
-	private GameObjectFileManager gameObjectFileManager;
 
 	@FXML
 	private void initialize() {
 		mapFileManger = new MapFileManager();
 
 		projectFileManager = new ProjectFileManager();
-		gameObjectFileManager = new GameObjectFileManager();
 		
 		objectExplorer.setMaxWidth(300);
 		try {
@@ -79,12 +76,17 @@ public class EngineUIController {
 	
 	@FXML
 	private void createNewObject() {
-		new ObjectCreateDialog().showAndWait().ifPresent(this::addObjectToList);
+		new ObjectCreateDialog().showAndWait().ifPresent(t -> {
+			try {
+				addObjectToList(t);
+			} catch (AssetCreationException e) {
+				LogHandler.log("Object could not be created", Level.SEVERE);
+			}
+		});
 	}
 	
-	private void addObjectToList(GameObject gameObject) {
+	private void addObjectToList(GameObject gameObject) throws AssetCreationException {
 		objectExplorer.addNewGameObject(gameObject);
-		gameObjectFileManager.createGameObject(gameObject);
 	}
 	
 	@FXML
