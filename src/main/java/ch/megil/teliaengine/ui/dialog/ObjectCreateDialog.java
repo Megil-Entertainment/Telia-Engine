@@ -34,7 +34,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.image.Image;
 
 public class ObjectCreateDialog extends Dialog<GameObject>{
 	private static final int PADDING = 15;
