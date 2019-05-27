@@ -102,7 +102,7 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 		try {
 			TextureFileManager.get().importTexture(textureName, textureFile);
 			var depiction = TextureFileManager.get().load(textureName, hitbox.getVectorSize().getX(), hitbox.getVectorSize().getY());
-			GameObject obj = new GameObject(name, name, depiction, hitbox, Color.BLACK);
+			var obj = new GameObject(name, name, depiction, hitbox, Color.BLACK);
 			new GameObjectFileManager().create(obj);
 			return obj;
 		} catch (AssetNotFoundException | AssetCreationException e) {
