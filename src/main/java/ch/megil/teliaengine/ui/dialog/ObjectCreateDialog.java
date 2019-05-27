@@ -45,8 +45,6 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 	private TextField objectHeight;
 	private TextField texturePath;
 	private HBox objectPreview;
-	private GameObject obj;
-	private GameObjectFileManager gameObjectFileManager;
 
 	
 	public ObjectCreateDialog() {
@@ -101,13 +99,12 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 				Double.parseDouble(objectHeight.getText()));
 		var textureFile = new File(texturePath.getText());
 		var textureName = name;
-		gameObjectFileManager = new GameObjectFileManager();
 		
 		try {
 			TextureFileManager.get().importTexture(textureName, textureFile);
 			var depiction = TextureFileManager.get().load(textureName, hitbox.getVectorSize().getX(), hitbox.getVectorSize().getY());
-			obj = new GameObject(name, name, depiction, hitbox, Color.BLACK);
-			gameObjectFileManager.create(obj);
+			GameObject obj = new GameObject(name, name, depiction, hitbox, Color.BLACK);
+			new GameObjectFileManager().create(obj);
 			return obj;
 		} catch (AssetNotFoundException | AssetCreationException e) {
 			LogHandler.log(e, Level.SEVERE);

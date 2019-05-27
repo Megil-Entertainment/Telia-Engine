@@ -76,16 +76,10 @@ public class EngineUIController {
 	
 	@FXML
 	private void createNewObject() {
-		new ObjectCreateDialog().showAndWait().ifPresent(t -> {
-			try {
-				addObjectToList(t);
-			} catch (AssetCreationException e) {
-				LogHandler.log("Object could not be created", Level.SEVERE);
-			}
-		});
+		new ObjectCreateDialog().showAndWait().ifPresent(this::addObjectToList);
 	}
 	
-	private void addObjectToList(GameObject gameObject) throws AssetCreationException {
+	private void addObjectToList(GameObject gameObject) {
 		objectExplorer.addNewGameObject(gameObject);
 	}
 	
