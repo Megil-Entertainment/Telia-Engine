@@ -26,6 +26,9 @@
 						<MenuItem text="Load Map" onAction="#fileLoadMap" />
 					</Menu>
 				</Menu>
+				<Menu text="Object">
+					<MenuItem text="New Object" onAction="#createNewObject"/>
+				</Menu>
 				<Menu text="Game">
 					<MenuItem text="Run" onAction="#gameRun" />
 				</Menu>

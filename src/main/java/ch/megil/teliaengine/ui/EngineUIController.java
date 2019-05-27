@@ -16,6 +16,7 @@ import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
+import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.logging.LogHandler;
 import ch.megil.teliaengine.project.ProjectController;
@@ -25,6 +26,7 @@ import ch.megil.teliaengine.ui.component.ObjectExplorer;
 import javafx.event.Event;
 import ch.megil.teliaengine.ui.dialog.AboutDialog;
 import ch.megil.teliaengine.ui.dialog.MapCreateDialog;
+import ch.megil.teliaengine.ui.dialog.ObjectCreateDialog;
 import ch.megil.teliaengine.ui.dialog.ProjectCreateDialog;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -59,7 +61,7 @@ public class EngineUIController {
 		mapFileManger = new MapFileManager();
 
 		projectFileManager = new ProjectFileManager();
-
+		
 		objectExplorer.setMaxWidth(300);
 		try {
 			assetExplorer.initialize(this::loadMap);
@@ -70,6 +72,15 @@ public class EngineUIController {
 		}
 		
 		openTabs = new HashMap<>();
+	}
+	
+	@FXML
+	private void createNewObject() {
+		new ObjectCreateDialog().showAndWait().ifPresent(this::addObjectToList);
+	}
+	
+	private void addObjectToList(GameObject gameObject) {
+		objectExplorer.addNewGameObject(gameObject);
 	}
 	
 	@FXML
