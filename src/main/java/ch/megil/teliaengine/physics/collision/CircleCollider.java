@@ -23,7 +23,7 @@ public class CircleCollider extends Collider {
 			var otherRadius = ((CircleCollider) other).radius;
 			return center.subtract(((CircleCollider) other).center).squareLength() < (radius + otherRadius) * (radius + otherRadius);
 		} else if (other instanceof RectangleCollider) {
-			return ((RectangleCollider) other).getNearestPoint(center).subtract(center).squareLength() < squareRadius;
+			return ((RectangleCollider) other).getSquareDistanceToPoint(center) < squareRadius;
 		} else if (other instanceof TriangleCollider) {
 			return ((TriangleCollider) other).getSquareDistanceToPoint(center) < squareRadius;
 		}

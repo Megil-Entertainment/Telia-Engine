@@ -23,7 +23,7 @@ public class RectangleCollider extends Collider {
 		throw new CollisionNotImplementedException(this, other);
 	}
 	
-	public Vector getNearestPoint(Vector point) {
-		return point.clamp(getBoundingBoxBegin(), getBoundingBoxEnd());
+	public double getSquareDistanceToPoint(Vector point) {
+		return point.clamp(getBoundingBoxBegin(), getBoundingBoxEnd()).subtract(point).squareLength();
 	}
 }
