@@ -35,12 +35,33 @@ public class Vector {
 		return new Vector(this.x - vector.x, this.y - vector.y);
 	}
 	
+	public double dot(Vector vector) {
+		return x*vector.x + y*vector.y;
+	}
+	
 	public Vector multiplyByComponent(Vector vector) {
 		return new Vector(this.x * vector.x, this.y * vector.y);
 	}
 	
 	public double squareLength() {
 		return x*x + y*y;
+	}
+	
+	public double squareDistanceToLineSegment(Vector p0, Vector p1) {
+		var v = p1.subtract(p0);
+		
+		var w = this.subtract(p0);
+		var proj = w.dot(v);
+		if(proj <= 0) {
+			return w.dot(w);
+		} else {
+			var vsq = v.dot(v);
+			if (proj >= vsq) {
+				return w.dot(w) - 2*proj + vsq;
+			} else {
+				return w.dot(w) - proj*proj/vsq;
+			}
+		}
 	}
 	
 	public Vector clamp(Vector min, Vector max) {
