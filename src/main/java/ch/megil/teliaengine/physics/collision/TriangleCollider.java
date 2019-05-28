@@ -49,6 +49,8 @@ public class TriangleCollider extends Collider implements DistanceCalculatable {
 		} else if (other instanceof TriangleCollider) {
 			var triangle = (TriangleCollider) other;
 			return this.checkTriangleIntersection(triangle) && triangle.checkTriangleIntersection(this);
+		} else if (other instanceof CompositeCollider) {
+			return other.checkDetailedCollision(this);
 		}
 		throw new CollisionNotImplementedException(this, other);
 	}

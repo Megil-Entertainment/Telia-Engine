@@ -19,6 +19,8 @@ public class RectangleCollider extends Collider implements DistanceCalculatable 
 			return true;
 		} else if (other instanceof TriangleCollider) {
 			return other.checkDetailedCollision(this);
+		} else if (other instanceof CompositeCollider) {
+			return other.checkDetailedCollision(this);
 		}
 		throw new CollisionNotImplementedException(this, other);
 	}

@@ -24,6 +24,8 @@ public class CircleCollider extends Collider {
 			return center.subtract(((CircleCollider) other).center).squareLength() < (radius + otherRadius) * (radius + otherRadius);
 		} else if (other instanceof DistanceCalculatable) {
 			return ((DistanceCalculatable) other).getSquareDistanceToPoint(center) < squareRadius;
+		} else if (other instanceof CompositeCollider) {
+			return other.checkDetailedCollision(this);
 		}
 		throw new CollisionNotImplementedException(this, other);
 	}
