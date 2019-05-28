@@ -18,10 +18,12 @@ public class RectangleCollider extends Collider implements DistanceCalculatable 
 		} else if (other instanceof RectangleCollider) {
 			return true;
 		} else if (other instanceof TriangleCollider) {
-			//TODO: implement collision
+			return other.checkDetailedCollision(this);
 		}
 		throw new CollisionNotImplementedException(this, other);
 	}
+	
+	
 	
 	@Override
 	public double getSquareDistanceToPoint(Vector point) {

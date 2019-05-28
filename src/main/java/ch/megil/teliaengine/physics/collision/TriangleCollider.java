@@ -30,7 +30,22 @@ public class TriangleCollider extends Collider implements DistanceCalculatable {
 		if (other instanceof CircleCollider) {
 			other.checkDetailedCollision(this);
 		} else if (other instanceof RectangleCollider) {
-			//TODO: implement collision
+			var rectangle = (RectangleCollider) other;
+			var v0 = p1.subtract(p0);
+			var v1 = p2.subtract(p1);
+			var n = v0.perpendicularDot(v1);
+			
+			if (checkRectangleOutsideEdge(p0, v0, n, rectangle)) {
+				return false;
+			}
+			if (checkRectangleOutsideEdge(p1, v1, n, rectangle)) {
+				return false;
+			}
+			var v2 = p0.subtract(p2);
+			if (checkRectangleOutsideEdge(p2, v2, n, rectangle)) {
+				return false;
+			}
+			return true;
 		} else if (other instanceof TriangleCollider) {
 			var triangle = (TriangleCollider) other;
 			return this.checkTriangleIntersection(triangle) && triangle.checkTriangleIntersection(this);
@@ -43,7 +58,14 @@ public class TriangleCollider extends Collider implements DistanceCalculatable {
 		var v1 = p2.subtract(p1);
 		var n = v0.perpendicularDot(v1);
 		
-		if (other.checkOutsideEdge(p0, v0, n) || other.checkOutsideEdge(p0, v0, n) || other.checkOutsideEdge(p0, v0, n)) {
+		if (other.checkOutsideEdge(p0, v0, n)) {
+			return false;
+		}
+		if (other.checkOutsideEdge(p1, v1, n)) {
+			return false;
+		}
+		var v2 = p0.subtract(p2);
+		if (other.checkOutsideEdge(p2, v2, n)) {
 			return false;
 		}
 		return true;
@@ -59,6 +81,28 @@ public class TriangleCollider extends Collider implements DistanceCalculatable {
 			return false;
 		}
 		wTest = edge.perpendicularDot(p2.subtract(edgeOrigin));
+		if (wTest*normal > 0) {
+			return false;
+		}
+		return true;
+	}
+	
+	private boolean checkRectangleOutsideEdge(Vector edgeOrigin, Vector edge, double normal, RectangleCollider collider) {
+		var wTest = edge.perpendicularDot(collider.getBoundingBoxBegin().subtract(edgeOrigin));
+		if (wTest*normal > 0) {
+			return false;
+		}
+		wTest = edge.perpendicularDot(collider.getBoundingBoxEnd().subtract(edgeOrigin));
+		if (wTest*normal > 0) {
+			return false;
+		}
+		var p2 = new Vector(collider.getBoundingBoxBegin().getX(), collider.getBoundingBoxEnd().getY());
+		wTest = edge.perpendicularDot(p2.subtract(edgeOrigin));
+		if (wTest*normal > 0) {
+			return false;
+		}
+		var p3 = new Vector(collider.getBoundingBoxEnd().getX(), collider.getBoundingBoxBegin().getY());
+		wTest = edge.perpendicularDot(p3.subtract(edgeOrigin));
 		if (wTest*normal > 0) {
 			return false;
 		}
