@@ -32,9 +32,37 @@ public class TriangleCollider extends Collider implements DistanceCalculatable {
 		} else if (other instanceof RectangleCollider) {
 			//TODO: implement collision
 		} else if (other instanceof TriangleCollider) {
-			//TODO: implement collision
+			var triangle = (TriangleCollider) other;
+			return this.checkTriangleIntersection(triangle) && triangle.checkTriangleIntersection(this);
 		}
 		throw new CollisionNotImplementedException(this, other);
+	}
+	
+	private boolean checkTriangleIntersection(TriangleCollider other) {
+		var v0 = p1.subtract(p0);
+		var v1 = p2.subtract(p1);
+		var n = v0.perpendicularDot(v1);
+		
+		if (other.checkOutsideEdge(p0, v0, n) || other.checkOutsideEdge(p0, v0, n) || other.checkOutsideEdge(p0, v0, n)) {
+			return false;
+		}
+		return true;
+	}
+	
+	private boolean checkOutsideEdge(Vector edgeOrigin, Vector edge, double normal) {
+		var wTest = edge.perpendicularDot(p0.subtract(edgeOrigin));
+		if (wTest*normal > 0) {
+			return false;
+		}
+		wTest = edge.perpendicularDot(p1.subtract(edgeOrigin));
+		if (wTest*normal > 0) {
+			return false;
+		}
+		wTest = edge.perpendicularDot(p2.subtract(edgeOrigin));
+		if (wTest*normal > 0) {
+			return false;
+		}
+		return true;
 	}
 	
 	@Override

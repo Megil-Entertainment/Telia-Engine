@@ -39,6 +39,10 @@ public class Vector {
 		return x*vector.x + y*vector.y;
 	}
 	
+	public double perpendicularDot(Vector vector) {
+		return x*vector.y - y*vector.x;
+	}
+	
 	public Vector multiplyByComponent(Vector vector) {
 		return new Vector(this.x * vector.x, this.y * vector.y);
 	}
