@@ -28,13 +28,20 @@ public class TriangleCollider extends Collider {
 	@Override
 	protected boolean checkDetailedCollision(Collider other) {
 		if (other instanceof CircleCollider) {
-			
+			other.checkDetailedCollision(this);
 		} else if (other instanceof RectangleCollider) {
-			
+			//TODO: implement collision
 		} else if (other instanceof TriangleCollider) {
-			
+			//TODO: implement collision
 		}
 		throw new CollisionNotImplementedException(this, other);
+	}
+	
+	public double getSquareDistanceToPoint(Vector point) {
+		var d0 = point.squareDistanceToLineSegment(p0, p1);
+		var d1 = point.squareDistanceToLineSegment(p1, p2);
+		var d2 = point.squareDistanceToLineSegment(p2, p0);
+		return Math.min(Math.min(d0, d1), d2);
 	}
 	
 	@Override

@@ -17,6 +17,8 @@ public class RectangleCollider extends Collider {
 			return other.checkDetailedCollision(this);
 		} else if (other instanceof RectangleCollider) {
 			return true;
+		} else if (other instanceof TriangleCollider) {
+			//TODO: implement collision
 		}
 		throw new CollisionNotImplementedException(this, other);
 	}

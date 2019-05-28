@@ -23,13 +23,11 @@ public class CircleCollider extends Collider {
 			var otherRadius = ((CircleCollider) other).radius;
 			return center.subtract(((CircleCollider) other).center).squareLength() < (radius + otherRadius) * (radius + otherRadius);
 		} else if (other instanceof RectangleCollider) {
-			return checkPointInside(((RectangleCollider) other).getNearestPoint(center));
+			return ((RectangleCollider) other).getNearestPoint(center).subtract(center).squareLength() < squareRadius;
+		} else if (other instanceof TriangleCollider) {
+			return ((TriangleCollider) other).getSquareDistanceToPoint(center) < squareRadius;
 		}
 		throw new CollisionNotImplementedException(this, other);
-	}
-	
-	private boolean checkPointInside(Vector point) {
-		return point.subtract(center).squareLength() < squareRadius;
 	}
 	
 	@Override
