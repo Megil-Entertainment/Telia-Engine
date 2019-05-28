@@ -22,10 +22,8 @@ public class CircleCollider extends Collider {
 		if (other instanceof CircleCollider) {
 			var otherRadius = ((CircleCollider) other).radius;
 			return center.subtract(((CircleCollider) other).center).squareLength() < (radius + otherRadius) * (radius + otherRadius);
-		} else if (other instanceof RectangleCollider) {
-			return ((RectangleCollider) other).getSquareDistanceToPoint(center) < squareRadius;
-		} else if (other instanceof TriangleCollider) {
-			return ((TriangleCollider) other).getSquareDistanceToPoint(center) < squareRadius;
+		} else if (other instanceof DistanceCalculatable) {
+			return ((DistanceCalculatable) other).getSquareDistanceToPoint(center) < squareRadius;
 		}
 		throw new CollisionNotImplementedException(this, other);
 	}

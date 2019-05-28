@@ -3,7 +3,7 @@ package ch.megil.teliaengine.physics.collision;
 import ch.megil.teliaengine.physics.Vector;
 import ch.megil.teliaengine.physics.exception.CollisionNotImplementedException;
 
-public class RectangleCollider extends Collider {
+public class RectangleCollider extends Collider implements DistanceCalculatable {
 	private Vector size;
 
 	public RectangleCollider(Vector origin, double width, double height) {
@@ -23,6 +23,7 @@ public class RectangleCollider extends Collider {
 		throw new CollisionNotImplementedException(this, other);
 	}
 	
+	@Override
 	public double getSquareDistanceToPoint(Vector point) {
 		return point.clamp(getBoundingBoxBegin(), getBoundingBoxEnd()).subtract(point).squareLength();
 	}

@@ -3,7 +3,7 @@ package ch.megil.teliaengine.physics.collision;
 import ch.megil.teliaengine.physics.Vector;
 import ch.megil.teliaengine.physics.exception.CollisionNotImplementedException;
 
-public class TriangleCollider extends Collider {
+public class TriangleCollider extends Collider implements DistanceCalculatable {
 	private Vector p0;
 	private Vector p1;
 	private Vector p2;
@@ -37,6 +37,7 @@ public class TriangleCollider extends Collider {
 		throw new CollisionNotImplementedException(this, other);
 	}
 	
+	@Override
 	public double getSquareDistanceToPoint(Vector point) {
 		var d0 = point.squareDistanceToLineSegment(p0, p1);
 		var d1 = point.squareDistanceToLineSegment(p1, p2);
