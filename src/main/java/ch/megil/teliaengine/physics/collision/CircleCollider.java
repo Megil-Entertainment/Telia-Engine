@@ -1,6 +1,7 @@
 package ch.megil.teliaengine.physics.collision;
 
 import ch.megil.teliaengine.physics.Vector;
+import ch.megil.teliaengine.physics.exception.CollisionNotImplementedException;
 
 public class CircleCollider extends Collider {
 	private Vector center;
@@ -24,7 +25,7 @@ public class CircleCollider extends Collider {
 		} else if (other instanceof RectangleCollider) {
 			return checkPointInside(((RectangleCollider) other).getNearestPoint(center));
 		}
-		return false;
+		throw new CollisionNotImplementedException(this, other);
 	}
 	
 	private boolean checkPointInside(Vector point) {

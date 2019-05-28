@@ -1,6 +1,7 @@
 package ch.megil.teliaengine.physics.collision;
 
 import ch.megil.teliaengine.physics.Vector;
+import ch.megil.teliaengine.physics.exception.CollisionNotImplementedException;
 
 public class RectangleCollider extends Collider {
 	private Vector size;
@@ -17,7 +18,7 @@ public class RectangleCollider extends Collider {
 		} else if (other instanceof RectangleCollider) {
 			return true;
 		}
-		return false;
+		throw new CollisionNotImplementedException(this, other);
 	}
 	
 	public Vector getNearestPoint(Vector point) {
