@@ -1,6 +1,5 @@
 package ch.megil.teliaengine.physics;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -84,7 +83,7 @@ public class Vector {
 		var tx = (int) Math.abs(x);
 		var ty = (int) Math.abs(y);
 		if (tx == 0 && ty == 0) {
-			return new ArrayList<>();
+			return Collections.nCopies(1, this);
 		} else if (tx > ty) {
 			return Collections.nCopies(tx, new Vector(x/tx, y/tx));
 		} else {
