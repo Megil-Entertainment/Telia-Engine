@@ -29,27 +29,27 @@ public class ColliderTest {
 	@Test
 	public void testCheckCollision() {
 		var testCollider = mock(Collider.class, CALLS_REAL_METHODS);
-		testCollider.setBoundingBox(new Vector(3,3), new Vector(8, 8));
+		testCollider.setBoundingBox(new Vector(3, 3), new Vector(8, 8));
 		when(testCollider.checkDetailedCollision(any())).thenReturn(true);
 		
 		var other0 = mock(Collider.class, CALLS_REAL_METHODS);
-		other0.setBoundingBox(new Vector(5,5), new Vector(10, 10));
+		other0.setBoundingBox(new Vector(5, 5), new Vector(10, 10));
 		when(other0.checkDetailedCollision(any())).thenReturn(true);
 		
 		var other1 = mock(Collider.class, CALLS_REAL_METHODS);
-		other1.setBoundingBox(new Vector(20,20), new Vector(25, 25));
+		other1.setBoundingBox(new Vector(20, 20), new Vector(25, 25));
 		when(other1.checkDetailedCollision(any())).thenReturn(true);
 		
 		var other2 = mock(Collider.class, CALLS_REAL_METHODS);
-		other2.setBoundingBox(new Vector(3,8), new Vector(8, 13));
+		other2.setBoundingBox(new Vector(3, 8), new Vector(8, 13));
 		when(other2.checkDetailedCollision(any())).thenReturn(true);
 		
 		var other3 = mock(Collider.class, CALLS_REAL_METHODS);
-		other3.setBoundingBox(new Vector(3,3), new Vector(8, 8));
+		other3.setBoundingBox(new Vector(3, 3), new Vector(8, 8));
 		when(other3.checkDetailedCollision(any())).thenReturn(true);
 		
 		var other4 = mock(Collider.class, CALLS_REAL_METHODS);
-		other4.setBoundingBox(new Vector(2,2), new Vector(9, 9));
+		other4.setBoundingBox(new Vector(2, 2), new Vector(9, 9));
 		when(other4.checkDetailedCollision(any())).thenReturn(true);
 		
 		assertTrue(testCollider.checkCollision(other0));
@@ -66,7 +66,7 @@ public class ColliderTest {
 	@Test
 	public void testSetBoundingBox() {
 		var collider = mock(Collider.class, CALLS_REAL_METHODS);
-		collider.setBoundingBox(new Vector(2,2), new Vector(7, 7));
+		collider.setBoundingBox(new Vector(2, 2), new Vector(7, 7));
 
 		assertEquals("Bounding Box begin", new Vector(2, 2), collider.getBoundingBoxBegin());
 		assertEquals("Bounding Box end", new Vector(7, 7), collider.getBoundingBoxEnd());
@@ -86,7 +86,7 @@ public class ColliderTest {
 	@Test
 	public void testMove() {
 		var collider = mock(Collider.class, CALLS_REAL_METHODS);
-		collider.setBoundingBox(new Vector(5,5), new Vector(10, 10));
+		collider.setBoundingBox(new Vector(5, 5), new Vector(10, 10));
 		collider.move(new Vector(3, 3));
 		assertEquals(8, collider.getBoundingBoxBegin().getX(),0);
 		assertEquals(8, collider.getBoundingBoxBegin().getY(),0);
