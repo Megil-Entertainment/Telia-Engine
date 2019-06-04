@@ -6,9 +6,11 @@ import java.util.List;
 import ch.megil.teliaengine.physics.Vector;
 
 public class CompositeCollider extends Collider {
+	private Vector movement;
 	private List<Collider> colliders;
 	
 	public CompositeCollider(Collider... colliders) {
+		this.movement = Vector.ZERO;
 		this.colliders = Arrays.asList(colliders);
 		var xmin = colliders[0].getBoundingBoxBegin().getX();
 		var xmax = colliders[0].getBoundingBoxEnd().getX();
@@ -25,19 +27,38 @@ public class CompositeCollider extends Collider {
 	
 	@Override
 	protected boolean checkDetailedCollision(Collider other) {
-		for (Collider collider : colliders) {
-			if (collider.checkCollision(other)) {
-				return true;
+		if (movement.equals(Vector.ZERO)) {
+			for (Collider collider : colliders) {
+				if (collider.checkCollision(other)) {
+					return true;
+				}
 			}
+			return false;
+		} else {
+			var collision = false;
+			var i = 0;
+			for (; i < colliders.size(); i++) {
+				colliders.get(i).move(movement);
+				if (colliders.get(i).checkCollision(other)) {
+					collision = true;
+					break;
+				}
+			}
+			for (; i < colliders.size(); i++) {
+				colliders.get(i).move(movement);
+			}
+			movement = Vector.ZERO;
+			return collision;
 		}
-		return false;
 	}
 	
 	@Override
 	public void move(Vector move) {
 		super.move(move);
-		for (Collider collider : colliders) {
-			collider.move(move);
-		}
+		movement = movement.add(move);
+	}
+	
+	protected Vector getMovement() {
+		return movement;
 	}
 }
