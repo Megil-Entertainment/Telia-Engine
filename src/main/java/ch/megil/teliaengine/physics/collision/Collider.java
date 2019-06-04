@@ -17,15 +17,12 @@ public abstract class Collider {
 	public boolean checkCollision(Collider other) {
 		var collision = false;
 		
-		if((
-				(boundingBoxBegin.getX() > other.boundingBoxBegin.getX() && boundingBoxBegin.getX() < other.boundingBoxEnd.getX()) ||
-				(boundingBoxEnd.getX() > other.boundingBoxBegin.getX() && boundingBoxEnd.getX() < other.boundingBoxEnd.getX()) ||
-				(boundingBoxBegin.getX() <= other.boundingBoxBegin.getX() && boundingBoxEnd.getX() >= other.boundingBoxEnd.getX())
-			) && (
-				(boundingBoxBegin.getY() > other.boundingBoxBegin.getY() && boundingBoxBegin.getY() < other.boundingBoxEnd.getY()) ||
-				(boundingBoxEnd.getY() > other.boundingBoxBegin.getY() && boundingBoxEnd.getY() < other.boundingBoxEnd.getY()) ||
-				(boundingBoxBegin.getY() <= other.boundingBoxBegin.getY() && boundingBoxEnd.getY() >= other.boundingBoxEnd.getY())
-			)) {
+		if(((boundingBoxBegin.getX() > other.boundingBoxBegin.getX() && boundingBoxBegin.getX() < other.boundingBoxEnd.getX())
+				|| (boundingBoxEnd.getX() > other.boundingBoxBegin.getX() && boundingBoxEnd.getX() < other.boundingBoxEnd.getX())
+				|| (boundingBoxBegin.getX() <= other.boundingBoxBegin.getX() && boundingBoxEnd.getX() >= other.boundingBoxEnd.getX()))
+			&& ((boundingBoxBegin.getY() > other.boundingBoxBegin.getY() && boundingBoxBegin.getY() < other.boundingBoxEnd.getY())
+				|| (boundingBoxEnd.getY() > other.boundingBoxBegin.getY() && boundingBoxEnd.getY() < other.boundingBoxEnd.getY())
+				|| (boundingBoxBegin.getY() <= other.boundingBoxBegin.getY() && boundingBoxEnd.getY() >= other.boundingBoxEnd.getY()))) {
 			collision = checkDetailedCollision(other);
 		}
 		
