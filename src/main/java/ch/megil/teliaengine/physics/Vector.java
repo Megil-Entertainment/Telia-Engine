@@ -6,6 +6,8 @@ import java.util.List;
 public class Vector {
 	public static final Vector ZERO = new Vector(0, 0);
 	
+	private static final double TOLERANCE = 0.000000001;
+	
 	private double x;
 	private double y;
 	
@@ -27,11 +29,11 @@ public class Vector {
 	}
 	
 	public Vector add(Vector vector) {
-		return new Vector(this.x + vector.x, this.y + vector.y);
+		return new Vector(this.x + vector.x, this.y + vector.y).eliminateFloatingPointError();
 	}
 	
 	public Vector subtract(Vector vector) {
-		return new Vector(this.x - vector.x, this.y - vector.y);
+		return new Vector(this.x - vector.x, this.y - vector.y).eliminateFloatingPointError();
 	}
 	
 	public double dot(Vector vector) {
@@ -43,7 +45,7 @@ public class Vector {
 	}
 	
 	public Vector multiplyByComponent(Vector vector) {
-		return new Vector(this.x * vector.x, this.y * vector.y);
+		return new Vector(this.x * vector.x, this.y * vector.y).eliminateFloatingPointError();
 	}
 	
 	public double squareLength() {
@@ -77,6 +79,14 @@ public class Vector {
 	
 	public Vector yVector() {
 		return new Vector(0, y);
+	}
+	
+	private Vector eliminateFloatingPointError() {
+		var xRounded = Math.rint(x);
+		var yRounded = Math.rint(y);
+		x = Math.abs(x - xRounded) <= TOLERANCE ? xRounded : x;
+		y = Math.abs(y - yRounded) <= TOLERANCE ? yRounded : y;
+		return this;
 	}
 	
 	public List<Vector> splitToComponentSizeOne() {
