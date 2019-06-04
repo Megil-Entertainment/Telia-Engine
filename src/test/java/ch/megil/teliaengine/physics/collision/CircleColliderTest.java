@@ -3,7 +3,6 @@ package ch.megil.teliaengine.physics.collision;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -82,7 +81,23 @@ public class CircleColliderTest {
 	
 	@Test
 	public void testCheckCollisionAgainstComposite() {
-		fail("Not yet implemented");
+		var crCollider0 = new CircleCollider(new Vector(10, 6), 1);
+		var crCollider1 = new CircleCollider(new Vector(13, 7), 1);
+		var crCollider2 = new CircleCollider(new Vector(12, 12), 3);
+		var crCollider3 = new CircleCollider(new Vector(14, 3), 2);
+		var crCollider4 = new CircleCollider(new Vector(19, 12), 2);
+		
+		var compositeCollider = new CompositeCollider(
+				new RectangleCollider(new Vector(9, 1), 2, 9),
+				new CircleCollider(new Vector(10, 13), 4),
+				new TriangleCollider(new Vector(11, 4), new Vector(15, 7), new Vector(11, 5)),
+				new TriangleCollider(new Vector(9, 6), new Vector(7, 8), new Vector(9, 7)));
+		
+		assertTrue(crCollider0.checkCollision(compositeCollider));
+		assertTrue(crCollider1.checkCollision(compositeCollider));
+		assertTrue(crCollider2.checkCollision(compositeCollider));
+		assertFalse(crCollider3.checkCollision(compositeCollider));
+		assertFalse(crCollider4.checkCollision(compositeCollider));
 	}
 
 	@Test
