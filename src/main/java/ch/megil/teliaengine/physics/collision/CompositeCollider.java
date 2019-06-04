@@ -32,4 +32,12 @@ public class CompositeCollider extends Collider {
 		}
 		return false;
 	}
+	
+	@Override
+	public void move(Vector move) {
+		super.move(move);
+		for (Collider collider : colliders) {
+			collider.move(move);
+		}
+	}
 }
