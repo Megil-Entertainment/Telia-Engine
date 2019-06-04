@@ -22,26 +22,26 @@ public class RectangleColliderTest {
 
 	@Test
 	public void testCheckCollisionAgainstSquare() {
-		var sqCollider0 = new RectangleCollider(new Vector(3, 3), 5, 5);
-		var sqCollider1 = new RectangleCollider(new Vector(5, 5), 5, 5);
-		var sqCollider2 = new RectangleCollider(new Vector(20, 20), 5, 5);
-		var sqCollider3 = new RectangleCollider(new Vector(3, 8), 5, 5);
-		var sqCollider4 = new RectangleCollider(new Vector(3, 3), 5, 5);
-		var sqCollider5 = new RectangleCollider(new Vector(2, 2), 7, 7);
-		var sqCollider6 = new RectangleCollider(new Vector(-1, -1), 2, 2);
+		var recCollider0 = new RectangleCollider(new Vector(3, 3), 5, 5);
+		var recCollider1 = new RectangleCollider(new Vector(5, 5), 5, 5);
+		var recCollider2 = new RectangleCollider(new Vector(20, 20), 5, 5);
+		var recCollider3 = new RectangleCollider(new Vector(3, 8), 5, 5);
+		var recCollider4 = new RectangleCollider(new Vector(3, 3), 5, 5);
+		var recCollider5 = new RectangleCollider(new Vector(2, 2), 7, 7);
+		var recCollider6 = new RectangleCollider(new Vector(-1, -1), 2, 2);
 		
-		assertTrue(sqCollider0.checkCollision(sqCollider1));
-		assertTrue(sqCollider1.checkCollision(sqCollider0));
-		assertFalse(sqCollider0.checkCollision(sqCollider2));
-		assertFalse(sqCollider2.checkCollision(sqCollider0));
-		assertFalse(sqCollider0.checkCollision(sqCollider3));
-		assertFalse(sqCollider3.checkCollision(sqCollider0));
-		assertTrue(sqCollider0.checkCollision(sqCollider4));
-		assertTrue(sqCollider4.checkCollision(sqCollider0));
-		assertTrue(sqCollider0.checkCollision(sqCollider5));
-		assertTrue(sqCollider5.checkCollision(sqCollider0));
-		assertFalse(sqCollider0.checkCollision(sqCollider6));
-		assertFalse(sqCollider6.checkCollision(sqCollider0));
+		assertTrue(recCollider0.checkCollision(recCollider1));
+		assertTrue(recCollider1.checkCollision(recCollider0));
+		assertFalse(recCollider0.checkCollision(recCollider2));
+		assertFalse(recCollider2.checkCollision(recCollider0));
+		assertFalse(recCollider0.checkCollision(recCollider3));
+		assertFalse(recCollider3.checkCollision(recCollider0));
+		assertTrue(recCollider0.checkCollision(recCollider4));
+		assertTrue(recCollider4.checkCollision(recCollider0));
+		assertTrue(recCollider0.checkCollision(recCollider5));
+		assertTrue(recCollider5.checkCollision(recCollider0));
+		assertFalse(recCollider0.checkCollision(recCollider6));
+		assertFalse(recCollider6.checkCollision(recCollider0));
 	}
 	
 	@Test
