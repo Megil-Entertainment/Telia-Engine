@@ -197,15 +197,6 @@ public class VectorTest {
 	}
 	
 	@Test
-	public void testRound() {
-		var vec = new Vector(12.99, 8.49);
-		
-		vec = vec.round();
-		assertEquals(13, vec.getX(), 0);
-		assertEquals(8, vec.getY(), 0);
-	}
-	
-	@Test
 	public void testEquals() {
 		var vec0 = new Vector(5, -8);
 		var vec1 = new Vector(5, -8);

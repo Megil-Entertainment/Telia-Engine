@@ -59,9 +59,6 @@ public class Player extends GameElement {
 				setPosition(np);
 			}
 		}
-		
-		setPosition(getPosition().round());
-		getHitbox().round();
 	}
 	
 	public boolean isJumpUsed() {

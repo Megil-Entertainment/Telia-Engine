@@ -80,17 +80,6 @@ public class ColliderTest {
 	}
 
 	@Test
-	public void testRound() {
-		var collider = mock(Collider.class, CALLS_REAL_METHODS);
-		collider.setBoundingBox(new Vector(0.000001, 0.49), new Vector(0.5, 0.75));
-		collider.round();
-		assertEquals(0, collider.getBoundingBoxBegin().getX(), 0);
-		assertEquals(0, collider.getBoundingBoxBegin().getY(), 0);
-		assertEquals(1, collider.getBoundingBoxEnd().getX(), 0);
-		assertEquals(1, collider.getBoundingBoxEnd().getY(), 0);
-	}
-
-	@Test
 	public void testMove() {
 		var collider = mock(Collider.class, CALLS_REAL_METHODS);
 		collider.setBoundingBox(new Vector(5, 5), new Vector(10, 10));

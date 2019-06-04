@@ -118,16 +118,6 @@ public class RectangleColliderTest {
 		res = collider.getSquareDistanceToPoint(point5);
 		assertEquals(9, res, 0);
 	}
-	
-	@Test
-	public void testRound() {
-		var collider = new RectangleCollider(new Vector(0.000001, 0.49), 0.5, 0.75);
-		collider.round();
-		assertEquals(0, collider.getBoundingBoxBegin().getX(), 0);
-		assertEquals(0, collider.getBoundingBoxBegin().getY(), 0);
-		assertEquals(1, collider.getBoundingBoxEnd().getX(), 0);
-		assertEquals(1, collider.getBoundingBoxEnd().getY(), 0);
-	}
 
 	@Test
 	public void testMove() {
