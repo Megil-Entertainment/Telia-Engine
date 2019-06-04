@@ -1,4 +1,4 @@
-package ch.megil.teliaengine.physics.collision;
+package ch.megil.teliaengine.physics.collision.old;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ch.megil.teliaengine.physics.Vector;
+import ch.megil.teliaengine.physics.collision.Collider;
 
 public class ColliderTest {
 	private Collider collider1;
