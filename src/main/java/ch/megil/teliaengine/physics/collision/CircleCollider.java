@@ -35,4 +35,8 @@ public class CircleCollider extends Collider {
 		super.move(move);
 		center = center.add(move);
 	}
+
+	protected Vector getCenter() {
+		return center;
+	}
 }
