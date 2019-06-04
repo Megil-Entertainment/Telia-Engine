@@ -133,10 +133,8 @@ public class RectangleColliderTest {
 	public void testMove() {
 		var collider = new RectangleCollider(new Vector(5, 5), 5, 5);
 		collider.move(new Vector(3, 3));
-		assertEquals(8, collider.getBoundingBoxBegin().getX(),0);
-		assertEquals(8, collider.getBoundingBoxBegin().getY(),0);
-		assertEquals(13, collider.getBoundingBoxEnd().getX(),0);
-		assertEquals(13, collider.getBoundingBoxEnd().getY(),0);
+		assertEquals("Bounding Box begin", new Vector(8, 8), collider.getBoundingBoxBegin());
+		assertEquals("Bounding Box end", new Vector(13, 13), collider.getBoundingBoxEnd());
 	}
 
 }
