@@ -4,11 +4,8 @@ import ch.megil.teliaengine.physics.Vector;
 import ch.megil.teliaengine.physics.exception.CollisionNotImplementedException;
 
 public class RectangleCollider extends Collider implements DistanceCalculatable {
-	private Vector size;
-
 	public RectangleCollider(Vector origin, double width, double height) {
-		size = new Vector(width, height);
-		setBoundingBox(origin, origin.add(size));
+		setBoundingBox(origin, origin.add(new Vector(width, height)));
 	}
 	
 	@Override

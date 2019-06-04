@@ -18,11 +18,21 @@ public class TriangleCollider extends Collider implements DistanceCalculatable {
 		this.p0 = p0.add(origin);
 		this.p1 = p1.add(origin);
 		this.p2 = p2.add(origin);
-		var xmin = Math.min(Math.min(p0.getX(), p1.getX()), p2.getX());
-		var xmax = Math.max(Math.max(p0.getX(), p1.getX()), p2.getX());
-		var ymin = Math.min(Math.min(p0.getY(), p1.getY()), p2.getY());
-		var ymax = Math.max(Math.max(p0.getY(), p1.getY()), p2.getY());
+		var xmin = Math.min(Math.min(this.p0.getX(), this.p1.getX()), this.p2.getX());
+		var xmax = Math.max(Math.max(this.p0.getX(), this.p1.getX()), this.p2.getX());
+		var ymin = Math.min(Math.min(this.p0.getY(), this.p1.getY()), this.p2.getY());
+		var ymax = Math.max(Math.max(this.p0.getY(), this.p1.getY()), this.p2.getY());
 		setBoundingBox(new Vector(xmin, ymin), new Vector(xmax, ymax));
+	}
+	
+	/**
+	 * With origin {@link Vector#ZERO}
+	 * @param p0 measured from origin
+	 * @param p1 measured from origin
+	 * @param p2 measured from origin
+	 */
+	public TriangleCollider(Vector p0, Vector p1, Vector p2) {
+		this(Vector.ZERO, p0, p1, p2);
 	}
 	
 	@Override
