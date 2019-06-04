@@ -62,7 +62,7 @@ public class TriangleColliderTest {
 	}
 
 	@Test
-	public void testCheckCollisionAgainstSquare() {
+	public void testCheckCollisionAgainstRectangle() {
 		var testCollider = new TriangleCollider(new Vector(2, 2), new Vector(9, 2), new Vector(8, 10));
 
 		var recCollider0 = new RectangleCollider(new Vector(4, 3), 3, 1);

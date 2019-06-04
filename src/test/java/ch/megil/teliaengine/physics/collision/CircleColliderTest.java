@@ -47,7 +47,7 @@ public class CircleColliderTest {
 	}
 	
 	@Test
-	public void testCheckCollisionAgainstSquare() {
+	public void testCheckCollisionAgainstRectangle() {
 		var testCollider = new CircleCollider(new Vector(5, 5), 4);
 		
 		var recCollider0 = new RectangleCollider(new Vector(1, 1), 3, 4);

@@ -19,7 +19,7 @@ public class RectangleColliderTest {
 	}
 
 	@Test
-	public void testCheckCollisionAgainstSquare() {
+	public void testCheckCollisionAgainstRectangle() {
 		var recCollider0 = new RectangleCollider(new Vector(3, 3), 5, 5);
 		var recCollider1 = new RectangleCollider(new Vector(5, 5), 5, 5);
 		var recCollider2 = new RectangleCollider(new Vector(20, 20), 5, 5);
