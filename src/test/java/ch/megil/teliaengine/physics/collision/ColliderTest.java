@@ -28,37 +28,46 @@ public class ColliderTest {
 
 	@Test
 	public void testCheckCollision() {
-		var testCollider = mock(Collider.class, CALLS_REAL_METHODS);
-		testCollider.setBoundingBox(new Vector(3, 3), new Vector(8, 8));
-		when(testCollider.checkDetailedCollision(any())).thenReturn(true);
+		var collider0 = mock(Collider.class, CALLS_REAL_METHODS);
+		collider0.setBoundingBox(new Vector(3, 3), new Vector(8, 8));
+		when(collider0.checkDetailedCollision(any())).thenReturn(true);
 		
-		var other0 = mock(Collider.class, CALLS_REAL_METHODS);
-		other0.setBoundingBox(new Vector(5, 5), new Vector(10, 10));
-		when(other0.checkDetailedCollision(any())).thenReturn(true);
+		var collider1 = mock(Collider.class, CALLS_REAL_METHODS);
+		collider1.setBoundingBox(new Vector(5, 5), new Vector(10, 10));
+		when(collider1.checkDetailedCollision(any())).thenReturn(true);
 		
-		var other1 = mock(Collider.class, CALLS_REAL_METHODS);
-		other1.setBoundingBox(new Vector(20, 20), new Vector(25, 25));
-		when(other1.checkDetailedCollision(any())).thenReturn(true);
+		var collider2 = mock(Collider.class, CALLS_REAL_METHODS);
+		collider2.setBoundingBox(new Vector(20, 20), new Vector(25, 25));
+		when(collider2.checkDetailedCollision(any())).thenReturn(true);
 		
-		var other2 = mock(Collider.class, CALLS_REAL_METHODS);
-		other2.setBoundingBox(new Vector(3, 8), new Vector(8, 13));
-		when(other2.checkDetailedCollision(any())).thenReturn(true);
+		var collider3 = mock(Collider.class, CALLS_REAL_METHODS);
+		collider3.setBoundingBox(new Vector(3, 8), new Vector(8, 13));
+		when(collider3.checkDetailedCollision(any())).thenReturn(true);
 		
-		var other3 = mock(Collider.class, CALLS_REAL_METHODS);
-		other3.setBoundingBox(new Vector(3, 3), new Vector(8, 8));
-		when(other3.checkDetailedCollision(any())).thenReturn(true);
+		var collider4 = mock(Collider.class, CALLS_REAL_METHODS);
+		collider4.setBoundingBox(new Vector(3, 3), new Vector(8, 8));
+		when(collider4.checkDetailedCollision(any())).thenReturn(true);
 		
-		var other4 = mock(Collider.class, CALLS_REAL_METHODS);
-		other4.setBoundingBox(new Vector(2, 2), new Vector(9, 9));
-		when(other4.checkDetailedCollision(any())).thenReturn(true);
+		var collider5 = mock(Collider.class, CALLS_REAL_METHODS);
+		collider5.setBoundingBox(new Vector(2, 2), new Vector(9, 9));
+		when(collider5.checkDetailedCollision(any())).thenReturn(true);
+
+		var collider6 = mock(Collider.class, CALLS_REAL_METHODS);
+		collider6.setBoundingBox(new Vector(4, 6), new Vector(7, 10));
+		when(collider6.checkDetailedCollision(any())).thenReturn(true);
 		
-		assertTrue(testCollider.checkCollision(other0));
-		assertTrue(other0.checkCollision(testCollider));
-		assertFalse(testCollider.checkCollision(other1));
-		assertFalse(testCollider.checkCollision(other2));
-		assertTrue(testCollider.checkCollision(other3));
-		assertTrue(testCollider.checkCollision(other4));
-		assertTrue(other4.checkCollision(testCollider));
+		assertTrue(collider0.checkCollision(collider1));
+		assertTrue(collider1.checkCollision(collider0));
+		assertFalse(collider0.checkCollision(collider2));
+		assertFalse(collider2.checkCollision(collider0));
+		assertFalse(collider0.checkCollision(collider3));
+		assertFalse(collider3.checkCollision(collider0));
+		assertTrue(collider0.checkCollision(collider4));
+		assertTrue(collider4.checkCollision(collider0));
+		assertTrue(collider0.checkCollision(collider5));
+		assertTrue(collider5.checkCollision(collider0));
+		assertTrue(collider0.checkCollision(collider6));
+		assertTrue(collider6.checkCollision(collider0));
 	}
 
 	@Test
