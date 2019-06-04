@@ -121,7 +121,7 @@ public class TriangleColliderTest {
 		assertEquals(10, res, 0);
 		
 		res = collider.getSquareDistanceToPoint(point2);
-		assertEquals(2.56, res, 0);
+		assertEquals(2.56, res, 0.000001);
 		
 		res = collider.getSquareDistanceToPoint(point3);
 		assertEquals(9, res, 0);

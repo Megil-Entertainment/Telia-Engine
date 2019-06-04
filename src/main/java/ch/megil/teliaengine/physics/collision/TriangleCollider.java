@@ -123,10 +123,34 @@ public class TriangleCollider extends Collider implements DistanceCalculatable {
 	
 	@Override
 	public double getSquareDistanceToPoint(Vector point) {
+		if (checkPointInside(point)) {
+			return 0;
+		}
 		var d0 = point.squareDistanceToLineSegment(p0, p1);
 		var d1 = point.squareDistanceToLineSegment(p1, p2);
 		var d2 = point.squareDistanceToLineSegment(p2, p0);
 		return Math.min(Math.min(d0, d1), d2);
+	}
+	
+	private boolean checkPointInside(Vector point) {
+		var v0 = p1.subtract(p0);
+		var v1 = p2.subtract(p1);
+		var n = v0.perpendicularDot(v1);
+		
+		var wTest = v0.perpendicularDot(point.subtract(p0));
+		if (wTest*n < 0) {
+			return false;
+		}
+		wTest = v1.perpendicularDot(point.subtract(p1));
+		if (wTest*n < 0) {
+			return false;
+		}
+		var v2 = p0.subtract(p2);
+		wTest = v2.perpendicularDot(point.subtract(p2));
+		if (wTest*n < 0) {
+			return false;
+		}
+		return true;
 	}
 	
 	@Override
