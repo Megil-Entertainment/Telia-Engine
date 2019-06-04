@@ -28,9 +28,9 @@ public class ColliderTest {
 
 	@Test
 	public void testCheckCollision() {
-		var collider = mock(Collider.class, CALLS_REAL_METHODS);
-		collider.setBoundingBox(new Vector(3,3), new Vector(8, 8));
-		when(collider.checkDetailedCollision(any())).thenReturn(true);
+		var testCollider = mock(Collider.class, CALLS_REAL_METHODS);
+		testCollider.setBoundingBox(new Vector(3,3), new Vector(8, 8));
+		when(testCollider.checkDetailedCollision(any())).thenReturn(true);
 		
 		var other0 = mock(Collider.class, CALLS_REAL_METHODS);
 		other0.setBoundingBox(new Vector(5,5), new Vector(10, 10));
@@ -52,15 +52,15 @@ public class ColliderTest {
 		other4.setBoundingBox(new Vector(2,2), new Vector(9, 9));
 		when(other4.checkDetailedCollision(any())).thenReturn(true);
 		
-		assertTrue(collider.checkCollision(other0));
-		assertTrue(other0.checkCollision(collider));
-		assertFalse(collider.checkCollision(other1));
-		assertFalse(collider.checkCollision(other2));
-		assertTrue(collider.checkCollision(other3));
-		assertTrue(collider.checkCollision(other4));
-		assertTrue(other4.checkCollision(collider));
-		collider.move(new Vector(20, 20));
-		assertFalse(collider.checkCollision(other0));
+		assertTrue(testCollider.checkCollision(other0));
+		assertTrue(other0.checkCollision(testCollider));
+		assertFalse(testCollider.checkCollision(other1));
+		assertFalse(testCollider.checkCollision(other2));
+		assertTrue(testCollider.checkCollision(other3));
+		assertTrue(testCollider.checkCollision(other4));
+		assertTrue(other4.checkCollision(testCollider));
+		testCollider.move(new Vector(20, 20));
+		assertFalse(testCollider.checkCollision(other0));
 	}
 
 	@Test
