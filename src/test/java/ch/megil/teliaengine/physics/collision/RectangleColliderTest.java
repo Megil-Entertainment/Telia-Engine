@@ -11,10 +11,6 @@ import ch.megil.teliaengine.physics.Vector;
 
 public class RectangleColliderTest {
 
-	@Before
-	public void setUp() throws Exception {
-	}
-
 	@Test
 	public void testRectangleCollider() {
 		var collider = new RectangleCollider(new Vector(1, 2), 3, 4);
