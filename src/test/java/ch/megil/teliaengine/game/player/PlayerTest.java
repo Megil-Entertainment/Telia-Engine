@@ -24,6 +24,8 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public class PlayerTest {
+	private static final double PERCISION = 0;
+	
 	private static File parentDir = new File(".");
 	
 	@Rule
@@ -71,45 +73,45 @@ public class PlayerTest {
 	public void testUpdate() {
 		var player = new Player("depiction", depiction, playerHitbox, Color.BLACK);
 		
-		assertEquals(0, player.getPosition().getX(), 0);
-		assertEquals(0, player.getPosition().getY(), 0);
+		assertEquals(0, player.getPosition().getX(), PERCISION);
+		assertEquals(0, player.getPosition().getY(), PERCISION);
 		
 		player.applyForce(new Vector(5, 3));
 		player.update(collision);
-		assertEquals(5, player.getPosition().getX(), 0);
-		assertEquals(3, player.getPosition().getY(), 0);
+		assertEquals(5, player.getPosition().getX(), PERCISION);
+		assertEquals(3, player.getPosition().getY(), PERCISION);
 		
 		player.update(collision);
-		assertEquals(15, player.getPosition().getX(), 0);
-		assertEquals(9, player.getPosition().getY(), 0);
+		assertEquals(15, player.getPosition().getX(), PERCISION);
+		assertEquals(9, player.getPosition().getY(), PERCISION);
 		
 		player.applyForce(new Vector(-5, -3));
 		player.update(collision);
-		assertEquals(25, player.getPosition().getX(), 0);
-		assertEquals(15, player.getPosition().getY(), 0);
+		assertEquals(25, player.getPosition().getX(), PERCISION);
+		assertEquals(15, player.getPosition().getY(), PERCISION);
 		
 		player.applyAcceleration(new Vector(-10, -6));
 		player.update(collision);
-		assertEquals(25, player.getPosition().getX(), 0);
-		assertEquals(15, player.getPosition().getY(), 0);
+		assertEquals(25, player.getPosition().getX(), PERCISION);
+		assertEquals(15, player.getPosition().getY(), PERCISION);
 		
 		player.update(collision);
-		assertEquals(25, player.getPosition().getX(), 0);
-		assertEquals(15, player.getPosition().getY(), 0);
+		assertEquals(25, player.getPosition().getX(), PERCISION);
+		assertEquals(15, player.getPosition().getY(), PERCISION);
 		
 		player.applyForce(new Vector(0, 5));
 		player.applyAcceleration(new Vector(3, 2));
 		player.update(collision);
-		assertEquals(28, player.getPosition().getX(), 0);
-		assertEquals(22, player.getPosition().getY(), 0);
+		assertEquals(28, player.getPosition().getX(), PERCISION);
+		assertEquals(22, player.getPosition().getY(), PERCISION);
 		
 		player.applyForce(new Vector(0, -5));
 		player.update(collision);
-		assertEquals(31, player.getPosition().getX(), 0);
-		assertEquals(29, player.getPosition().getY(), 0);
+		assertEquals(31, player.getPosition().getX(), PERCISION);
+		assertEquals(29, player.getPosition().getY(), PERCISION);
 		
 		player.update(collision);
-		assertEquals(34, player.getPosition().getX(), 0);
-		assertEquals(33, player.getPosition().getY(), 0);
+		assertEquals(34, player.getPosition().getX(), PERCISION);
+		assertEquals(33, player.getPosition().getY(), PERCISION);
 	}
 }
