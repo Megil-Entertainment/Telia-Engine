@@ -49,7 +49,7 @@ public class ColliderTest {
 		when(collider4.checkDetailedCollision(any())).thenReturn(true);
 		
 		var collider5 = mock(Collider.class, CALLS_REAL_METHODS);
-		collider5.setBoundingBox(new Vector(2,2), new Vector(7, 7));
+		collider5.setBoundingBox(new Vector(2,2), new Vector(9, 9));
 		when(collider5.checkDetailedCollision(any())).thenReturn(true);
 		
 		assertTrue(collider0.checkCollision(collider1));
