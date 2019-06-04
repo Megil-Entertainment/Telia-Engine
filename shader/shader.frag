@@ -11,5 +11,9 @@ layout(location=2) flat in uint texIndex;
 layout(location=0) out vec4 outColor;
 
 void main(void) {
-  outColor = texture(sampler2D(textures[texIndex], samp), texCord);
+  vec4 color = texture(sampler2D(textures[texIndex], samp), texCord);
+  if (color.a < 1) {
+	  discard;
+  }
+  outColor = color;
 }
