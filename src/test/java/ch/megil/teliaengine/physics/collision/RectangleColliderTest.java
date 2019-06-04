@@ -34,11 +34,15 @@ public class RectangleColliderTest {
 		assertTrue(testCollider.checkCollision(sqCollider0));
 		assertTrue(sqCollider0.checkCollision(testCollider));
 		assertFalse(testCollider.checkCollision(sqCollider1));
+		assertFalse(sqCollider1.checkCollision(testCollider));
 		assertFalse(testCollider.checkCollision(sqCollider2));
+		assertFalse(sqCollider2.checkCollision(testCollider));
 		assertTrue(testCollider.checkCollision(sqCollider3));
+		assertTrue(sqCollider3.checkCollision(testCollider));
 		assertTrue(testCollider.checkCollision(sqCollider4));
 		assertTrue(sqCollider4.checkCollision(testCollider));
 		assertFalse(testCollider.checkCollision(sqCollider5));
+		assertFalse(sqCollider5.checkCollision(testCollider));
 	}
 	
 	@Test
