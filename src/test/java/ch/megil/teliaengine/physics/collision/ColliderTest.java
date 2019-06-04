@@ -59,8 +59,6 @@ public class ColliderTest {
 		assertTrue(testCollider.checkCollision(other3));
 		assertTrue(testCollider.checkCollision(other4));
 		assertTrue(other4.checkCollision(testCollider));
-		testCollider.move(new Vector(20, 20));
-		assertFalse(testCollider.checkCollision(other0));
 	}
 
 	@Test
