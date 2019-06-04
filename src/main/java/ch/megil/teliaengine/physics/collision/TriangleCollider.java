@@ -38,7 +38,7 @@ public class TriangleCollider extends Collider implements DistanceCalculatable {
 	@Override
 	protected boolean checkDetailedCollision(Collider other) {
 		if (other instanceof CircleCollider) {
-			other.checkDetailedCollision(this);
+			return other.checkDetailedCollision(this);
 		} else if (other instanceof RectangleCollider) {
 			var rectangle = (RectangleCollider) other;
 			var v0 = p1.subtract(p0);
