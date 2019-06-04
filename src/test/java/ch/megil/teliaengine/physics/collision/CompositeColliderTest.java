@@ -20,6 +20,7 @@ public class CompositeColliderTest {
 		
 		assertEquals("Bounding Box begin", new Vector(6, 1), collider.getBoundingBoxBegin());
 		assertEquals("Bounding Box end", new Vector(15, 17), collider.getBoundingBoxEnd());
+		assertEquals("Movement vector", Vector.ZERO, collider.getMovement());
 	}
 	
 
@@ -68,6 +69,41 @@ public class CompositeColliderTest {
 		assertTrue(compCollider3.checkCollision(compCollider2));
 		assertTrue(compCollider0.checkCollision(compCollider4));
 		assertTrue(compCollider4.checkCollision(compCollider0));
+	}
+	
+	@Test
+	public void testCheckCollisionAgainstCompositeWithMovement() {
+		var testCollider = new CompositeCollider(
+				new RectangleCollider(new Vector(9, 1), 2, 9),
+				new CircleCollider(new Vector(10, 13), 4),
+				new TriangleCollider(new Vector(11, 4), new Vector(15, 7), new Vector(11, 5)),
+				new TriangleCollider(new Vector(9, 6), new Vector(7, 8), new Vector(9, 7)));
+		
+		var compColliderLeft = new CompositeCollider(
+				new TriangleCollider(new Vector(11, 3), new Vector(11, 8), new Vector(9, 10)),
+				new TriangleCollider(new Vector(9, 10), new Vector(11, 9), new Vector(11, 11)));
+		
+		var compColliderRight = new CompositeCollider(
+				new TriangleCollider(new Vector(11, 1), new Vector(15, 7), new Vector(11, 4)),
+				new TriangleCollider(new Vector(11, 5), new Vector(15, 7), new Vector(11, 9)));
+		
+		assertTrue(testCollider.checkCollision(compColliderLeft));
+		assertFalse(testCollider.checkCollision(compColliderRight));
+		assertEquals("Movement vector", Vector.ZERO, testCollider.getMovement());
+		
+		testCollider.move(new Vector(2, 2));
+		assertEquals("Movement vector", new Vector(2, 2), testCollider.getMovement());
+
+		assertFalse(testCollider.checkCollision(compColliderLeft));
+		assertTrue(testCollider.checkCollision(compColliderRight));
+		assertEquals("Movement vector", Vector.ZERO, testCollider.getMovement());
+
+		testCollider.move(new Vector(-1, -1));
+		assertEquals("Movement vector", new Vector(-1, -1), testCollider.getMovement());
+
+		assertTrue(testCollider.checkCollision(compColliderLeft));
+		assertTrue(testCollider.checkCollision(compColliderRight));
+		assertEquals("Movement vector", Vector.ZERO, testCollider.getMovement());
 	}
 
 	@Test
@@ -140,10 +176,16 @@ public class CompositeColliderTest {
 				new CircleCollider(new Vector(10, 13), 4),
 				new TriangleCollider(new Vector(11, 4), new Vector(15, 7), new Vector(11, 5)),
 				new TriangleCollider(new Vector(9, 6), new Vector(7, 8), new Vector(9, 7)));
-		collider.move(new Vector(3, 5));
 		
+		collider.move(new Vector(3, 5));
 		assertEquals("Bounding Box begin", new Vector(9, 6), collider.getBoundingBoxBegin());
 		assertEquals("Bounding Box end", new Vector(18, 22), collider.getBoundingBoxEnd());
+		assertEquals("Movement vector", new Vector(3, 5), collider.getMovement());
+		
+		collider.move(new Vector(3, 5));
+		assertEquals("Bounding Box begin", new Vector(12, 11), collider.getBoundingBoxBegin());
+		assertEquals("Bounding Box end", new Vector(21, 27), collider.getBoundingBoxEnd());
+		assertEquals("Movement vector", new Vector(6, 10), collider.getMovement());
 	}
 
 }
