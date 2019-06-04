@@ -28,6 +28,7 @@ public class CircleColliderTest {
 		var crCollider4 = new CircleCollider(new Vector(11, 11), 2);
 		var crCollider5 = new CircleCollider(new Vector(2, 2), 1);
 		var crCollider6 = new CircleCollider(new Vector(5, 5), 4);
+		var crCollider7 = new CircleCollider(new Vector(5, 5), 3);
 		
 		assertFalse(crCollider0.checkCollision(crCollider1));
 		assertFalse(crCollider1.checkCollision(crCollider0));
@@ -41,6 +42,8 @@ public class CircleColliderTest {
 		assertFalse(crCollider5.checkCollision(crCollider0));
 		assertTrue(crCollider0.checkCollision(crCollider6));
 		assertTrue(crCollider6.checkCollision(crCollider0));
+		assertTrue(crCollider0.checkCollision(crCollider7));
+		assertTrue(crCollider7.checkCollision(crCollider0));
 	}
 	
 	@Test
@@ -79,11 +82,6 @@ public class CircleColliderTest {
 	
 	@Test
 	public void testCheckCollisionAgainstComposite() {
-		fail("Not yet implemented");
-	}
-	
-	@Test
-	public void testRound() {
 		fail("Not yet implemented");
 	}
 
