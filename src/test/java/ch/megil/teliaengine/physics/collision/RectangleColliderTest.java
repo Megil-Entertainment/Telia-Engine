@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
-import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
 
@@ -123,8 +121,7 @@ public class RectangleColliderTest {
 	
 	@Test
 	public void testRound() {
-		var collider = mock(Collider.class, CALLS_REAL_METHODS);
-		collider.setBoundingBox(new Vector(0.000001, 0.49), new Vector(0.5, 0.75));
+		var collider = new RectangleCollider(new Vector(0.000001, 0.49), 0.5, 0.75);
 		collider.round();
 		assertEquals(0, collider.getBoundingBoxBegin().getX(), 0);
 		assertEquals(0, collider.getBoundingBoxBegin().getY(), 0);
@@ -134,8 +131,7 @@ public class RectangleColliderTest {
 
 	@Test
 	public void testMove() {
-		var collider = mock(Collider.class, CALLS_REAL_METHODS);
-		collider.setBoundingBox(new Vector(5, 5), new Vector(10, 10));
+		var collider = new RectangleCollider(new Vector(5, 5), 5, 5);
 		collider.move(new Vector(3, 3));
 		assertEquals(8, collider.getBoundingBoxBegin().getX(),0);
 		assertEquals(8, collider.getBoundingBoxBegin().getY(),0);
