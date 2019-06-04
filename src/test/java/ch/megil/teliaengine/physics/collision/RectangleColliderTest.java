@@ -3,7 +3,6 @@ package ch.megil.teliaengine.physics.collision;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -86,7 +85,23 @@ public class RectangleColliderTest {
 	
 	@Test
 	public void testCheckCollisionAgainstComposite() {
-		fail("Not yet implemented");
+		var recCollider0 = new RectangleCollider(new Vector(7, 3), 8, 3);
+		var recCollider1 = new RectangleCollider(new Vector(13, 5), 1, 3);
+		var recCollider2 = new RectangleCollider(new Vector(11, 11), 1, 2);
+		var recCollider3 = new RectangleCollider(new Vector(17, 11), 2, 3);
+		var recCollider4 = new RectangleCollider(new Vector(12, 1), 3, 1);
+		
+		var compositeCollider = new CompositeCollider(
+				new RectangleCollider(new Vector(9, 1), 2, 9),
+				new CircleCollider(new Vector(10, 13), 4),
+				new TriangleCollider(new Vector(11, 4), new Vector(15, 7), new Vector(11, 5)),
+				new TriangleCollider(new Vector(9, 6), new Vector(7, 8), new Vector(9, 7)));
+		
+		assertTrue(recCollider0.checkCollision(compositeCollider));
+		assertTrue(recCollider1.checkCollision(compositeCollider));
+		assertTrue(recCollider2.checkCollision(compositeCollider));
+		assertFalse(recCollider3.checkCollision(compositeCollider));
+		assertFalse(recCollider4.checkCollision(compositeCollider));
 	}
 	
 	@Test
