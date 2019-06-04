@@ -11,8 +11,8 @@ import ch.megil.teliaengine.file.TextureFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
-import ch.megil.teliaengine.game.Hitbox;
-import ch.megil.teliaengine.game.Vector;
+import ch.megil.teliaengine.physics.Vector;
+import ch.megil.teliaengine.physics.collision.RectangleCollider;
 import ch.megil.teliaengine.logging.LogHandler;
 import ch.megil.teliaengine.ui.GameElementImageView;
 import javafx.application.Platform;
@@ -94,14 +94,15 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 	
 	private GameObject createGameObject() {
 		var name = objectName.getText();
-		var hitbox = new Hitbox(new Vector(0,0), Double.parseDouble(objectWidth.getText()),
-				Double.parseDouble(objectHeight.getText()));
+		var width = Double.parseDouble(objectWidth.getText());
+		var height = Double.parseDouble(objectWidth.getText());
+		var hitbox = new RectangleCollider(new Vector(0,0), width, height);
 		var textureFile = new File(texturePath.getText());
 		var textureName = name;
 		
 		try {
 			TextureFileManager.get().importTexture(textureName, textureFile);
-			var depiction = TextureFileManager.get().load(textureName, hitbox.getVectorSize().getX(), hitbox.getVectorSize().getY());
+			var depiction = TextureFileManager.get().load(textureName, width, height);
 			var obj = new GameObject(name, name, depiction, hitbox, Color.BLACK);
 			new GameObjectFileManager().create(obj);
 			return obj;
