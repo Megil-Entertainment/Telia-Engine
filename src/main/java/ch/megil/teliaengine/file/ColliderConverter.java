@@ -2,11 +2,7 @@ package ch.megil.teliaengine.file;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.physics.Vector;
-import ch.megil.teliaengine.physics.collision.CircleCollider;
-import ch.megil.teliaengine.physics.collision.Collider;
-import ch.megil.teliaengine.physics.collision.CompositeCollider;
-import ch.megil.teliaengine.physics.collision.RectangleCollider;
-import ch.megil.teliaengine.physics.collision.TriangleCollider;
+import ch.megil.teliaengine.physics.collision.*;
 
 public class ColliderConverter {
 	private static final String RECTANGLE = "rectangle";
@@ -49,7 +45,7 @@ public class ColliderConverter {
 			}
 			return new CompositeCollider(colliders);
 		} else {
-			return null;//TODO: none
+			return new EmptyCollider();
 		}
 	}
 	
