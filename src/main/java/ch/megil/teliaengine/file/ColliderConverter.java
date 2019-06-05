@@ -50,14 +50,28 @@ public class ColliderConverter {
 	}
 	
 	public String convertToEntryString(Collider collider) {
+		var propSeperator = FileConfiguration.SEPERATOR_PROPERTY.getConfiguration();
 		if (collider instanceof RectangleCollider) {
-			return "rectangle:0:0:5:5";
+			var origin = collider.getBoundingBoxBegin();
+			var size = collider.getBoundingBoxEnd().subtract(origin);
+			return RECTANGLE + propSeperator + origin.getX() + propSeperator + origin.getY() + propSeperator +
+					size.getX() + propSeperator + size.getY();
 		} else if (collider instanceof CircleCollider) {
-			return "circle:0:0:5";
-		} else if (collider instanceof RectangleCollider) {
-			return "triangle:0:0:5:5:3:3";
-		} else if (collider instanceof RectangleCollider) {
-			return "composite:;circle:0:0:5;triangle:0:0:5:5:3:3";
+			var circle = (CircleCollider) collider;
+			return CIRCLE + propSeperator + circle.getCenter().getX() + propSeperator + circle.getCenter().getY() +
+					propSeperator + circle.getRadius();
+		} else if (collider instanceof TriangleCollider) {
+			var triangle = (TriangleCollider) collider;
+			return TRIANGLE + propSeperator + triangle.getP0().getX() + propSeperator + triangle.getP0().getY() +
+					propSeperator + triangle.getP1().getX() + propSeperator + triangle.getP1().getY() +
+					propSeperator + triangle.getP2().getX() + propSeperator + triangle.getP2().getY();
+		} else if (collider instanceof CompositeCollider) {
+			var compPropSeperator = FileConfiguration.SEPERATOR_COMPOSITE_PROPERTY.getConfiguration();
+			var colliderStr = COMPOSITE + propSeperator;
+			for (var coll : ((CompositeCollider)collider).getColliders()) {
+				colliderStr = colliderStr + compPropSeperator + convertToEntryString(coll);
+			}
+			return colliderStr;
 		} else {
 			return "";
 		}
