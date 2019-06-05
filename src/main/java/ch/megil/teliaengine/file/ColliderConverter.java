@@ -23,7 +23,7 @@ public class ColliderConverter {
 	 * TriangleCollider
 	 * 		triangle:p0x:p0y:p1x:p1y:p2x:p2y
 	 * CompositeCollider
-	 * 		composite:{collider;...}
+	 * 		composite:;collider;collider;...
 	 */
 	public Collider convertToCollider(String colliderStr) {
 		var spec = colliderStr.split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
@@ -42,7 +42,12 @@ public class ColliderConverter {
 					new Vector(Double.parseDouble(spec[3]), Double.parseDouble(spec[4])),
 					new Vector(Double.parseDouble(spec[5]), Double.parseDouble(spec[6])));
 		} else if (spec[0].equals(COMPOSITE)) {
-			return new CompositeCollider();
+			var compSpec = colliderStr.split(FileConfiguration.SEPERATOR_COMPOSITE_PROPERTY.getConfiguration());
+			var colliders = new Collider[compSpec.length - 1];
+			for (var i = 1; i < compSpec.length; i++) {
+				colliders[i-1] = convertToCollider(compSpec[i]);
+			}
+			return new CompositeCollider(colliders);
 		} else {
 			return null;//TODO: none
 		}
