@@ -1,13 +1,12 @@
 package ch.megil.teliaengine.file;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.logging.Level;
 
 import ch.megil.teliaengine.configuration.FileConfiguration;
@@ -17,8 +16,6 @@ import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.logging.LogHandler;
-import ch.megil.teliaengine.physics.Vector;
-import ch.megil.teliaengine.physics.collision.RectangleCollider;
 import javafx.scene.paint.Color;
 
 public class GameObjectFileManager {
@@ -26,14 +23,18 @@ public class GameObjectFileManager {
 		var fileName = ProjectFolderConfiguration.ASSETS_OBJECTS.getConfigurationWithProjectPath() + "/" + name + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
 		var file = new File(fileName);
 		
-		try (var reader = new BufferedReader(new FileReader(file))) {
-			var spec = reader.readLine().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
+		try (var scanner = new Scanner(file)) {
+			scanner.useDelimiter(FileConfiguration.SEPARATOR_ENTRY.getConfiguration());
+			
+			var spec = scanner.next().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			var depictionName = spec[2];
 			var depiction = TextureFileManager.get().load(depictionName, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
-			var hitbox = new RectangleCollider(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			var color = Color.web(spec[3]);
 			
-			var obj = new GameObject(name, depictionName, depiction, hitbox, color);
+			var colliderSpec = scanner.next();
+			var collider = new ColliderConverter().convertToCollider(colliderSpec);
+			
+			var obj = new GameObject(name, depictionName, depiction, collider, color);
 			
 			return obj;
 		} catch (IOException e) {
