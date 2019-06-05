@@ -65,10 +65,13 @@ public class GameObjectFileManager {
 		var fileName = ProjectFolderConfiguration.ASSETS_OBJECTS.getConfigurationWithProjectPath() + "/" + obj.getDepictionName() + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
 		
 		var propSeperator = FileConfiguration.SEPERATOR_PROPERTY.getConfiguration();
+		var entrySeperator = FileConfiguration.SEPARATOR_ENTRY.getConfiguration();
 		
 		try (var writer = new BufferedWriter(new FileWriter(fileName))) {
 			writer.write(obj.getDepiction().getWidth() + propSeperator + obj.getDepiction().getHeight() + propSeperator +
-					obj.getDepictionName() + propSeperator + obj.getColor());
+					obj.getDepictionName() + propSeperator + obj.getColor() + entrySeperator);
+
+			writer.write(new ColliderConverter().convertToEntryString(obj.getHitbox()));
 		} catch (IOException e) {
 			throw new AssetCreationException("Game Object could not be created", e);
 		}
