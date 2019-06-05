@@ -1,5 +1,6 @@
 package ch.megil.teliaengine.file;
 
+import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.physics.Vector;
 import ch.megil.teliaengine.physics.collision.CircleCollider;
 import ch.megil.teliaengine.physics.collision.Collider;
@@ -25,13 +26,22 @@ public class ColliderConverter {
 	 * 		composite:{collider;...}
 	 */
 	public Collider convertToCollider(String colliderStr) {
-		if (colliderStr.startsWith(RECTANGLE)) {
-			return new RectangleCollider(Vector.ZERO, 5, 5);
-		} else if (colliderStr.startsWith(CIRCLE)) {
-			return new CircleCollider(Vector.ZERO, 5);
-		} else if (colliderStr.startsWith(TRIANGLE)) {
-			return new TriangleCollider(Vector.ZERO, Vector.ZERO, Vector.ZERO);
-		} else if (colliderStr.startsWith(COMPOSITE)) {
+		var spec = colliderStr.split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
+		if (spec[0].equals(RECTANGLE)) {
+			return new RectangleCollider(
+					new Vector(Double.parseDouble(spec[1]), Double.parseDouble(spec[2])),
+					Double.parseDouble(spec[3]),
+					Double.parseDouble(spec[4]));
+		} else if (spec[0].equals(CIRCLE)) {
+			return new CircleCollider(
+					new Vector(Double.parseDouble(spec[1]), Double.parseDouble(spec[2])),
+					Double.parseDouble(spec[3]));
+		} else if (spec[0].equals(TRIANGLE)) {
+			return new TriangleCollider(
+					new Vector(Double.parseDouble(spec[1]), Double.parseDouble(spec[2])),
+					new Vector(Double.parseDouble(spec[3]), Double.parseDouble(spec[4])),
+					new Vector(Double.parseDouble(spec[5]), Double.parseDouble(spec[6])));
+		} else if (spec[0].equals(COMPOSITE)) {
 			return new CompositeCollider();
 		} else {
 			return null;//TODO: none
