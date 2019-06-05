@@ -11,7 +11,7 @@ public class ColliderConverter {
 	private static final String COMPOSITE = "composite";
 	
 	/*
-	 * None??
+	 * None
 	 * RectangleCollider
 	 * 		rectangle:originX:originY:width:height
 	 * CircleCollider
@@ -50,6 +50,16 @@ public class ColliderConverter {
 	}
 	
 	public String convertToEntryString(Collider collider) {
-		return "Rectangle:0:0:5:5";
+		if (collider instanceof RectangleCollider) {
+			return "rectangle:0:0:5:5";
+		} else if (collider instanceof CircleCollider) {
+			return "circle:0:0:5";
+		} else if (collider instanceof RectangleCollider) {
+			return "triangle:0:0:5:5:3:3";
+		} else if (collider instanceof RectangleCollider) {
+			return "composite:;circle:0:0:5;triangle:0:0:5:5:3:3";
+		} else {
+			return "";
+		}
 	}
 }
