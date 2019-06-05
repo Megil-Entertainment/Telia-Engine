@@ -11,9 +11,9 @@ import ch.megil.teliaengine.GameMain;
 import ch.megil.teliaengine.configuration.FileConfiguration;
 import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.MapFileManager;
+import ch.megil.teliaengine.file.PlayerFileManager;
 import ch.megil.teliaengine.file.ProjectFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
-import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
@@ -23,20 +23,15 @@ import ch.megil.teliaengine.project.ProjectController;
 import ch.megil.teliaengine.ui.component.AssetExplorer;
 import ch.megil.teliaengine.ui.component.MapEditor;
 import ch.megil.teliaengine.ui.component.ObjectExplorer;
-import javafx.event.Event;
 import ch.megil.teliaengine.ui.dialog.AboutDialog;
 import ch.megil.teliaengine.ui.dialog.MapCreateDialog;
 import ch.megil.teliaengine.ui.dialog.ObjectCreateDialog;
 import ch.megil.teliaengine.ui.dialog.ProjectCreateDialog;
+import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextInputDialog;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
@@ -117,18 +112,21 @@ public class EngineUIController {
 	
 	@FXML
 	private void fileNewMap() {
-		var mapEditorTab = new Tab();
-		currentMapEditor = new MapEditor();
 		new MapCreateDialog().showAndWait().ifPresent(this::initMap);
-		addFunctionalityToTab(mapEditorTab, currentMapEditor);
 	}
 	
 	private void initMap(Map map) {
-		currentMapEditor.setMap(map);
-		mapFileManger.save(map, currentMapEditor.getPlayer());
 		try {
+			var player = new PlayerFileManager().load();
+			var newMapEditor = new MapEditor();
+			newMapEditor.updateMap(map, player);
+			mapFileManger.save(map, newMapEditor.getPlayer());
 			assetExplorer.reload();
-		} catch(AssetNotFoundException e) {
+			
+			var mapEditorTab = new Tab();
+			currentMapEditor = newMapEditor;
+			addFunctionalityToTab(mapEditorTab, currentMapEditor);
+		} catch(AssetLoadException e) {
 			LogHandler.log(e, Level.SEVERE);
 		}
 	}
@@ -144,10 +142,10 @@ public class EngineUIController {
 			
 			var result = dialog.showAndWait();
 			result.ifPresent(map::setName);
-			currentMapEditor.setSaved(true);
 		}
 		
 		mapFileManger.save(map, currentMapEditor.getPlayer());
+		currentMapEditor.setSaved(true);
 	}
 	
 	@FXML
@@ -184,7 +182,7 @@ public class EngineUIController {
 				openNewTab(mapName, false);
 			}
 
-		} catch (AssetNotFoundException | AssetFormatException e) {
+		} catch (AssetLoadException e) {
 			var alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Map Load Error");
 			alert.setHeaderText(null);
@@ -194,7 +192,7 @@ public class EngineUIController {
 			if (res.isPresent() && res.get().equals(ButtonType.YES)) {
 				try {
 					openNewTab(mapName, true);
-				} catch (AssetNotFoundException | AssetFormatException e2) {
+				} catch (AssetLoadException e2) {
 					LogHandler.log(e2, Level.SEVERE);
 				}
 			} else {
@@ -235,10 +233,11 @@ public class EngineUIController {
 		currentMapEditor = mapEditor;
 	}
 	
-	private void openNewTab(String mapName, boolean saveMode) throws AssetNotFoundException, AssetFormatException {
+	private void openNewTab(String mapName, boolean saveMode) throws AssetLoadException {
 		var mapEditorTab = new Tab();
 		var mapEditor = new MapEditor();
-		mapEditor.setMap(mapFileManger.load(mapName, saveMode));
+		var player = new PlayerFileManager().load();
+		mapEditor.updateMap(mapFileManger.load(mapName, saveMode, player), player);
 		addFunctionalityToTab(mapEditorTab, mapEditor);
 	}
 	

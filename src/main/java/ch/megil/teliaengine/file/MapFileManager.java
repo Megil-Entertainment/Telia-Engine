@@ -42,7 +42,7 @@ public class MapFileManager {
 		}
 	}
 	
-	public Map load(String mapName, boolean recoverMode) throws AssetNotFoundException, AssetFormatException {
+	public Map load(String mapName, boolean recoverMode, Player player) throws AssetNotFoundException, AssetFormatException {
 		var fileName = ProjectFolderConfiguration.ASSETS_MAPS.getConfigurationWithProjectPath() + "/" + mapName
 				+ FileConfiguration.FILE_EXT_MAP.getConfiguration();
 		var file = new File(fileName);
@@ -53,7 +53,6 @@ public class MapFileManager {
 			var mapSize = scanner.next().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			var playerPos = scanner.next().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			
-			var player = Player.get();
 			player.setPosX(Double.parseDouble(playerPos[0]));
 			player.setPosY(Double.parseDouble(playerPos[1]));
 			

@@ -2,7 +2,7 @@ package ch.megil.teliaengine.vulkanui;
 
 import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.game.Map;
-import ch.megil.teliaengine.game.Vector;
+import ch.megil.teliaengine.physics.Vector;
 
 public class VulkanMap extends VulkanElement {
 	public VulkanMap(Map map, Vector cameraPosition) {

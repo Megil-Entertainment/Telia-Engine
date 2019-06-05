@@ -16,9 +16,9 @@ import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
-import ch.megil.teliaengine.game.Hitbox;
-import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.logging.LogHandler;
+import ch.megil.teliaengine.physics.Vector;
+import ch.megil.teliaengine.physics.collision.RectangleCollider;
 import javafx.scene.paint.Color;
 
 public class GameObjectFileManager {
@@ -30,7 +30,7 @@ public class GameObjectFileManager {
 			var spec = reader.readLine().split(FileConfiguration.SEPERATOR_PROPERTY.getConfiguration());
 			var depictionName = spec[2];
 			var depiction = TextureFileManager.get().load(depictionName, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
-			var hitbox = new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
+			var hitbox = new RectangleCollider(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			var color = Color.web(spec[3]);
 			
 			var obj = new GameObject(name, depictionName, depiction, hitbox, color);

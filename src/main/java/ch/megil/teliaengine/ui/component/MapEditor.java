@@ -205,18 +205,18 @@ public class MapEditor extends Pane {
 		return player;
 	}
 	
-	public void setMap(Map map) {
+	public void updateMap(Map map, Player player) {
 		getChildren().clear();
 		getChildren().add(hiddenKeyInput);
 		
 		this.map = map;
+		this.player = player;
 		
 		mapBackground.setWidth(map.getWidth());
 		mapBackground.setHeight(map.getHeight());
 		getChildren().add(mapBackground);
 		
 		map.getMapObjects().forEach(o -> getChildren().add(new GameElementImageView(o)));
-		this.player = Player.getEngineCopy();
 		getChildren().add(new GameElementImageView(player));
 		setTranslateX(0);
 		setTranslateY(0);

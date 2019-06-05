@@ -11,14 +11,13 @@ import ch.megil.teliaengine.configuration.ProjectFolderConfiguration;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
-import ch.megil.teliaengine.game.Hitbox;
-import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.game.player.Player;
-import ch.megil.teliaengine.game.player.PlayerConstructor;
+import ch.megil.teliaengine.physics.Vector;
+import ch.megil.teliaengine.physics.collision.RectangleCollider;
 import javafx.scene.paint.Color;
 
 public class PlayerFileManager {
-	public Player load(PlayerConstructor constructor) throws AssetLoadException {
+	public Player load() throws AssetLoadException {
 		var fileName = ProjectFolderConfiguration.ASSET_PLAYER.getConfigurationWithProjectPath() + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
 		var file = new File(fileName);
 		
@@ -29,10 +28,10 @@ public class PlayerFileManager {
 
 			var depictionName = spec[2];
 			var depiction = TextureFileManager.get().load(depictionName, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
-			var hitbox =  new Hitbox(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
+			var hitbox =  new RectangleCollider(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			var color = Color.web(spec[3]);
 			
-			return constructor.invoke(depictionName, depiction, hitbox, color);
+			return new Player(depictionName, depiction, hitbox, color);
 		} catch (IOException e) {
 			throw new AssetNotFoundException("Player spec not found", e);
 		} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {

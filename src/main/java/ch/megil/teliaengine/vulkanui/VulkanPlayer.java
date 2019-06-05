@@ -1,8 +1,8 @@
 package ch.megil.teliaengine.vulkanui;
 
 import ch.megil.teliaengine.configuration.GameConfiguration;
-import ch.megil.teliaengine.game.Vector;
 import ch.megil.teliaengine.game.player.Player;
+import ch.megil.teliaengine.physics.Vector;
 
 public class VulkanPlayer extends VulkanElement {
 	private static final int SINGLE_OBJECT = 1;
