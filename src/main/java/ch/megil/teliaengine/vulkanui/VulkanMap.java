@@ -1,14 +1,17 @@
 package ch.megil.teliaengine.vulkanui;
 
+import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.game.Map;
+import ch.megil.teliaengine.physics.Vector;
 
 public class VulkanMap extends VulkanElement {
-	public VulkanMap(Map map) {
-		this(map, 0);
+	public VulkanMap(Map map, Vector cameraPosition) {
+		this(map, 0, cameraPosition);
 	}
 	
-	public VulkanMap(Map map, int indexOffset) {
-		super(map.getMapObjects().size(), map.getWidth(), map.getHeight());
+	public VulkanMap(Map map, int indexOffset, Vector cameraPosition) {
+		super(map.getMapObjects().size(), GameConfiguration.MAP_WIDTH.getConfiguration(), 
+				GameConfiguration.MAP_HEIGHT.getConfiguration(), cameraPosition);
 		
 		var vertexBuffer = vertecies.asFloatBuffer();
 		var indexBuffer = indicies.asShortBuffer();

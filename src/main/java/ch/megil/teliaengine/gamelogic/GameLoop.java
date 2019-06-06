@@ -4,8 +4,8 @@ import java.util.stream.Collectors;
 
 import ch.megil.teliaengine.configuration.PhysicsConstants;
 import ch.megil.teliaengine.game.GameObject;
-import ch.megil.teliaengine.game.player.Player;
-import ch.megil.teliaengine.input.KeyHandler;
+import ch.megil.teliaengine.input.InputHandler;
+import ch.megil.teliaengine.input.converter.GameKeyConverter;
 import javafx.animation.AnimationTimer;
 
 public class GameLoop extends AnimationTimer {
@@ -14,10 +14,10 @@ public class GameLoop extends AnimationTimer {
 	private static GameLoop instance;
 	
 	private long lastRun;
-	private KeyHandler keyHandler;
+	private InputHandler inputHandler;
 	
 	protected GameLoop() {
-		keyHandler = new KeyHandler();
+		this.inputHandler = new InputHandler(new GameKeyConverter());
 	}
 	
 	public static GameLoop get() {
@@ -28,22 +28,22 @@ public class GameLoop extends AnimationTimer {
 	}
 	
 	public void runInputs() {
-		var strokes = keyHandler.getKeyStrokes();
+		var strokes = inputHandler.getInputs();
 		var pressed = strokes.get(0);
 		var released = strokes.get(1);
 		
 		for (var key : pressed) {
 			switch (key) {
 				case WALK_RIGHT:
-					Player.get().applyAcceleration(PhysicsConstants.WALK_SPEED_RIGHT.get());
+					GameState.get().getPlayer().applyAcceleration(PhysicsConstants.WALK_SPEED_RIGHT.get());
 					break;
 				case WALK_LEFT:
-					Player.get().applyAcceleration(PhysicsConstants.WALK_SPEED_LEFT.get());
+					GameState.get().getPlayer().applyAcceleration(PhysicsConstants.WALK_SPEED_LEFT.get());
 					break;
 				case JUMP:
-					if (!Player.get().isJumpUsed()) {
-						Player.get().useJump();
-						Player.get().applyForce(PhysicsConstants.JUMP_FORCE.get());
+					if (!GameState.get().getPlayer().isJumpUsed()) {
+						GameState.get().getPlayer().useJump();
+						GameState.get().getPlayer().applyForce(PhysicsConstants.JUMP_FORCE.get());
 					}
 					break;
 				default:
@@ -54,10 +54,10 @@ public class GameLoop extends AnimationTimer {
 		for (var key : released) {
 			switch (key) {
 				case WALK_RIGHT:
-					Player.get().applyAcceleration(PhysicsConstants.WALK_SPEED_RIGHT.get().negate());
+					GameState.get().getPlayer().applyAcceleration(PhysicsConstants.WALK_SPEED_RIGHT.get().negate());
 					break;
 				case WALK_LEFT:
-					Player.get().applyAcceleration(PhysicsConstants.WALK_SPEED_LEFT.get().negate());
+					GameState.get().getPlayer().applyAcceleration(PhysicsConstants.WALK_SPEED_LEFT.get().negate());
 					break;
 				default:
 					break;
@@ -68,16 +68,17 @@ public class GameLoop extends AnimationTimer {
 	@Override
 	public void handle(long now) {
 		var delta = now - lastRun;
+		inputHandler.updateGamepad();
 		if (delta >= TICK_SPEED) {
 			lastRun = now;
 			runInputs();
 			
-			Player.get().applyForce(PhysicsConstants.GRAVITY.get());
-			Player.get().update(GameState.get().getMap().getMapObjects().stream().map(GameObject::getHitbox).collect(Collectors.toList()));
+			GameState.get().getPlayer().applyForce(PhysicsConstants.GRAVITY.get());
+			GameState.get().getPlayer().update(GameState.get().getMap().getMapObjects().stream().map(GameObject::getHitbox).collect(Collectors.toList()));
 		}
 	}
 	
-	public KeyHandler getKeyHandler() {
-		return keyHandler;
+	public InputHandler getInputHandler() {
+		return inputHandler;
 	}
 }

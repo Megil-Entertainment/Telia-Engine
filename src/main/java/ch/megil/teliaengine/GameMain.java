@@ -18,15 +18,20 @@ import org.lwjgl.vulkan.VkPresentInfoKHR;
 import org.lwjgl.vulkan.VkSubmitInfo;
 
 import ch.megil.teliaengine.configuration.SystemConfiguration;
-import ch.megil.teliaengine.file.MapSaveLoad;
-import ch.megil.teliaengine.file.exception.AssetFormatException;
+import ch.megil.teliaengine.file.MapFileManager;
+import ch.megil.teliaengine.file.PlayerFileManager;
+import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
 import ch.megil.teliaengine.gamelogic.GameLoop;
 import ch.megil.teliaengine.gamelogic.GameState;
 import ch.megil.teliaengine.vulkan.*;
+import ch.megil.teliaengine.vulkan.buffer.VulkanIndexBuffer;
+import ch.megil.teliaengine.vulkan.buffer.VulkanVertexBuffer;
+import ch.megil.teliaengine.vulkan.command.VulkanCommandPool;
 import ch.megil.teliaengine.vulkan.exception.VulkanException;
+import ch.megil.teliaengine.vulkan.file.VulkanTextureLoader;
 import ch.megil.teliaengine.vulkanui.VulkanMap;
 import ch.megil.teliaengine.vulkanui.VulkanPlayer;
 
@@ -58,12 +63,18 @@ public class GameMain {
 	private VulkanSwapchain swapchain;
 	private VulkanRenderPass renderPass;
 	private VulkanShader shader;
-	private VulkanPipeline pipeline;
+	private VulkanSampler sampler;
 	private VulkanFramebuffers framebuffers;
 	private VulkanCommandPool renderCommandPool;
+	private VulkanCommandPool singleCommandPool;
+	private VulkanSemaphore semaphore;
+	private VulkanDescriptor descriptor;
+	private VulkanDescriptorUpdater descriptorUpdater;
+	private VulkanPipeline pipeline;
 	private VulkanVertexBuffer vertexBuffer;
 	private VulkanIndexBuffer indexBuffer;
-	private VulkanSemaphore semaphore;
+	
+	private VulkanTextureLoader textureLoader;
 	
 	private VulkanMap map;
 	private VulkanPlayer player;
@@ -79,40 +90,44 @@ public class GameMain {
 		swapchain = new VulkanSwapchain();
 		renderPass = new VulkanRenderPass();
 		shader = new VulkanShader();
-		pipeline = new VulkanPipeline();
+		sampler = new VulkanSampler();
 		framebuffers = new VulkanFramebuffers();
 		renderCommandPool = new VulkanCommandPool();
+		singleCommandPool = new VulkanCommandPool();
+		semaphore = new VulkanSemaphore();
+		
+		descriptor = new VulkanDescriptor();
+		descriptorUpdater = new VulkanDescriptorUpdater();
+		pipeline = new VulkanPipeline();
 		vertexBuffer = new VulkanVertexBuffer();
 		indexBuffer = new VulkanIndexBuffer();
-		semaphore = new VulkanSemaphore();
+		
+		textureLoader = new VulkanTextureLoader();
 	}
 	
-	public GameMain(String mapName) throws AssetNotFoundException, AssetFormatException {
+	public GameMain(String mapName) throws AssetLoadException {
 		this();
-		GameState.get().setMap(new MapSaveLoad().load(mapName, false));
+		Player player = new PlayerFileManager().load();
+		GameState.get().setPlayer(player);
+		GameState.get().setMap(new MapFileManager().load(mapName, false, player));
 	}
 
-	public void run() throws IllegalStateException, VulkanException {
+	public void run() throws IllegalStateException, VulkanException, AssetNotFoundException {
 		if (instance.get() != null) {
 			throw new IllegalStateException("Vulkan is already completly or partialy initialized. Use cleanUp first.");
 		}
 		
-		map = new VulkanMap(GameState.get().getMap());
-		player = new VulkanPlayer(Player.get(), GameState.get().getMap(), map.getNumberOfVertecies());
-		
 		try {
 			init();
-			vertexBuffer.writeVertecies(logicalDevice, map);
-			indexBuffer.writeIndicies(logicalDevice, map);
-			vertexBuffer.writeVertecies(logicalDevice, player, map.getNumberOfVertecies());
-			indexBuffer.writeIndicies(logicalDevice, player, map.getNumberOfIndecies());
-			player.free();
+			initMap(GameState.get().getMap(), GameState.get().getPlayer());
+			
 			GameLoop.get().start();
+			
 			initKeyhandling();
 			loop();
 		} finally {
+			cleanUpMap();
 			cleanUp();
-			map.free();
 			GameLoop.get().stop();
 		}
 	}
@@ -137,12 +152,51 @@ public class GameMain {
 		swapchain.init(physicalDevice, windowSurface, queue, logicalDevice, color, BASE_WIDTH, BASE_HEIGHT);
 		renderPass.init(logicalDevice, color);
 		shader.init(logicalDevice);
-		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer);
+		sampler.init(logicalDevice);
 		framebuffers.init(logicalDevice, swapchain, renderPass);
 		renderCommandPool.init(logicalDevice, queue, swapchain.getImageCount());
-		vertexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfVertecies() + player.getNumberOfVertecies());
-		indexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfIndecies() + player.getNumberOfIndecies());
+		singleCommandPool.init(logicalDevice, queue);
+		semaphore.init(logicalDevice, SEM_NUM_OF_SEM);
 		
+		glfwShowWindow(window);
+	}
+	
+	private void initMap(Map mapObj, Player playerObj) throws VulkanException, AssetNotFoundException {
+		descriptor.init(logicalDevice);
+		descriptorUpdater.init(sampler, descriptor);
+		pipeline.init(logicalDevice, swapchain, shader, renderPass, vertexBuffer, descriptor);
+		
+		textureLoader.loadAndUpdateGameElementTexture(physicalDevice, logicalDevice, queue, singleCommandPool, descriptorUpdater, playerObj);
+		for (var element : mapObj.getMapObjects()) {
+			textureLoader.loadAndUpdateGameElementTexture(physicalDevice, logicalDevice, queue, singleCommandPool, descriptorUpdater, element);
+		}
+		
+		map = new VulkanMap(GameState.get().getMap(), playerObj.getPosition());
+		player = new VulkanPlayer(playerObj, map.getNumberOfVertecies(), playerObj.getPosition());
+		
+		try {
+			vertexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfVertecies() + player.getNumberOfVertecies(), new int[] {queue.getGraphicsFamily()});
+			indexBuffer.init(physicalDevice, logicalDevice, map.getNumberOfIndecies() + player.getNumberOfIndecies(), new int[] {queue.getGraphicsFamily()});
+			
+			descriptorUpdater.updateDescriptor(logicalDevice);
+			
+			vertexBuffer.writeVertecies(logicalDevice, map);
+			indexBuffer.writeIndicies(logicalDevice, map);
+			vertexBuffer.writeVertecies(logicalDevice, player, map.getNumberOfVertecies());
+			indexBuffer.writeIndicies(logicalDevice, player, map.getNumberOfIndecies());
+		} finally {
+			player.free();
+			map.free();
+		}
+	}
+	
+	private void initKeyhandling() {
+		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+			GameLoop.get().getInputHandler().registerKeyAction(key, action);
+		});
+	}
+	
+	private void loop() throws VulkanException {
 		var clearColor = VkClearValue.calloc(1);
 		clearColor.color()
 				.float32(0, CLEAR_R)
@@ -151,27 +205,11 @@ public class GameMain {
 				.float32(3, CLEAR_A);
 		
 		try {
-			renderPass.linkRender(swapchain, pipeline, framebuffers, renderCommandPool, vertexBuffer, indexBuffer, clearColor, BASE_WIDTH, BASE_HEIGHT);
+			renderPass.linkRender(swapchain, pipeline, framebuffers, renderCommandPool, vertexBuffer, indexBuffer, descriptor, clearColor, BASE_WIDTH, BASE_HEIGHT);
 		} finally {
 			clearColor.free();
 		}
 		
-		semaphore.init(logicalDevice, SEM_NUM_OF_SEM);
-		
-		glfwShowWindow(window);
-	}
-	
-	private void initKeyhandling() {
-		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-			if (action == GLFW_PRESS) {
-				GameLoop.get().getKeyHandler().press(key);
-			} else if (action == GLFW_RELEASE) {
-				GameLoop.get().getKeyHandler().release(key);
-			}
-		});
-	}
-	
-	private void loop() throws VulkanException {
 		var pImageIndex = memAllocInt(1);
 		var pRenderCommandBuffer = memAllocPointer(1);
 		var pSwapchain = memAllocLong(1);
@@ -202,9 +240,12 @@ public class GameMain {
 			while(!glfwWindowShouldClose(window)) {
 				glfwPollEvents();
 				
-				player = new VulkanPlayer(Player.get(), GameState.get().getMap());
+				map = new VulkanMap(GameState.get().getMap(), GameState.get().getPlayer().getPosition());
+				player = new VulkanPlayer(GameState.get().getPlayer(), GameState.get().getPlayer().getPosition());
+				vertexBuffer.writeVertecies(logicalDevice, map);
 				vertexBuffer.writeVertecies(logicalDevice, player, map.getNumberOfVertecies());
 				player.free();
+				map.free();
 				
 				vkAcquireNextImageKHR(logicalDevice.get(), swapchain.get(), UINT64_MAX, semaphore.get(SEM_IMAGE_AVAILABLE), VK_NULL_HANDLE, pImageIndex);
 				var imageIndex = pImageIndex.get(0);
@@ -232,13 +273,23 @@ public class GameMain {
 		}
 	}
 	
+	public void cleanUpMap() {
+		// Destroy bottom up		
+		indexBuffer.cleanUp(logicalDevice);
+		vertexBuffer.cleanUp(logicalDevice);
+		textureLoader.cleanUp(logicalDevice);
+		pipeline.cleanUp(logicalDevice);
+		descriptorUpdater.cleanUp();
+		descriptor.cleanUp(logicalDevice);
+	}
+	
 	public void cleanUp() {
 		// Destroy bottom up
 		semaphore.cleanUp(logicalDevice);
-		vertexBuffer.cleanUp(logicalDevice);
+		singleCommandPool.cleanUp(logicalDevice);
 		renderCommandPool.cleanUp(logicalDevice);
 		framebuffers.cleanUp(logicalDevice);
-		pipeline.cleanUp(logicalDevice);
+		sampler.cleanUp(logicalDevice);
 		shader.cleanUp(logicalDevice);
 		renderPass.cleanUp(logicalDevice);
 		swapchain.cleanUp(logicalDevice);

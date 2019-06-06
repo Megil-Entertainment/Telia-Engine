@@ -1,6 +1,6 @@
 package ch.megil.teliaengine.ui.component;
 
-import ch.megil.teliaengine.configuration.SystemConfiguration;
+import ch.megil.teliaengine.configuration.GameConfiguration;
 import ch.megil.teliaengine.game.GameObject;
 import ch.megil.teliaengine.game.Map;
 import ch.megil.teliaengine.game.player.Player;
@@ -22,6 +22,8 @@ public class MapEditor extends Pane {
 	private static final double KEY_INPUT_HIDDEN_SIZE = 50;
 	private static final double KEY_INPUT_HIDDEN_OFFSET = -50;
 	private static final Color INNER_SHADOW_COLOR = Color.CORNFLOWERBLUE;
+	private static final Color MAP_BACKGROUND = Color.WHITE;
+	private static final Color MAP_BACKGROUND_STROKE = Color.BLACK;
 	
 	private Map map;
 	private Player player;
@@ -29,8 +31,8 @@ public class MapEditor extends Pane {
 	private double dx;
 	private double dy;
 	
-	private int gridWidth;
-	private int gridHeight;
+	private double gridWidth;
+	private double gridHeight;
 	
 	private InnerShadow nodeSelected;
 	private InnerShadow nodeDeselected;
@@ -38,6 +40,9 @@ public class MapEditor extends Pane {
 	private GameElementImageView selected;
 	
 	private TextArea hiddenKeyInput;
+	private Rectangle mapBackground;
+	
+	private boolean saved;
 	
 	public MapEditor() {
 		hiddenKeyInput = new TextArea();
@@ -47,6 +52,9 @@ public class MapEditor extends Pane {
 		hiddenKeyInput.setLayoutX(KEY_INPUT_HIDDEN_OFFSET);
 		hiddenKeyInput.setLayoutY(KEY_INPUT_HIDDEN_OFFSET);
 		hiddenKeyInput.setOnKeyReleased(this::onKeyPressed);
+		mapBackground = new Rectangle();
+		mapBackground.setFill(MAP_BACKGROUND);
+		mapBackground.setStroke(MAP_BACKGROUND_STROKE);
 		var clip = new Rectangle();
 		clip.widthProperty().bind(this.widthProperty());
 		clip.heightProperty().bind(this.heightProperty());
@@ -61,26 +69,29 @@ public class MapEditor extends Pane {
 					});
 			}});
 		
-		gridWidth = Integer.parseInt(SystemConfiguration.MAP_GRID_WIDTH.getConfiguration());
-		gridHeight = Integer.parseInt(SystemConfiguration.MAP_GRID_HEIGHT.getConfiguration());
+		gridWidth = GameConfiguration.MAP_GRID_WIDTH.getConfiguration();
+		gridHeight = GameConfiguration.MAP_GRID_HEIGHT.getConfiguration();
 		
 		nodeSelected = new InnerShadow(INNER_SHADOW_RADIUS, INNER_SHADOW_COLOR);
 		nodeSelected.setChoke(INNER_SHADOW_CHOKE);
 		
 		nodeDeselected = new InnerShadow();
 		nodeDeselected.setColor(Color.TRANSPARENT);
+		
+		saved = true;
 	}
 	
 	public void addGameObject(GameObject obj) {
 		if (map != null) {
 			map.addObject(obj);
 			getChildren().add(new GameElementImageView(obj));
+			saved = false;
 		}
 	}
 	
 	public void onClickNode(MouseEvent event) {
 		hiddenKeyInput.requestFocus();
-		if (event.isPrimaryButtonDown()) {
+		if (event.isPrimaryButtonDown() && event.getSource() != mapBackground) {
 			var source = (GameElementImageView) event.getSource();
 			if(selected != null) {
 				selected.setEffect(nodeDeselected);
@@ -108,9 +119,10 @@ public class MapEditor extends Pane {
 		map.removeObject((GameObject)selected.getGameElement());
 		getChildren().remove(selected);
 		selected = null;
+		saved = false;
 	}
 	
-	private double roundToNearest(double value, int roundFactor) {
+	private double roundToNearest(double value, double roundFactor) {
 		return Math.round(value/roundFactor) * roundFactor;
 	}
 	
@@ -134,27 +146,28 @@ public class MapEditor extends Pane {
 		var offsetX = rectangle.getWidth() - map.getWidth();
 		var offsetY = rectangle.getHeight() - map.getHeight();
 		
-		if(getTranslateX() < offsetX) {
-			setTranslateX(offsetX);
-		} else if (getTranslateX() > 0) {
+		if (offsetX >= 0 || getTranslateX() > 0) {
 			setTranslateX(0);
+		} else if(getTranslateX() < offsetX) {
+			setTranslateX(offsetX);
 		}
 		
-		if(getTranslateY() < offsetY) {
-			setTranslateY(offsetY);
-		} else if (getTranslateY() > 0) {
+		if(offsetY >= 0 || getTranslateY() > 0) {
 			setTranslateY(0);
+		} else if(getTranslateY() < offsetY) {
+			setTranslateY(offsetY);
 		}
 	}
 	
 	public void onMoveNode(MouseEvent event) {
-		if(event.isPrimaryButtonDown()) {
+		if(event.isPrimaryButtonDown() && event.getSource() != mapBackground) {
 			var source = (GameElementImageView) event.getSource();
 			source.setImageViewLayoutX(
 					roundToNearest((event.getSceneX() + dx), gridWidth));
 			source.setImageViewLayoutY(
 					roundToNearest((event.getSceneY() + dy), gridHeight));
 			checkBoundries(source);
+			saved = false;
 			event.consume();
 		}
 	}
@@ -192,19 +205,32 @@ public class MapEditor extends Pane {
 		return player;
 	}
 	
-	public void setMap(Map map) {
+	public void updateMap(Map map, Player player) {
 		getChildren().clear();
 		getChildren().add(hiddenKeyInput);
 		
 		this.map = map;
+		this.player = player;
+		
+		mapBackground.setWidth(map.getWidth());
+		mapBackground.setHeight(map.getHeight());
+		getChildren().add(mapBackground);
+		
 		map.getMapObjects().forEach(o -> getChildren().add(new GameElementImageView(o)));
-		this.player = Player.getEngineCopy();
 		getChildren().add(new GameElementImageView(player));
 		setTranslateX(0);
 		setTranslateY(0);
 		var clip = (Rectangle) getClip();
 		clip.setX(0);
 		clip.setY(0);
+	}
+	
+	public void setSaved(boolean saved) {
+		this.saved = saved;
+	}
+	
+	public boolean getSaved() {
+		return saved;
 	}
 
 }

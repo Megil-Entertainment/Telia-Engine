@@ -7,25 +7,28 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import ch.megil.teliaengine.physics.Vector;
+import ch.megil.teliaengine.physics.collision.Collider;
+import ch.megil.teliaengine.physics.collision.RectangleCollider;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public class GameObjectTest {
 	@Mock
 	private Image depiction;
-	private Hitbox hitbox;
+	private Collider hitbox;
 	private Color color;
 
 	@Before
 	public void setUp() throws Exception {
 		depiction = mock(Image.class);
-		hitbox = new Hitbox(Vector.ZERO, 50, 50);
+		hitbox = new RectangleCollider(Vector.ZERO, 50, 50);
 		color = Color.BLACK;
 	}
 
 	@Test
 	public void testGameObjectStringNode() {
-		var obj = new GameObject("testObject", depiction, hitbox, color);
+		var obj = new GameObject("testObject", "depiction", depiction, hitbox, color);
 
 		assertEquals(depiction, obj.getDepiction());
 		assertEquals(0, obj.getPosition().getX(), 0);
@@ -34,12 +37,12 @@ public class GameObjectTest {
 
 	@Test
 	public void testGameObjectStringNodeDoubleDouble() {
-		var obj = new GameObject("testObject", depiction, hitbox, color, 30, 40);
+		var obj = new GameObject("testObject", "depiction", depiction, hitbox, color, 30, 40);
 
 		assertEquals(depiction, obj.getDepiction());
 		assertEquals(30, obj.getPosition().getX(), 0);
 		assertEquals(40, obj.getPosition().getY(), 0);
-		assertEquals(30, obj.getHitbox().getOrigin().getX(), 0);
-		assertEquals(40, obj.getHitbox().getOrigin().getY(), 0);
+		assertEquals(30, obj.getHitbox().getBoundingBoxBegin().getX(), 0);
+		assertEquals(40, obj.getHitbox().getBoundingBoxBegin().getY(), 0);
 	}
 }

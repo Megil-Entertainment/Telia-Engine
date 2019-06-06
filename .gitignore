@@ -21,5 +21,11 @@
 /build
 !gradle-wrapper.jar
 
+# telia engine files
+project.last
+
 # dev env assets #
-/assets/maps
+*.teliaproject
+/config/game.properties
+/assets
+/const

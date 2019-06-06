@@ -1,7 +1,7 @@
 package ch.megil.teliaengine.ui;
 
 import ch.megil.teliaengine.game.GameElement;
-import ch.megil.teliaengine.game.Vector;
+import ch.megil.teliaengine.physics.Vector;
 import javafx.scene.image.ImageView;
 
 public class GameElementImageView extends ImageView{
