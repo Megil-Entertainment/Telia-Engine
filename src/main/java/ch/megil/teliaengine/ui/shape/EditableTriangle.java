@@ -29,7 +29,7 @@ public class EditableTriangle extends Pane {
 		edge2 = new Line(x2, y2, x0, y0);
 		
 		p0 = new EditableVertex(x0, y0);
-		p0.setOnPositionChange((x, y) -> {
+		p0.setOnDragPosition((x, y) -> {
 			edge0.setStartX(x);
 			edge0.setStartY(y);
 			edge2.setEndX(x);
@@ -37,7 +37,7 @@ public class EditableTriangle extends Pane {
 			onP0Change.accept(x, y);
 			});
 		p1 = new EditableVertex(x1, y1);
-		p1.setOnPositionChange((x, y) -> {
+		p1.setOnDragPosition((x, y) -> {
 			edge1.setStartX(x);
 			edge1.setStartY(y);
 			edge0.setEndX(x);
@@ -45,7 +45,7 @@ public class EditableTriangle extends Pane {
 			onP1Change.accept(x, y);
 			});
 		p2 = new EditableVertex(x2, y2);
-		p2.setOnPositionChange((x, y) -> {
+		p2.setOnDragPosition((x, y) -> {
 			edge2.setStartX(x);
 			edge2.setStartY(y);
 			edge1.setEndX(x);

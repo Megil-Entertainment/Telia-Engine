@@ -11,13 +11,13 @@ public class EditableVertex extends Rectangle {
 	private static final double SIZE = 6;
 	private static final double OFFSET = SIZE / 2;
 	
-	private BiConsumer<Double, Double> onPositionChange;
+	private BiConsumer<Double, Double> onDragPosition;
 	
 	public EditableVertex(double x, double y) {
 		super(x - OFFSET, y - OFFSET, SIZE, SIZE);
 		setFill(Color.TRANSPARENT);
 		setStroke(Color.BLACK);
-		this.onPositionChange = (a, b) -> {};
+		this.onDragPosition = (a, b) -> {};
 
 		setOnMouseDragged(this::onDrag);
 	}
@@ -30,7 +30,12 @@ public class EditableVertex extends Rectangle {
 	private void onDrag(MouseEvent event) {
 		setX(event.getX() - OFFSET);
 		setY(event.getY() - OFFSET);
-		onPositionChange.accept(event.getX(), event.getY());
+		onDragPosition.accept(event.getX(), event.getY());
+	}
+	
+	public void setPosition(double x, double y) {
+		setX(x - OFFSET);
+		setY(y - OFFSET);
 	}
 	
 	public double getPositionX() {
@@ -41,7 +46,7 @@ public class EditableVertex extends Rectangle {
 		return getY() + OFFSET;
 	}
 	
-	public void setOnPositionChange(BiConsumer<Double, Double> onPositionChange) {
-		this.onPositionChange = onPositionChange;
+	public void setOnDragPosition(BiConsumer<Double, Double> onDragPosition) {
+		this.onDragPosition = onDragPosition;
 	}
 }
