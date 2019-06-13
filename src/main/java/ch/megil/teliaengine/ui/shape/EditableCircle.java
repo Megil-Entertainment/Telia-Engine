@@ -45,6 +45,10 @@ public class EditableCircle extends Pane {
 	
 	public EditableCircle(double centerX, double centerY, double radius, Paint stroke) {
 		this(centerX, centerY, radius);
+		setStroke(stroke);
+	}
+	
+	public void setStroke(Paint stroke) {
 		circle.setStroke(stroke);
 		center.setStroke(stroke);
 		size.setStroke(stroke);

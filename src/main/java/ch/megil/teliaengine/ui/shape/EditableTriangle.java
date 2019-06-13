@@ -46,12 +46,7 @@ public class EditableTriangle extends Pane {
 	
 	public EditableTriangle(double x0, double y0, double x1, double y1, double x2, double y2, Paint stroke) {
 		this(x0, y0, x1, y1, x2, y2);
-		p0.setStroke(stroke);
-		p1.setStroke(stroke);
-		p2.setStroke(stroke);
-		edge0.setStroke(stroke);
-		edge1.setStroke(stroke);
-		edge2.setStroke(stroke);
+		setStroke(stroke);
 	}
 	
 	private BiConsumer<Double, Double> createDragListener(Line edgeStart, Line edgeEnd, BiConsumer<Double, Double> onDragListener) {
@@ -62,6 +57,15 @@ public class EditableTriangle extends Pane {
 			edgeEnd.setEndY(y);
 			onDragListener.accept(x, y);
 		};
+	}
+	
+	public void setStroke(Paint stroke) {
+		p0.setStroke(stroke);
+		p1.setStroke(stroke);
+		p2.setStroke(stroke);
+		edge0.setStroke(stroke);
+		edge1.setStroke(stroke);
+		edge2.setStroke(stroke);
 	}
 	
 	public void setOnP0Change(BiConsumer<Double, Double> onP0Change) {

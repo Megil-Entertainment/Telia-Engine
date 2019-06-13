@@ -43,11 +43,7 @@ public class EditableRectangle extends Pane {
 	
 	public EditableRectangle(double x, double y, double width, double height, Paint stroke) {
 		this(x, y, width, height);
-		rectangle.setStroke(stroke);
-		p0.setStroke(stroke);
-		p1.setStroke(stroke);
-		p2.setStroke(stroke);
-		p3.setStroke(stroke);
+		setStroke(stroke);
 	}
 	
 	private BiConsumer<Double, Double> createDragListener(EditableVertex offsetCalc, EditableVertex changeX, EditableVertex changeY) {
@@ -85,6 +81,14 @@ public class EditableRectangle extends Pane {
 		
 		onOriginChange.accept(x, y);
 		onSizeChange.accept(w, h);
+	}
+	
+	public void setStroke(Paint stroke) {
+		rectangle.setStroke(stroke);
+		p0.setStroke(stroke);
+		p1.setStroke(stroke);
+		p2.setStroke(stroke);
+		p3.setStroke(stroke);
 	}
 	
 	public void setOnOriginChange(BiConsumer<Double, Double> onOriginChange) {
