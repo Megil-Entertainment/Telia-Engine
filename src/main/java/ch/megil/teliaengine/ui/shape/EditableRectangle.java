@@ -68,10 +68,20 @@ public class EditableRectangle extends Pane {
 		var w = p2.getPositionX() - x;
 		var h = p2.getPositionY() - y;
 		
-		rectangle.setX(x);
-		rectangle.setY(y);
-		rectangle.setWidth(w);
-		rectangle.setHeight(h);
+		if (w > 0) {
+			rectangle.setX(x);
+			rectangle.setWidth(w);
+		} else {
+			rectangle.setX(x+w);
+			rectangle.setWidth(0-w);
+		}
+		if (h > 0) {
+			rectangle.setY(y);
+			rectangle.setHeight(h);
+		} else {
+			rectangle.setY(y+h);
+			rectangle.setHeight(0-h);
+		}
 		
 		onOriginChange.accept(x, y);
 		onSizeChange.accept(w, h);
