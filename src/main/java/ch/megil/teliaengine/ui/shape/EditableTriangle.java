@@ -56,12 +56,12 @@ public class EditableTriangle extends Pane {
 	
 	private BiConsumer<Double, Double> createDragListener(Line edgeStart, Line edgeEnd, BiConsumer<Double, Double> onDragListener) {
 		return (x, y) -> {
-				edgeStart.setStartX(x);
-				edgeStart.setStartY(y);
-				edgeEnd.setEndX(x);
-				edgeEnd.setEndY(y);
-				onDragListener.accept(x, y);
-			};
+			edgeStart.setStartX(x);
+			edgeStart.setStartY(y);
+			edgeEnd.setEndX(x);
+			edgeEnd.setEndY(y);
+			onDragListener.accept(x, y);
+		};
 	}
 	
 	public void setOnP0Change(BiConsumer<Double, Double> onP0Change) {
