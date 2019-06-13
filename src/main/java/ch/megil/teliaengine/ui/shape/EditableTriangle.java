@@ -29,29 +29,11 @@ public class EditableTriangle extends Pane {
 		edge2 = new Line(x2, y2, x0, y0);
 		
 		p0 = new EditableVertex(x0, y0);
-		p0.setOnDragPosition((x, y) -> {
-			edge0.setStartX(x);
-			edge0.setStartY(y);
-			edge2.setEndX(x);
-			edge2.setEndY(y);
-			onP0Change.accept(x, y);
-			});
+		p0.setOnDragPosition(createDragListener(edge0, edge2, onP0Change));
 		p1 = new EditableVertex(x1, y1);
-		p1.setOnDragPosition((x, y) -> {
-			edge1.setStartX(x);
-			edge1.setStartY(y);
-			edge0.setEndX(x);
-			edge0.setEndY(y);
-			onP1Change.accept(x, y);
-			});
+		p1.setOnDragPosition(createDragListener(edge1, edge0, onP1Change));
 		p2 = new EditableVertex(x2, y2);
-		p2.setOnDragPosition((x, y) -> {
-			edge2.setStartX(x);
-			edge2.setStartY(y);
-			edge1.setEndX(x);
-			edge1.setEndY(y);
-			onP2Change.accept(x, y);
-			});
+		p2.setOnDragPosition(createDragListener(edge2, edge1, onP2Change));
 		
 		getChildren().add(edge0);
 		getChildren().add(edge1);
@@ -70,6 +52,16 @@ public class EditableTriangle extends Pane {
 		edge0.setStroke(stroke);
 		edge1.setStroke(stroke);
 		edge2.setStroke(stroke);
+	}
+	
+	private BiConsumer<Double, Double> createDragListener(Line edgeStart, Line edgeEnd, BiConsumer<Double, Double> onDragListener) {
+		return (x, y) -> {
+				edgeStart.setStartX(x);
+				edgeStart.setStartY(y);
+				edgeEnd.setEndX(x);
+				edgeEnd.setEndY(y);
+				onDragListener.accept(x, y);
+			};
 	}
 	
 	public void setOnP0Change(BiConsumer<Double, Double> onP0Change) {
