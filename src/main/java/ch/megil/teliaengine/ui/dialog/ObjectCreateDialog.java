@@ -32,6 +32,15 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 	private static final double WIDTH = 480;
 	private static final double HEIGHT = 300;
 	
+	private static final double PERCENT_WIDTH_COL0 = 20;
+	private static final double FACTOR_WIDTH_COL0 = 0.2;
+	private static final double PERCENT_WIDTH_COL1 = 15;
+	private static final double FACTOR_WIDTH_COL1 = 0.15;
+	private static final double PERCENT_WIDTH_COL2 = 15;
+	private static final double FACTOR_WIDTH_COL2 = 0.15;
+	private static final double PERCENT_WIDTH_COL3 = 50;
+	private static final double FACTOR_WIDTH_COL3 = 0.5;
+	
 	private Node createBtn;
 	private TextField objectName;
 	private TextField objectWidth;
@@ -89,14 +98,14 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 		colliderEditor = new ColliderEditor(Color.BLACK);
 		grid.add(colliderEditor, 3, 0, 1, 4);
 
-		var col0 = new ColumnConstraints(WIDTH*0.2);
-		col0.setPercentWidth(20);
-		var col1 = new ColumnConstraints(WIDTH*0.15);
-		col1.setPercentWidth(15);
-		var col2 = new ColumnConstraints(WIDTH*0.15);
-		col2.setPercentWidth(15);
-		var col3 = new ColumnConstraints(WIDTH*0.5);
-		col3.setPercentWidth(50);
+		var col0 = new ColumnConstraints(WIDTH*FACTOR_WIDTH_COL0);
+		col0.setPercentWidth(PERCENT_WIDTH_COL0);
+		var col1 = new ColumnConstraints(WIDTH*FACTOR_WIDTH_COL1);
+		col1.setPercentWidth(PERCENT_WIDTH_COL1);
+		var col2 = new ColumnConstraints(WIDTH*FACTOR_WIDTH_COL2);
+		col2.setPercentWidth(PERCENT_WIDTH_COL2);
+		var col3 = new ColumnConstraints(WIDTH*FACTOR_WIDTH_COL3);
+		col3.setPercentWidth(PERCENT_WIDTH_COL3);
 		grid.getColumnConstraints().addAll(col0, col1, col2, col3);
 		
 		getDialogPane().setContent(grid);
