@@ -65,7 +65,6 @@ public class EditableRectangle extends Pane {
 		var h = p2.getPositionY() - y;
 		
 		if (w < 0) {
-		} else {
 			x = x+w;
 			w = 0-w;
 		}
