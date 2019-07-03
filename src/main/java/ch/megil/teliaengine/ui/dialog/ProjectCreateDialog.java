@@ -11,6 +11,8 @@ import ch.megil.teliaengine.file.ProjectFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.logging.LogHandler;
 import ch.megil.teliaengine.project.Project;
+import ch.megil.teliaengine.ui.component.ColliderEditor;
+import ch.megil.teliaengine.ui.component.ColliderType;
 import ch.megil.teliaengine.ui.dialog.wizard.Wizard;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -18,6 +20,10 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
+import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -36,6 +42,7 @@ public class ProjectCreateDialog extends Wizard<File> {
 	private TextField playerWidth;
 	private TextField playerHeight;
 	private TextField playerTexture;
+	private ColliderEditor playerColliderEditor;
 	
 	private TextField mapWidth;
 	private TextField mapHeight;
@@ -109,10 +116,37 @@ public class ProjectCreateDialog extends Wizard<File> {
 		playerCreationGrid.add(createLabelWithTooltip("Player texture"), 0, 1);
 		playerTexture = new TextField();
 		playerTexture.textProperty().addListener(super::doNextPageCheckListener);
-		playerCreationGrid.add(playerTexture, 1, 1);
 		var searchBtn = new Button("...");
 		searchBtn.setOnAction(this::searchTexture);
-		playerCreationGrid.add(searchBtn, 2, 1);
+		var textureInput = new HBox(playerTexture, searchBtn);
+		textureInput.setSpacing(PADDING);
+		playerCreationGrid.add(textureInput, 1, 1, 2, 1);
+		
+		playerCreationGrid.add(createLabelWithTooltip("Collider Type"), 0, 2);
+		var colliderSelect = new ComboBox<ColliderType>();
+		colliderSelect.getItems().addAll(ColliderType.values());
+		colliderSelect.setOnAction(e -> playerColliderEditor.setColliderType(colliderSelect.getValue()));
+		colliderSelect.setValue(ColliderType.NONE);
+		var colliderColorPicker = new ColorPicker(Color.BLACK);
+		colliderColorPicker.setStyle("-fx-color-label-visible: false;");
+		colliderColorPicker.getStyleClass().add("button");
+		colliderColorPicker.setOnAction(ae -> playerColliderEditor.setColliderColor(colliderColorPicker.getValue()));
+		var colliderInput = new HBox(colliderSelect, colliderColorPicker);
+		colliderInput.setSpacing(PADDING);
+		playerCreationGrid.add(colliderInput, 1, 2, 2, 1);
+
+		playerColliderEditor = new ColliderEditor(Color.BLACK);
+		playerCreationGrid.add(playerColliderEditor, 0, 3, 3, 1);
+		
+		var row0 = new RowConstraints();
+		row0.setVgrow(Priority.NEVER);
+		var row1 = new RowConstraints();
+		row1.setVgrow(Priority.NEVER);
+		var row2 = new RowConstraints();
+		row2.setVgrow(Priority.NEVER);
+		var row3 = new RowConstraints();
+		row3.setVgrow(Priority.ALWAYS);
+		playerCreationGrid.getRowConstraints().addAll(row0, row1, row2, row3);
 		
 		return playerCreationGrid;
 	}
