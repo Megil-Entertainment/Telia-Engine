@@ -1,6 +1,4 @@
 package ch.megil.teliaengine.ui.dialog;
-import javafx.event.ActionEvent;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -11,41 +9,35 @@ import ch.megil.teliaengine.file.TextureFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.GameObject;
-import ch.megil.teliaengine.physics.Vector;
-import ch.megil.teliaengine.physics.collision.RectangleCollider;
 import ch.megil.teliaengine.logging.LogHandler;
-import ch.megil.teliaengine.ui.GameElementImageView;
+import ch.megil.teliaengine.ui.component.ColliderEditor;
+import ch.megil.teliaengine.ui.component.ColliderType;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
-import javafx.scene.control.Alert.AlertType;
 
 public class ObjectCreateDialog extends Dialog<GameObject>{
 	private static final int PADDING = 15;
+	private static final double WIDTH = 480;
+	private static final double HEIGHT = 360;
 	
 	private Node createBtn;
 	private TextField objectName;
 	private TextField objectWidth;
 	private TextField objectHeight;
 	private TextField texturePath;
-	private HBox objectPreview;
+	private ColliderEditor colliderEditor;
 
-	
 	public ObjectCreateDialog() {
 		var createType = new ButtonType("Create Object", ButtonData.OK_DONE);
 		getDialogPane().getButtonTypes().setAll(createType, ButtonType.CANCEL);
@@ -63,12 +55,12 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 		Platform.runLater(() -> objectName.requestFocus());
 		grid.add(objectName, 1, 0, 2, 1);
 		
-		grid.add(createLabelWithTooltip("Object Width / Object Height"), 0, 1);
+		grid.add(createLabelWithTooltip("Object Width / Height"), 0, 1);
 		objectWidth = new TextField();
 		objectWidth.textProperty().addListener(this::enableCreate);
+		grid.add(objectWidth, 1, 1);
 		objectHeight = new TextField();
 		objectHeight.textProperty().addListener(this::enableCreate);
-		grid.add(objectWidth, 1, 1);
 		grid.add(objectHeight, 2, 1);
 		
 		grid.add(createLabelWithTooltip("Texture"), 0, 2);
@@ -79,15 +71,32 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 		searchBtn.setOnAction(this::searchTexture);
 		grid.add(searchBtn, 2, 2);
 		
-		objectPreview = new HBox();
-		objectPreview.setAlignment(Pos.CENTER);
-		objectPreview.setPadding(new Insets(PADDING));
-		grid.add(objectPreview, 2, 3);
-		
+		grid.add(createLabelWithTooltip("Collider Type"), 0, 3);
+		var colliderSelect = new ComboBox<ColliderType>();
+		colliderSelect.getItems().addAll(ColliderType.values());
+		colliderSelect.setOnAction(e -> colliderEditor.setColliderType(colliderSelect.getValue()));
+		colliderSelect.setValue(ColliderType.NONE);
+		grid.add(colliderSelect, 1, 3, 2, 1);
+
+		colliderEditor = new ColliderEditor();
+		grid.add(colliderEditor, 3, 0, 1, 4);
+
+		var col0 = new ColumnConstraints(WIDTH*0.2);
+		col0.setPercentWidth(20);
+		var col1 = new ColumnConstraints(WIDTH*0.15);
+		col1.setPercentWidth(15);
+		var col2 = new ColumnConstraints(WIDTH*0.15);
+		col2.setPercentWidth(15);
+		var col3 = new ColumnConstraints(WIDTH*0.5);
+		col3.setPercentWidth(50);
+		grid.getColumnConstraints().addAll(col0, col1, col2, col3);
 		
 		getDialogPane().setContent(grid);
 		
-		
+		setWidth(WIDTH);
+		setHeight(HEIGHT);
+		setResizable(true);
+
 		setResultConverter(b -> b.equals(createType)
 				? createGameObject() : null);
 	}
@@ -96,7 +105,7 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 		var name = objectName.getText();
 		var width = Double.parseDouble(objectWidth.getText());
 		var height = Double.parseDouble(objectWidth.getText());
-		var hitbox = new RectangleCollider(new Vector(0,0), width, height);
+		var hitbox = colliderEditor.getCollider();
 		var textureFile = new File(texturePath.getText());
 		var textureName = name;
 		
@@ -119,15 +128,12 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 			var width = Double.parseDouble(objectWidth.getText());
 			var height = Double.parseDouble(objectHeight.getText());
 			
-			if(!objectName.getText().trim().isEmpty() && !texturePath.getText().trim().isEmpty()) {
-				var obj = new GameObject(null, null, TextureFileManager.get().loadExternal(texturePath.getText(), width, height), null, null);
-				var objImageView = new GameElementImageView(obj);
-				objectPreview.getChildren().clear();
-				objectPreview.setMinSize(width, height);
-				objectPreview.getChildren().add(objImageView);
-				getDialogPane().getScene().getWindow().sizeToScene();
-				createBtn.setDisable(false);
-				return;
+			if(!texturePath.getText().trim().isEmpty()) {
+				colliderEditor.setObjectImage(TextureFileManager.get().loadExternal(texturePath.getText(), width, height));
+				if (!objectName.getText().trim().isEmpty()) {
+					createBtn.setDisable(false);
+					return;
+				}
 			}
 		} catch(NumberFormatException e) {	
 		} catch (AssetNotFoundException e) {
