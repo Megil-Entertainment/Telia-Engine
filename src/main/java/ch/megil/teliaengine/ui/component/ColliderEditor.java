@@ -10,24 +10,23 @@ import ch.megil.teliaengine.ui.shape.EditableCircle;
 import ch.megil.teliaengine.ui.shape.EditableRectangle;
 import ch.megil.teliaengine.ui.shape.EditableShape;
 import ch.megil.teliaengine.ui.shape.EditableTriangle;
-import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 public class ColliderEditor extends Pane {
+	private static final Paint DEFAULT_COLLIDER_COLOR = Color.BLACK;
 	private static final double SCROLL_FACTOR = 1.1;
 	private static final double DEFAULT_ORIGIN = 0;
 	private static final double DEFAULT_MAX = 50;
 	
+	private Paint colliderColor;
 	private ColliderType type;
 	private ScrollPane scrollPane;
 	private Pane content;
@@ -35,7 +34,11 @@ public class ColliderEditor extends Pane {
 	private Pane colliderShape;
 	
 	public ColliderEditor() {
-		setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+		this(DEFAULT_COLLIDER_COLOR);
+	}
+	
+	public ColliderEditor(Paint defaultColliderColor) {
+		this.colliderColor = defaultColliderColor;
 		
 		addEventFilter(ScrollEvent.SCROLL, this::onScroll);
 		
@@ -63,6 +66,13 @@ public class ColliderEditor extends Pane {
 		}
 	}
 	
+	public void setColliderColor(Paint colliderColor) {
+		if (colliderShape != null) {
+			((EditableShape)colliderShape).setStroke(colliderColor);
+		}
+		this.colliderColor = colliderColor;
+	}
+	
 	public void setObjectImage(Image object) {
 		objectView.setImage(object);
 	}
@@ -76,14 +86,14 @@ public class ColliderEditor extends Pane {
 			case NONE:
 				return;
 			case RECTANGLE:
-				colliderShape = new EditableRectangle(DEFAULT_ORIGIN, DEFAULT_ORIGIN, imgWidth, imgHeight, Color.AQUA);
+				colliderShape = new EditableRectangle(DEFAULT_ORIGIN, DEFAULT_ORIGIN, imgWidth, imgHeight, colliderColor);
 				break;
 			case TRIANGLE:
-				colliderShape = new EditableTriangle(DEFAULT_ORIGIN, DEFAULT_ORIGIN, imgWidth, imgHeight, DEFAULT_ORIGIN, imgHeight, Color.AQUA);
+				colliderShape = new EditableTriangle(DEFAULT_ORIGIN, DEFAULT_ORIGIN, imgWidth, imgHeight, DEFAULT_ORIGIN, imgHeight, colliderColor);
 				break;
 			case CIRCLE:
 				var radius = imgWidth < imgHeight ? imgWidth/2 : imgHeight/2;
-				colliderShape = new EditableCircle(DEFAULT_ORIGIN+radius, DEFAULT_ORIGIN+radius, radius, Color.AQUA);
+				colliderShape = new EditableCircle(DEFAULT_ORIGIN+radius, DEFAULT_ORIGIN+radius, radius, colliderColor);
 				break;
 		}
 		((EditableShape)colliderShape).setSizeFactor(1/content.getScaleX());

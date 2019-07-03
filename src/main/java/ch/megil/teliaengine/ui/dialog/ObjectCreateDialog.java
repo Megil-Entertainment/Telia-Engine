@@ -29,7 +29,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 public class ObjectCreateDialog extends Dialog<GameObject>{
 	private static final int PADDING = 15;
 	private static final double WIDTH = 480;
-	private static final double HEIGHT = 360;
+	private static final double HEIGHT = 300;
 	
 	private Node createBtn;
 	private TextField objectName;
@@ -71,14 +71,20 @@ public class ObjectCreateDialog extends Dialog<GameObject>{
 		searchBtn.setOnAction(this::searchTexture);
 		grid.add(searchBtn, 2, 2);
 		
-		grid.add(createLabelWithTooltip("Collider Type"), 0, 3);
+		var colliderColorPicker = new ColorPicker(Color.BLACK);
+		colliderColorPicker.setVisible(false);
+		colliderColorPicker.setOnAction(ae -> colliderEditor.setColliderColor(colliderColorPicker.getValue()));
+		grid.add(colliderColorPicker, 0, 3);
+		var colliderLabel = createLabelWithTooltip("Collider Type");
+		colliderLabel.setOnMouseClicked(me -> colliderColorPicker.show());
+		grid.add(colliderLabel, 0, 3);
 		var colliderSelect = new ComboBox<ColliderType>();
 		colliderSelect.getItems().addAll(ColliderType.values());
 		colliderSelect.setOnAction(e -> colliderEditor.setColliderType(colliderSelect.getValue()));
 		colliderSelect.setValue(ColliderType.NONE);
 		grid.add(colliderSelect, 1, 3, 2, 1);
 
-		colliderEditor = new ColliderEditor();
+		colliderEditor = new ColliderEditor(Color.BLACK);
 		grid.add(colliderEditor, 3, 0, 1, 4);
 
 		var col0 = new ColumnConstraints(WIDTH*0.2);
