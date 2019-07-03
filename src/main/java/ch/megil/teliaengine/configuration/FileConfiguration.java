@@ -12,7 +12,8 @@ public enum FileConfiguration {
 	FILE_EXT_TEXTURE("fileExtTexture"),
 	FILE_EXT_PROJECT("fileExtProject"),
 	SEPARATOR_ENTRY("separatorEntry"),
-	SEPERATOR_PROPERTY("seperatorProperty");
+	SEPERATOR_PROPERTY("seperatorProperty"),
+	SEPERATOR_COMPOSITE_PROPERTY("seperatorCompProp");
 	
 private static Properties fileProp;
 	

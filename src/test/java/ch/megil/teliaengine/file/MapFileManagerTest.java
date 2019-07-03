@@ -91,7 +91,8 @@ public class MapFileManagerTest {
 		//create player
 		var player = testProjectDir.newFile("assets/player.tobj");
 		try (var writer = new BufferedWriter(new FileWriter(player))) {
-			writer.write("10.0:10.0:player:#000000");
+			writer.write("10.0:10.0:player:#000000\n");
+			writer.write("rectangle:0.0:0.0:10.0:10.0");
 		}
 		testProjectDir.newFile("assets/texture/player.png");
 		
@@ -103,7 +104,8 @@ public class MapFileManagerTest {
 		//create objects
 		var redObj = testProjectDir.newFile("assets/object/red.tobj");
 		try (var writer = new BufferedWriter(new FileWriter(redObj))) {
-			writer.write("50.0:60.0:tex:#FF0000");
+			writer.write("50.0:60.0:tex:#FF0000\n");
+			writer.write("rectangle:0.0:0.0:50.0:60.0");
 		}
 		
 		var failObj = testProjectDir.newFile("assets/object/fail.tobj");
