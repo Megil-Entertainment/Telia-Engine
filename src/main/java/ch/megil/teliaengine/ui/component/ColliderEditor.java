@@ -10,8 +10,12 @@ import ch.megil.teliaengine.ui.shape.EditableCircle;
 import ch.megil.teliaengine.ui.shape.EditableRectangle;
 import ch.megil.teliaengine.ui.shape.EditableTriangle;
 import javafx.geometry.Insets;
+import javafx.scene.Group;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -19,19 +23,42 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
 public class ColliderEditor extends Pane {
+	private static final double SCROLL_FACTOR = 1.1;
 	private static final double DEFAULT_ORIGIN = 0;
 	private static final double DEFAULT_MAX = 50;
+	
 	private ColliderType type;
+	private ScrollPane scrollPane;
+	private Pane content;
 	private ImageView objectView;
 	private Pane colliderShape;
 	
 	public ColliderEditor() {
 		setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
 		
+		addEventFilter(ScrollEvent.SCROLL, this::onScroll);
+		
+		scrollPane = new ScrollPane();
+		scrollPane.prefWidthProperty().bind(widthProperty());
+		scrollPane.prefHeightProperty().bind(heightProperty());
+		scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		getChildren().add(scrollPane);
+		
+		content = new Pane();
+		scrollPane.setContent(new Group(content));
+		
 		objectView = new ImageView();
-		objectView.fitWidthProperty().bind(widthProperty());
-		objectView.fitHeightProperty().bind(heightProperty());
-		getChildren().add(objectView);
+		content.getChildren().add(objectView);
+	}
+	
+	private void onScroll(ScrollEvent e) {
+		if (e.isControlDown()) {
+			var scrollFactor = e.getDeltaY() > 0 ? SCROLL_FACTOR : 1/SCROLL_FACTOR;
+			content.setScaleX(content.getScaleX() * scrollFactor);
+			content.setScaleY(content.getScaleY() * scrollFactor);
+			e.consume();
+		}
 	}
 	
 	public void setObjectImage(Image object) {
@@ -39,7 +66,7 @@ public class ColliderEditor extends Pane {
 	}
 	
 	public void setColliderType(ColliderType type) {
-		getChildren().remove(colliderShape);
+		content.getChildren().remove(colliderShape);
 		this.type = type;
 		var imgWidth = objectView.getImage() != null ? objectView.getImage().getWidth() : DEFAULT_MAX;
 		var imgHeight = objectView.getImage() != null ? objectView.getImage().getHeight() : DEFAULT_MAX;
@@ -58,7 +85,7 @@ public class ColliderEditor extends Pane {
 				colliderShape = new EditableCircle(DEFAULT_ORIGIN+radius, DEFAULT_ORIGIN+radius, radius, Color.AQUA);
 				break;
 		}
-		getChildren().add(colliderShape);
+		content.getChildren().add(colliderShape);
 	}
 	
 	public Collider getCollider() {
