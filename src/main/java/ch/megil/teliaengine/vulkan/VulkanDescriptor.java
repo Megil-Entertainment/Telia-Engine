@@ -16,7 +16,7 @@ import ch.megil.teliaengine.vulkan.exception.VulkanException;
  */
 public class VulkanDescriptor {
 	public static final int SAMPLER_COUNT = 1;
-	public static final int IMAGE_COUNT = 8;
+	public static final int IMAGE_COUNT = 1024;
 	public static final int BINDING_COUNT = 2;
 
 	public static final int SAMPLER_BINDING = 0;
