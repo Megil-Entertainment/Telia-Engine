@@ -64,20 +64,19 @@ public class EditableRectangle extends Pane {
 		var w = p2.getPositionX() - x;
 		var h = p2.getPositionY() - y;
 		
-		if (w > 0) {
-			rectangle.setX(x);
-			rectangle.setWidth(w);
+		if (w < 0) {
 		} else {
-			rectangle.setX(x+w);
-			rectangle.setWidth(0-w);
+			x = x+w;
+			w = 0-w;
 		}
-		if (h > 0) {
-			rectangle.setY(y);
-			rectangle.setHeight(h);
-		} else {
-			rectangle.setY(y+h);
-			rectangle.setHeight(0-h);
+		rectangle.setX(x);
+		rectangle.setWidth(w);
+		if (h < 0) {
+			y = y+h;
+			h = 0-h;
 		}
+		rectangle.setY(y);
+		rectangle.setHeight(h);
 		
 		onOriginChange.accept(x, y);
 		onSizeChange.accept(w, h);
@@ -97,5 +96,21 @@ public class EditableRectangle extends Pane {
 	
 	public void setOnSizeChange(BiConsumer<Double, Double> onSizeChange) {
 		this.onSizeChange = onSizeChange;
+	}
+	
+	public double getOriginX() {
+		return rectangle.getX();
+	}
+	
+	public double getOriginY() {
+		return rectangle.getY();
+	}
+	
+	public double getSizeWidth() {
+		return rectangle.getWidth();
+	}
+	
+	public double getSizeHeight() {
+		return rectangle.getHeight();
 	}
 }
