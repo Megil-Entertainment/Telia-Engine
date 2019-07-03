@@ -36,7 +36,11 @@ public class CircleCollider extends Collider {
 		center = center.add(move);
 	}
 
-	protected Vector getCenter() {
+	public Vector getCenter() {
 		return center;
+	}
+	
+	public double getRadius() {
+		return radius;
 	}
 }

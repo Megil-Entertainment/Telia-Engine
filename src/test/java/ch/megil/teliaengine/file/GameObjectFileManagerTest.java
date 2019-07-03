@@ -1,6 +1,8 @@
 package ch.megil.teliaengine.file;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
@@ -17,6 +19,7 @@ import org.junit.rules.TemporaryFolder;
 
 import ch.megil.teliaengine.file.exception.AssetFormatException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
+import ch.megil.teliaengine.physics.collision.RectangleCollider;
 import ch.megil.teliaengine.project.ProjectController;
 
 public class GameObjectFileManagerTest {
@@ -46,14 +49,16 @@ public class GameObjectFileManagerTest {
 		//create player
 		var player = testProjectDir.newFile("assets/player.tobj");
 		try (var writer = new BufferedWriter(new FileWriter(player))) {
-			writer.write("10.0:10.0:player:#000000");
+			writer.write("10.0:10.0:player:#000000\n");
+			writer.write("rectangle:0.0:0.0:10.0:10.0");
 		}
 		testProjectDir.newFile("assets/texture/player.png");
 		
 		//create objects
 		var red = testProjectDir.newFile("assets/object/red.tobj");
 		try (var writer = new BufferedWriter(new FileWriter(red))) {
-			writer.write("50.0:60.0:red:#FF0000");
+			writer.write("50.0:60.0:red:#FF0000\n");
+			writer.write("rectangle:0.0:0.0:50.0:60.0");
 		}
 		var redTexFile = testProjectDir.newFile("assets/texture/red.png");
 		var redTexture = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
@@ -79,6 +84,7 @@ public class GameObjectFileManagerTest {
 		assertEquals(0.0, obj.getPosition().getY(), 0);
 		assertEquals(50.0, (obj.getDepiction()).getWidth(), 0);
 		assertEquals(60.0, (obj.getDepiction()).getHeight(), 0);
+		assertThat(obj.getHitbox(), instanceOf(RectangleCollider.class));
 	}
 	
 	@Test(expected = AssetNotFoundException.class)

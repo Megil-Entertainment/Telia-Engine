@@ -12,8 +12,7 @@ import ch.megil.teliaengine.file.exception.AssetCreationException;
 import ch.megil.teliaengine.file.exception.AssetLoadException;
 import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.game.player.Player;
-import ch.megil.teliaengine.physics.Vector;
-import ch.megil.teliaengine.physics.collision.RectangleCollider;
+import ch.megil.teliaengine.physics.collision.Collider;
 import javafx.scene.paint.Color;
 
 public class PlayerFileManager {
@@ -28,10 +27,12 @@ public class PlayerFileManager {
 
 			var depictionName = spec[2];
 			var depiction = TextureFileManager.get().load(depictionName, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
-			var hitbox =  new RectangleCollider(Vector.ZERO, Double.parseDouble(spec[0]), Double.parseDouble(spec[1]));
 			var color = Color.web(spec[3]);
 			
-			return new Player(depictionName, depiction, hitbox, color);
+			var colliderSpec = scanner.next();
+			var collider = new ColliderConverter().convertToCollider(colliderSpec);
+			
+			return new Player(depictionName, depiction, collider, color);
 		} catch (IOException e) {
 			throw new AssetNotFoundException("Player spec not found", e);
 		} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
@@ -41,15 +42,18 @@ public class PlayerFileManager {
 		}
 	}
 	
-	public void createPlayer(File projectDir, double width, double height, File texture) throws AssetCreationException {
+	public void createPlayer(File projectDir, double width, double height, File texture, Collider collider) throws AssetCreationException {
 		var fileName = projectDir + ProjectFolderConfiguration.ASSET_PLAYER.getConfigurationWithoutProjectPath() + FileConfiguration.FILE_EXT_OBJECT.getConfiguration();
 		
 		var depictionName = texture.getName().replace(FileConfiguration.FILE_EXT_TEXTURE.getConfiguration(), "");
 		TextureFileManager.get().importTextureToOtherProject(projectDir, depictionName, texture);
 		
 		var propSeperator = FileConfiguration.SEPERATOR_PROPERTY.getConfiguration();
+		var entrySeperator = FileConfiguration.SEPARATOR_ENTRY.getConfiguration();
+		
 		try (var writer = new BufferedWriter(new FileWriter(fileName))) {
-			writer.write(width + propSeperator + height + propSeperator + depictionName + propSeperator + "#000000");
+			writer.write(width + propSeperator + height + propSeperator + depictionName + propSeperator + "#000000" + entrySeperator);
+			writer.write(new ColliderConverter().convertToEntryString(collider));
 		} catch (IOException e) {
 			throw new AssetCreationException(e);
 		}

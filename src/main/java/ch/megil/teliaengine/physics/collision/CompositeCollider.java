@@ -61,4 +61,8 @@ public class CompositeCollider extends Collider {
 	protected Vector getMovement() {
 		return movement;
 	}
+	
+	public List<Collider> getColliders() {
+		return colliders;
+	}
 }

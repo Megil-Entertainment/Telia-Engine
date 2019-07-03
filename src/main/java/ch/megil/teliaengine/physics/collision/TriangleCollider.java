@@ -161,15 +161,15 @@ public class TriangleCollider extends Collider implements DistanceCalculatable {
 		p2 = p2.add(move);
 	}
 
-	protected Vector getP0() {
+	public Vector getP0() {
 		return p0;
 	}
 
-	protected Vector getP1() {
+	public Vector getP1() {
 		return p1;
 	}
 
-	protected Vector getP2() {
+	public Vector getP2() {
 		return p2;
 	}
 }
