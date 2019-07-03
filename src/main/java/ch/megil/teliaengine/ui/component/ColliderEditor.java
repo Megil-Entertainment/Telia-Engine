@@ -19,6 +19,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
 public class ColliderEditor extends Pane {
+	private static final double DEFAULT_ORIGIN = 0;
 	private static final double DEFAULT_MAX = 50;
 	private ColliderType type;
 	private ImageView objectView;
@@ -40,17 +41,21 @@ public class ColliderEditor extends Pane {
 	public void setColliderType(ColliderType type) {
 		getChildren().remove(colliderShape);
 		this.type = type;
+		var imgWidth = objectView.getImage() != null ? objectView.getImage().getWidth() : DEFAULT_MAX;
+		var imgHeight = objectView.getImage() != null ? objectView.getImage().getHeight() : DEFAULT_MAX;
 		switch (type) {
 			case NONE:
 				return;
 			case RECTANGLE:
-				colliderShape = new EditableRectangle(10, 20, 120, 60, Color.AQUA);
+				colliderShape = new EditableRectangle(DEFAULT_ORIGIN, DEFAULT_ORIGIN, imgWidth, imgHeight, Color.AQUA);
 				break;
 			case TRIANGLE:
-				colliderShape = new EditableTriangle(3, 3, 13, 13, 3, 13, Color.AQUA);
+				
+				colliderShape = new EditableTriangle(DEFAULT_ORIGIN, DEFAULT_ORIGIN, imgWidth, imgHeight, DEFAULT_ORIGIN, imgHeight, Color.AQUA);
 				break;
 			case CIRCLE:
-				colliderShape = new EditableCircle(20, 20, 20, Color.AQUA);
+				var radius = imgWidth < imgHeight ? imgWidth/2 : imgHeight/2;
+				colliderShape = new EditableCircle(DEFAULT_ORIGIN+radius, DEFAULT_ORIGIN+radius, radius, Color.AQUA);
 				break;
 		}
 		getChildren().add(colliderShape);
