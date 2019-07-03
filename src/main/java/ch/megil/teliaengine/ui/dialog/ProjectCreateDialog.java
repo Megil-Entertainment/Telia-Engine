@@ -8,8 +8,11 @@ import ch.megil.teliaengine.configuration.data.GameConfigData;
 import ch.megil.teliaengine.configuration.data.PhysicsConstData;
 import ch.megil.teliaengine.file.PlayerFileManager;
 import ch.megil.teliaengine.file.ProjectFileManager;
+import ch.megil.teliaengine.file.TextureFileManager;
 import ch.megil.teliaengine.file.exception.AssetCreationException;
+import ch.megil.teliaengine.file.exception.AssetNotFoundException;
 import ch.megil.teliaengine.logging.LogHandler;
+import ch.megil.teliaengine.physics.collision.Collider;
 import ch.megil.teliaengine.project.Project;
 import ch.megil.teliaengine.ui.component.ColliderEditor;
 import ch.megil.teliaengine.ui.component.ColliderType;
@@ -42,6 +45,7 @@ public class ProjectCreateDialog extends Wizard<File> {
 	private TextField playerWidth;
 	private TextField playerHeight;
 	private TextField playerTexture;
+	private ComboBox<ColliderType> playerColliderSelect;
 	private ColliderEditor playerColliderEditor;
 	
 	private TextField mapWidth;
@@ -71,7 +75,7 @@ public class ProjectCreateDialog extends Wizard<File> {
 		
 		setResultConverter(b -> b.equals(ButtonType.FINISH)
 				? createProject(projectName.getText(), location.getText(),
-						Double.parseDouble(playerWidth.getText()), Double.parseDouble(playerHeight.getText()), playerTexture.getText(),
+						Double.parseDouble(playerWidth.getText()), Double.parseDouble(playerHeight.getText()), playerTexture.getText(), playerColliderEditor.getCollider(),
 						gameConfigData, physicsConstData)
 				: null);
 	}
@@ -123,15 +127,16 @@ public class ProjectCreateDialog extends Wizard<File> {
 		playerCreationGrid.add(textureInput, 1, 1, 2, 1);
 		
 		playerCreationGrid.add(createLabelWithTooltip("Collider Type"), 0, 2);
-		var colliderSelect = new ComboBox<ColliderType>();
-		colliderSelect.getItems().addAll(ColliderType.values());
-		colliderSelect.setOnAction(e -> playerColliderEditor.setColliderType(colliderSelect.getValue()));
-		colliderSelect.setValue(ColliderType.NONE);
+		playerColliderSelect = new ComboBox<ColliderType>();
+		playerColliderSelect.getItems().addAll(ColliderType.values());
+		playerColliderSelect.setOnAction(e -> playerColliderEditor.setColliderType(playerColliderSelect.getValue()));
+		playerColliderSelect.setValue(ColliderType.NONE);
+		playerColliderSelect.valueProperty().addListener(super::doNextPageCheckListener);
 		var colliderColorPicker = new ColorPicker(Color.BLACK);
 		colliderColorPicker.setStyle("-fx-color-label-visible: false;");
 		colliderColorPicker.getStyleClass().add("button");
 		colliderColorPicker.setOnAction(ae -> playerColliderEditor.setColliderColor(colliderColorPicker.getValue()));
-		var colliderInput = new HBox(colliderSelect, colliderColorPicker);
+		var colliderInput = new HBox(playerColliderSelect, colliderColorPicker);
 		colliderInput.setSpacing(PADDING);
 		playerCreationGrid.add(colliderInput, 1, 2, 2, 1);
 
@@ -211,13 +216,13 @@ public class ProjectCreateDialog extends Wizard<File> {
 		return label;
 	}
 	
-	private File createProject(String projectName, String location, double playerWidth, double playerHeight, String playerTexture, GameConfigData gameConfigData, PhysicsConstData physicsConstData) {
+	private File createProject(String projectName, String location, double playerWidth, double playerHeight, String playerTexture, Collider collider, GameConfigData gameConfigData, PhysicsConstData physicsConstData) {
 		var projectDir = new File(location + "/" + projectName.replaceAll("\\s", ""));
 		var project = new Project(projectName, projectDir);
 		
 		try {
 			var projectInfo = projectFileManager.initProject(project, gameConfigData, physicsConstData);
-			new PlayerFileManager().createPlayer(projectDir, playerWidth, playerHeight, new File(playerTexture));
+			new PlayerFileManager().createPlayer(projectDir, playerWidth, playerHeight, new File(playerTexture), collider);
 			
 			return projectInfo;
 		} catch (AssetCreationException e) {
@@ -273,9 +278,13 @@ public class ProjectCreateDialog extends Wizard<File> {
 		try {
 			var width = Double.parseDouble(playerWidth.getText());
 			var height = Double.parseDouble(playerHeight.getText());
+			
+			if (!playerTexture.getText().trim().isEmpty()) {
+				playerColliderEditor.setObjectImage(TextureFileManager.get().loadExternal(playerTexture.getText(), width, height));
+			}
 
-			return width <= 0.0 || height <= 0.0 || playerTexture.getText().trim().isEmpty();
-		} catch (NumberFormatException e) {
+			return width <= 0.0 || height <= 0.0 || playerTexture.getText().trim().isEmpty() || playerColliderSelect.getValue()==ColliderType.NONE;
+		} catch (NumberFormatException | AssetNotFoundException e) {
 			return true;
 		}
 	}
