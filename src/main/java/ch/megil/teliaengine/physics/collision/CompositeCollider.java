@@ -44,7 +44,7 @@ public class CompositeCollider extends Collider {
 					break;
 				}
 			}
-			for (; i < colliders.size(); i++) {
+			for (i++; i < colliders.size(); i++) {
 				colliders.get(i).move(movement);
 			}
 			movement = Vector.ZERO;
