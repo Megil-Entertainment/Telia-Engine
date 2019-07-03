@@ -7,7 +7,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
-public class EditableRectangle extends Pane {
+public class EditableRectangle extends Pane implements EditableShape {
 	private BiConsumer<Double, Double> onOriginChange;
 	private BiConsumer<Double, Double> onSizeChange;
 	
@@ -81,6 +81,16 @@ public class EditableRectangle extends Pane {
 		onSizeChange.accept(w, h);
 	}
 	
+	@Override
+	public void setSizeFactor(double sizeFactor) {
+		rectangle.setStrokeWidth(sizeFactor);
+		p0.setSizeFactor(sizeFactor);
+		p1.setSizeFactor(sizeFactor);
+		p2.setSizeFactor(sizeFactor);
+		p3.setSizeFactor(sizeFactor);
+	}
+	
+	@Override
 	public void setStroke(Paint stroke) {
 		rectangle.setStroke(stroke);
 		p0.setStroke(stroke);

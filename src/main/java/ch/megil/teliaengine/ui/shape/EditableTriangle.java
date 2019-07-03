@@ -6,7 +6,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 
-public class EditableTriangle extends Pane {
+public class EditableTriangle extends Pane implements EditableShape {
 	private BiConsumer<Double, Double> onP0Change;
 	private BiConsumer<Double, Double> onP1Change;
 	private BiConsumer<Double, Double> onP2Change;
@@ -59,6 +59,17 @@ public class EditableTriangle extends Pane {
 		};
 	}
 	
+	@Override
+	public void setSizeFactor(double sizeFactor) {
+		p0.setSizeFactor(sizeFactor);
+		p1.setSizeFactor(sizeFactor);
+		p2.setSizeFactor(sizeFactor);
+		edge0.setStrokeWidth(sizeFactor);
+		edge1.setStrokeWidth(sizeFactor);
+		edge2.setStrokeWidth(sizeFactor);
+	}
+	
+	@Override
 	public void setStroke(Paint stroke) {
 		p0.setStroke(stroke);
 		p1.setStroke(stroke);

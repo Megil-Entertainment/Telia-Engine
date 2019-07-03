@@ -8,6 +8,7 @@ import ch.megil.teliaengine.physics.collision.RectangleCollider;
 import ch.megil.teliaengine.physics.collision.TriangleCollider;
 import ch.megil.teliaengine.ui.shape.EditableCircle;
 import ch.megil.teliaengine.ui.shape.EditableRectangle;
+import ch.megil.teliaengine.ui.shape.EditableShape;
 import ch.megil.teliaengine.ui.shape.EditableTriangle;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
@@ -57,6 +58,7 @@ public class ColliderEditor extends Pane {
 			var scrollFactor = e.getDeltaY() > 0 ? SCROLL_FACTOR : 1/SCROLL_FACTOR;
 			content.setScaleX(content.getScaleX() * scrollFactor);
 			content.setScaleY(content.getScaleY() * scrollFactor);
+			((EditableShape)colliderShape).setSizeFactor(1/content.getScaleX());
 			e.consume();
 		}
 	}
@@ -77,7 +79,6 @@ public class ColliderEditor extends Pane {
 				colliderShape = new EditableRectangle(DEFAULT_ORIGIN, DEFAULT_ORIGIN, imgWidth, imgHeight, Color.AQUA);
 				break;
 			case TRIANGLE:
-				
 				colliderShape = new EditableTriangle(DEFAULT_ORIGIN, DEFAULT_ORIGIN, imgWidth, imgHeight, DEFAULT_ORIGIN, imgHeight, Color.AQUA);
 				break;
 			case CIRCLE:
@@ -85,6 +86,7 @@ public class ColliderEditor extends Pane {
 				colliderShape = new EditableCircle(DEFAULT_ORIGIN+radius, DEFAULT_ORIGIN+radius, radius, Color.AQUA);
 				break;
 		}
+		((EditableShape)colliderShape).setSizeFactor(1/content.getScaleX());
 		content.getChildren().add(colliderShape);
 	}
 	

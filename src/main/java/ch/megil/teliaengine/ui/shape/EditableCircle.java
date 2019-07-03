@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
-public class EditableCircle extends Pane {
+public class EditableCircle extends Pane implements EditableShape {
 	private BiConsumer<Double, Double> onCenterMove;
 	private Consumer<Double> onRadiusChange;
 	
@@ -48,6 +48,14 @@ public class EditableCircle extends Pane {
 		setStroke(stroke);
 	}
 	
+	@Override
+	public void setSizeFactor(double sizeFactor) {
+		circle.setStrokeWidth(sizeFactor);
+		center.setSizeFactor(sizeFactor);
+		size.setSizeFactor(sizeFactor);
+	}
+	
+	@Override
 	public void setStroke(Paint stroke) {
 		circle.setStroke(stroke);
 		center.setStroke(stroke);
