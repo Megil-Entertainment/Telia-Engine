@@ -21,24 +21,36 @@ public class ColliderConverterTest {
 	public void setUp() throws Exception {
 		colliderConverter = new ColliderConverter();
 	}
-
+	
 	@Test
-	public void testConvertToCollider() {
-		fail("Not yet implemented");
+	public void testConvertToEntryStringRectangle() {
+		Collider collider = new RectangleCollider(new Vector(5, 10), 20, 30);
+		var res = colliderConverter.convertToEntryString(collider);
+		assertEquals("rectangle:5.0:10.0:20.0:30.0", res);
 	}
 	
 	@Test
-	public void testConvertToEntryString() {
+	public void testConvertToEntryStringCircle() {
+		Collider collider = new CircleCollider(new Vector(20, 10), 5);
+		var res = colliderConverter.convertToEntryString(collider);
+		assertEquals("circle:20.0:10.0:5.0", res);
+	}
+	
+	@Test
+	public void testConvertToEntryStringTriangle() {
+		Collider collider = new TriangleCollider(new Vector(5, 5), new Vector(15, 4), new Vector(3, 18));
+		var res = colliderConverter.convertToEntryString(collider);
+		assertEquals("triangle:5.0:5.0:15.0:4.0:3.0:18.0", res);
+	}
+	
+	@Test
+	public void testConvertToEntryStringComposite() {
 		var colRec = new RectangleCollider(new Vector(5, 10), 20, 30);
 		var colCir = new CircleCollider(new Vector(20, 10), 5);
 		var colTri = new TriangleCollider(new Vector(5, 5), new Vector(15, 4), new Vector(3, 18));
-		var colComp = new CompositeCollider(colRec, colCir, colTri);
+		Collider collider = new CompositeCollider(colRec, colCir, colTri);
 		
-		assertEquals("rectangle:5.0:10.0:20.0:30.0", colliderConverter.convertToEntryString(colRec));
-		assertEquals("circle:20.0:10.0:5.0", colliderConverter.convertToEntryString(colCir));
-		assertEquals("triangle:5.0:5.0:15.0:4.0:3.0:18.0", colliderConverter.convertToEntryString(colTri));
-		
-		var compRes = colliderConverter.convertToEntryString(colComp);
+		var compRes = colliderConverter.convertToEntryString(collider);
 		assertTrue("Starts with composite", compRes.startsWith("composite:;"));
 		assertTrue("Contains rectangle collider", compRes.contains("rectangle:5.0:10.0:20.0:30.0"));
 		assertTrue("Contains circle collider", compRes.contains("circle:20.0:10.0:5.0"));
