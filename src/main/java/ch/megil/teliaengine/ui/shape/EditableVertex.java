@@ -11,7 +11,6 @@ public class EditableVertex extends Rectangle implements EditableShape {
 	private static final double SIZE = 6;
 	private static final double OFFSET = SIZE / 2;
 	
-	private double size;
 	private double offset;
 	private BiConsumer<Double, Double> onDragPosition;
 	
