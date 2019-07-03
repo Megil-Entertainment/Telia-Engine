@@ -16,7 +16,6 @@ public class EditableVertex extends Rectangle implements EditableShape {
 	
 	public EditableVertex(double x, double y) {
 		super(x - OFFSET, y - OFFSET, SIZE, SIZE);
-		size = SIZE;
 		offset = OFFSET;
 		setFill(Color.TRANSPARENT);
 		setStroke(Color.BLACK);
