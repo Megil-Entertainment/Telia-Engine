@@ -9,6 +9,7 @@ public class ColliderConverter {
 	private static final String CIRCLE = "circle";
 	private static final String TRIANGLE = "triangle";
 	private static final String COMPOSITE = "composite";
+	private static final String EMPTY = "empty";
 	
 	/*
 	 * None
@@ -73,7 +74,7 @@ public class ColliderConverter {
 			}
 			return colliderStr;
 		} else {
-			return "";
+			return "empty";
 		}
 	}
 }
