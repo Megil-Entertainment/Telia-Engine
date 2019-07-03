@@ -79,4 +79,28 @@ public class EditableTriangle extends Pane {
 	public void setOnP2Change(BiConsumer<Double, Double> onP2Change) {
 		this.onP2Change = onP2Change;
 	}
+	
+	public double getP0X() {
+		return p0.getPositionX();
+	}
+	
+	public double getP0Y() {
+		return p0.getPositionY();
+	}
+	
+	public double getP1X() {
+		return p1.getPositionX();
+	}
+	
+	public double getP1Y() {
+		return p1.getPositionY();
+	}
+	
+	public double getP2X() {
+		return p2.getPositionX();
+	}
+	
+	public double getP2Y() {
+		return p2.getPositionY();
+	}
 }

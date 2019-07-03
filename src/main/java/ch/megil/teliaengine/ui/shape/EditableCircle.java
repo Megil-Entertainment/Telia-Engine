@@ -61,4 +61,16 @@ public class EditableCircle extends Pane {
 	public void setOnRadiusChange(Consumer<Double> onRadiusChange) {
 		this.onRadiusChange = onRadiusChange;
 	}
+	
+	public double getCenterX() {
+		return circle.getCenterX();
+	}
+	
+	public double getCenterY() {
+		return circle.getCenterY();
+	}
+	
+	public double getRadius() {
+		return circle.getRadius();
+	}
 }
